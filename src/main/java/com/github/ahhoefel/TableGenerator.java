@@ -8,6 +8,7 @@ public class TableGenerator {
     private Rule rule;
     private int index;
     private Set<TerminalSymbol<L>> lookAhead;
+
     public Item(Rule rule, int index, Set<TerminalSymbol<L>> lookAhead) {
       this.rule = rule;
       this.index = index;
@@ -16,13 +17,13 @@ public class TableGenerator {
   }
 
   public <L> LRTable<L> generate(List<Rule> rules) {
-     if (rules.isEmpty()) {
-       return null;
-     }
-     Map<NonTerminalSymbol, List<Rule>> ruleMap = toMap(rules);
-     Rule start = rules.get(0);
-     Item<L> startItem = new Item(start, 0, first(start, ruleMap));
-     //Set<Item<L>> startSet = closure(startItem, ruleMap);
+    if (rules.isEmpty()) {
+      return null;
+    }
+    Map<NonTerminalSymbol, List<Rule>> ruleMap = toMap(rules);
+    Rule start = rules.get(0);
+    Item<L> startItem = new Item(start, 0, first(start, ruleMap));
+    //Set<Item<L>> startSet = closure(startItem, ruleMap);
     return null;
   }
 

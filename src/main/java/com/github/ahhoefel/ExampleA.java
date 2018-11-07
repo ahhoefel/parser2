@@ -22,14 +22,14 @@ public class ExampleA {
     Rule r4 = new Rule(products, List.of(value));
     Rule r5 = new Rule(value, List.of(num));
     Rule r6 = new Rule(value, List.of(id));
-    List<Rule> ruleList = List.of(r0,r1,r2,r3,r4,r5,r6);
+    List<Rule> ruleList = List.of(r0, r1, r2, r3, r4, r5, r6);
     Rules rules = new Rules(ruleList, eof);
 
     LRTable table = new LRTable(
         Arrays.asList(
             new LRTable.State<>(
                 Map.of(),
-                Map.of(num, 8, id,9),
+                Map.of(num, 8, id, 9),
                 Map.of(sums, 1, products, 4, value, 7)
             ),
             new LRTable.State<>(
@@ -39,8 +39,8 @@ public class ExampleA {
             ),
             new LRTable.State<>(
                 Map.of(),
-                Map.of(num, 8, id,9),
-                Map.of( products, 3, value, 7)
+                Map.of(num, 8, id, 9),
+                Map.of(products, 3, value, 7)
             ),
             new LRTable.State<>(
                 Map.of(plus, r1, eof, r1),
@@ -54,7 +54,7 @@ public class ExampleA {
             ),
             new LRTable.State<>(
                 Map.of(),
-                Map.of(num, 8, id,9),
+                Map.of(num, 8, id, 9),
                 Map.of(value, 6)
             ),
             new LRTable.State<>(

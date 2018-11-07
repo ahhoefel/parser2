@@ -22,12 +22,12 @@ public class LRItemTest {
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
-    List<Rule> rs = List.of(r0,r1,r2,r3,r4);
+    List<Rule> rs = List.of(r0, r1, r2, r3, r4);
     Rules rules = new Rules(rs, eof);
-    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0,0), rules);
+    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0), rules);
     Assert.assertEquals(closure, Set.of(
-        new MarkedRule(r0,0),
-        new MarkedRule(r1,0),
+        new MarkedRule(r0, 0),
+        new MarkedRule(r1, 0),
         new MarkedRule(r2, 0)
     ));
   }
@@ -51,13 +51,13 @@ public class LRItemTest {
     Rule r4 = new Rule(t, List.of(t, times, f));
     Rule r5 = new Rule(f, List.of(n));
     Rule r6 = new Rule(f, List.of(lparen, e, rparen));
-    List<Rule> rs = List.of(r0,r1,r2,r3,r4,r5,r6);
-    Rules rules = new Rules(rs,eof);
+    List<Rule> rs = List.of(r0, r1, r2, r3, r4, r5, r6);
+    Rules rules = new Rules(rs, eof);
 
-    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6,1), rules);
+    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6, 1), rules);
     Assert.assertEquals(Set.of(
-        new MarkedRule(r6,1),
-        new MarkedRule(r1,0),
+        new MarkedRule(r6, 1),
+        new MarkedRule(r1, 0),
         new MarkedRule(r2, 0),
         new MarkedRule(r3, 0),
         new MarkedRule(r4, 0),
@@ -67,12 +67,12 @@ public class LRItemTest {
 
     closure = LRItem.closure(
         Set.of(
-            new MarkedRule(r0,1),
+            new MarkedRule(r0, 1),
             new MarkedRule(r1, 1)
         ), rules);
     Assert.assertEquals(Set.of(
-        new MarkedRule(r0,1),
-        new MarkedRule(r1,1)
+        new MarkedRule(r0, 1),
+        new MarkedRule(r1, 1)
     ), closure);
   }
 
@@ -93,7 +93,7 @@ public class LRItemTest {
     Rule r4 = new Rule(t, List.of(t, times, f));
     Rule r5 = new Rule(f, List.of(n));
     Rule r6 = new Rule(f, List.of(lparen, e, rparen));
-    Rules rules = new Rules(List.of(r1,r2,r3,r4,r5,r6), eof);
+    Rules rules = new Rules(List.of(r1, r2, r3, r4, r5, r6), eof);
     LRParser parser = LRItem.makeItemGraph(rules);
     Assert.assertEquals(12, parser.items.size());
     System.out.println(parser.getTable(rules));
@@ -116,7 +116,7 @@ public class LRItemTest {
     Rule r3 = new Rule(a, List.of());
     Rule r4 = new Rule(b, List.of(y));
     Rule r5 = new Rule(b, List.of(z));
-    Rules rules = new Rules(List.of(r1,r2,r3,r4,r5), eof);
+    Rules rules = new Rules(List.of(r1, r2, r3, r4, r5), eof);
     LRParser parser = LRItem.makeItemGraph(rules);
     Assert.assertEquals(9, parser.items.size());
   }
@@ -137,7 +137,7 @@ public class LRItemTest {
     Rule r3 = new Rule(a, List.of());
     Rule r4 = new Rule(b, List.of(y));
     Rule r5 = new Rule(b, List.of(z));
-    List<Rule> rs = List.of(r0,r1,r2,r3,r4,r5);
+    List<Rule> rs = List.of(r0, r1, r2, r3, r4, r5);
     Rules rules = new Rules(rs, eof);
     LRParser parser = LRItem.makeItemGraph(rules);
     LRTable table = parser.getTable(rules);

@@ -11,7 +11,10 @@ public class Rule {
     this.symbols = symbols;
   }
 
-  public NonTerminalSymbol getSource() {return source;}
+  public NonTerminalSymbol getSource() {
+    return source;
+  }
+
   public List<Symbol> getSymbols() {
     return symbols;
   }

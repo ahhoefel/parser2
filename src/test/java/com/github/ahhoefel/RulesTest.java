@@ -22,7 +22,7 @@ public class RulesTest {
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
-    List<Rule> rs = List.of(r0,r1,r2,r3,r4);
+    List<Rule> rs = List.of(r0, r1, r2, r3, r4);
     Rules rules = new Rules(rs, eof);
     Assert.assertFalse(rules.isEpsilon(s));
     Assert.assertTrue(rules.isEpsilon(a));
@@ -43,23 +43,23 @@ public class RulesTest {
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
-    List<Rule> rs = List.of(r0,r1,r2,r3,r4);
+    List<Rule> rs = List.of(r0, r1, r2, r3, r4);
     Rules rules = new Rules(rs, eof);
 
     Assert.assertEquals(Set.of(), rules.getSimpleFirstTerminals(start));
     Assert.assertEquals(Set.of(x), rules.getSimpleFirstTerminals(a));
-    Assert.assertEquals(Set.of(y,z), rules.getSimpleFirstTerminals(b));
+    Assert.assertEquals(Set.of(y, z), rules.getSimpleFirstTerminals(b));
 
-    Assert.assertEquals(Set.of(a,b), rules.getSimpleFirstNonTerminals(start));
+    Assert.assertEquals(Set.of(a, b), rules.getSimpleFirstNonTerminals(start));
     Assert.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(a));
     Assert.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(b));
 
-    Assert.assertEquals(Set.of(start,a,b), rules.getFirstNonTerminals(start));
+    Assert.assertEquals(Set.of(start, a, b), rules.getFirstNonTerminals(start));
     Assert.assertEquals(Set.of(a), rules.getFirstNonTerminals(a));
     Assert.assertEquals(Set.of(b), rules.getFirstNonTerminals(b));
 
-    Assert.assertEquals(Set.of(x,y,z), rules.getFirstTerminals(start));
+    Assert.assertEquals(Set.of(x, y, z), rules.getFirstTerminals(start));
     Assert.assertEquals(Set.of(x), rules.getFirstTerminals(a));
-    Assert.assertEquals(Set.of(y,z), rules.getFirstTerminals(b));
+    Assert.assertEquals(Set.of(y, z), rules.getFirstTerminals(b));
   }
 }

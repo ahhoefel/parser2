@@ -6,6 +6,7 @@ import java.util.Stack;
 public class StackParser<T> {
   private Stack<JointParser<T>> stack;
   private Iterator<T> tokens;
+
   public StackParser(Iterator<T> tokens) {
     this.stack = new Stack<>();
     this.tokens = tokens;

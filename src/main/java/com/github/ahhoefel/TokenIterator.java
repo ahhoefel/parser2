@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-public class TokenIterator<T,L> {
+public class TokenIterator<T, L> {
   private List<LabeledTaker<T, L>> takers;
   private List<LabeledTaker<T, L>> accepting;
   private Iterator<T> tokens;
@@ -85,6 +85,7 @@ public class TokenIterator<T,L> {
   public class Word<T, L> {
     public List<T> tokens;
     public L label;
+
     public Word(List<T> tokens, L label) {
 
       this.tokens = tokens;
@@ -109,7 +110,7 @@ public class TokenIterator<T,L> {
         new TokenIterator<>(Arrays.asList(
             new LabeledTakerAdapter<>("fooLabel", WordTaker.newStringTaker("foo")),
             new LabeledTakerAdapter<>("barLabel", WordTaker.newStringTaker("bar"))
-        ),  chars.iterator()
+        ), chars.iterator()
         );
     while (iter.hasNext()) {
       System.out.println(iter.next());

@@ -27,7 +27,7 @@ public class LRItem {
     markedRules.addAll(seed);
     toVisit.addAll(markedRules);
     while (!toVisit.isEmpty()) {
-      MarkedRule markedRule = toVisit.remove(toVisit.size()-1);
+      MarkedRule markedRule = toVisit.remove(toVisit.size() - 1);
       Optional<Symbol> symbol = markedRule.getSymbolAtIndex();
       if (symbol.isPresent() && !symbol.get().isTerminal()) {
         List<Rule> nextRules = rules.getRulesForNonTerminal((NonTerminalSymbol) symbol.get());
@@ -53,7 +53,7 @@ public class LRItem {
     queue.add(startItem);
     items.add(startItem);
     while (!queue.isEmpty()) {
-      LRItem item = queue.remove(queue.size() -1);
+      LRItem item = queue.remove(queue.size() - 1);
       Map<Symbol, Set<MarkedRule>> nexts = new HashMap<>();
       for (MarkedRule rule : item.rules) {
         Optional<Symbol> optSymbol = rule.getSymbolAtIndex();
@@ -145,7 +145,7 @@ public class LRItem {
         }
         shift.put(terminal, entry.getValue());
       } else {
-        NonTerminalSymbol nonTerminal = (NonTerminalSymbol) entry.getKey() ;
+        NonTerminalSymbol nonTerminal = (NonTerminalSymbol) entry.getKey();
         if (state.containsKey(nonTerminal)) {
           throw new RuntimeException("State error constructing LR(0) table.");
         }

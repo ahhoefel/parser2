@@ -1,12 +1,15 @@
 package com.github.ahhoefel;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class Parser<T> {
 
   private static class SymbolState {
     public Symbol symbol;
     public int stateIndex;
+
     public SymbolState(Symbol symbol, int stateIndex) {
       this.symbol = symbol;
       this.stateIndex = stateIndex;
@@ -18,9 +21,17 @@ public class Parser<T> {
   }
 
   private static class Stack<E> extends ArrayList<E> {
-    public void push(E e) {this.add(e);}
-    public E pop() { return this.remove(this.size() -1);}
-    public E peek() { return this.get(this.size() - 1);}
+    public void push(E e) {
+      this.add(e);
+    }
+
+    public E pop() {
+      return this.remove(this.size() - 1);
+    }
+
+    public E peek() {
+      return this.get(this.size() - 1);
+    }
   }
 
   public static <T> ParseTree parse(LRTable<T> table, Iterator<T> iter, NonTerminalSymbol start) {

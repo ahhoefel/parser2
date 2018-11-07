@@ -1,6 +1,6 @@
 package com.github.ahhoefel;
 
-public class LabeledTakerAdapter<T,L> implements LabeledTaker<T, L> {
+public class LabeledTakerAdapter<T, L> implements LabeledTaker<T, L> {
 
   private L label;
   private TokenTaker<T> taker;
@@ -14,7 +14,7 @@ public class LabeledTakerAdapter<T,L> implements LabeledTaker<T, L> {
     taker.add(t);
   }
 
-  public State getState() { 
+  public State getState() {
     return taker.getState();
   }
 

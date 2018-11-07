@@ -1,12 +1,15 @@
 package com.github.ahhoefel;
 
 public interface TokenTaker<T> {
-  public enum State {
+  enum State {
     MATCH,
     ACCEPTING,
     ERROR
   }
-  public void add(T t);
-  public State getState();
-  public void reset();
+
+  void add(T t);
+
+  State getState();
+
+  void reset();
 }

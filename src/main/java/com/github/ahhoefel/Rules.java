@@ -126,7 +126,7 @@ public class Rules {
     cascadeFollowing();
   }
 
-  private Set<TerminalSymbol> makeSimpleFirstTerminals(NonTerminalSymbol start)  {
+  private Set<TerminalSymbol> makeSimpleFirstTerminals(NonTerminalSymbol start) {
     Set<TerminalSymbol> firsts = new HashSet<>();
     for (Rule rule : getRulesForNonTerminal(start)) {
       if (!rule.getSymbols().isEmpty() && rule.getSymbols().get(0).isTerminal()) {
@@ -140,7 +140,7 @@ public class Rules {
     Set<NonTerminalSymbol> firsts = new HashSet<>();
     for (Rule rule : getRulesForNonTerminal(start)) {
       for (Symbol symbol : rule.getSymbols()) {
-        if(rule.getSymbols().get(0).isTerminal()) {
+        if (rule.getSymbols().get(0).isTerminal()) {
           continue;
         }
         NonTerminalSymbol nonTerminal = (NonTerminalSymbol) symbol;
@@ -159,7 +159,7 @@ public class Rules {
     firsts.add(start);
     toVisit.add(start);
     while (!toVisit.isEmpty()) {
-      NonTerminalSymbol symbol = toVisit.remove(toVisit.size()-1);
+      NonTerminalSymbol symbol = toVisit.remove(toVisit.size() - 1);
       Set<NonTerminalSymbol> nexts = simpleFirstNonTerminals.get(symbol);
       for (NonTerminalSymbol next : nexts) {
         if (!firsts.contains(next)) {
@@ -191,7 +191,7 @@ public class Rules {
       NonTerminalSymbol nonTerminal = (NonTerminalSymbol) rule.getSymbols().get(i);
       boolean done = false;
       int j;
-      for (j = i+1; !done && j < rule.getSymbols().size(); j++) {
+      for (j = i + 1; !done && j < rule.getSymbols().size(); j++) {
         Symbol t = rule.getSymbols().get(j);
         if (t.isTerminal()) {
           followingTerminals.get(nonTerminal).add((TerminalSymbol) t);

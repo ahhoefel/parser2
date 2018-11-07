@@ -6,10 +6,15 @@ import java.util.List;
 public class WordTaker<T> implements TokenTaker<T> {
 
   public static WordTaker<Character> newStringTaker(String word) {
-     return new WordTaker<Character>(
+    return new WordTaker<Character>(
         new AbstractList<Character>() {
-          public int size() { return word.length(); }
-          public Character get(int index) { return word.charAt(index); }
+          public int size() {
+            return word.length();
+          }
+
+          public Character get(int index) {
+            return word.charAt(index);
+          }
         });
   }
 

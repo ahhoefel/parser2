@@ -29,7 +29,7 @@ public class ParseTree<T> {
     }
     String t = indent + "  ";
     buf.append(indent).append("Rule: ").append(rule.toString()).append('\n');
-    for (ParseTree child: children) {
+    for (ParseTree child : children) {
       buf.append(indent).append("Child: {\n");
       child.toString(buf, t);
       buf.append(indent).append("}\n");
