@@ -1,0 +1,150 @@
+package com.github.ahhoefel;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.List;
+import java.util.Set;
+
+public class LRItemTest {
+
+  @Test
+  public void testClosure() {
+    NonTerminalSymbol start = new NonTerminalSymbol("start");
+    NonTerminalSymbol a = new NonTerminalSymbol("A");
+    NonTerminalSymbol b = new NonTerminalSymbol("B");
+    TerminalSymbol<String> x = new TerminalSymbol<>("x");
+    TerminalSymbol<String> y = new TerminalSymbol<>("y");
+    TerminalSymbol<String> z = new TerminalSymbol<>("z");
+    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
+    Rule r0 = new Rule(start, List.of(a, b));
+    Rule r1 = new Rule(a, List.of(x, a, b));
+    Rule r2 = new Rule(a, List.of());
+    Rule r3 = new Rule(b, List.of(y));
+    Rule r4 = new Rule(b, List.of(z));
+    List<Rule> rs = List.of(r0,r1,r2,r3,r4);
+    Rules rules = new Rules(rs, eof);
+    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0,0), rules);
+    Assert.assertEquals(closure, Set.of(
+        new MarkedRule(r0,0),
+        new MarkedRule(r1,0),
+        new MarkedRule(r2, 0)
+    ));
+  }
+
+  @Test
+  public void testClosureSeed() {
+    NonTerminalSymbol start = new NonTerminalSymbol("start");
+    NonTerminalSymbol e = new NonTerminalSymbol("E");
+    NonTerminalSymbol t = new NonTerminalSymbol("T");
+    NonTerminalSymbol f = new NonTerminalSymbol("F");
+    TerminalSymbol<String> plus = new TerminalSymbol<>("+");
+    TerminalSymbol<String> times = new TerminalSymbol<>("*");
+    TerminalSymbol<String> n = new TerminalSymbol<>("n");
+    TerminalSymbol<String> lparen = new TerminalSymbol<>("(");
+    TerminalSymbol<String> rparen = new TerminalSymbol<>(")");
+    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
+    Rule r0 = new Rule(start, List.of(e));
+    Rule r1 = new Rule(e, List.of(t));
+    Rule r2 = new Rule(e, List.of(e, plus, t));
+    Rule r3 = new Rule(t, List.of(f));
+    Rule r4 = new Rule(t, List.of(t, times, f));
+    Rule r5 = new Rule(f, List.of(n));
+    Rule r6 = new Rule(f, List.of(lparen, e, rparen));
+    List<Rule> rs = List.of(r0,r1,r2,r3,r4,r5,r6);
+    Rules rules = new Rules(rs,eof);
+
+    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6,1), rules);
+    Assert.assertEquals(Set.of(
+        new MarkedRule(r6,1),
+        new MarkedRule(r1,0),
+        new MarkedRule(r2, 0),
+        new MarkedRule(r3, 0),
+        new MarkedRule(r4, 0),
+        new MarkedRule(r5, 0),
+        new MarkedRule(r6, 0)
+    ), closure);
+
+    closure = LRItem.closure(
+        Set.of(
+            new MarkedRule(r0,1),
+            new MarkedRule(r1, 1)
+        ), rules);
+    Assert.assertEquals(Set.of(
+        new MarkedRule(r0,1),
+        new MarkedRule(r1,1)
+    ), closure);
+  }
+
+  @Test
+  public void testMakeItemGraph() {
+    NonTerminalSymbol e = new NonTerminalSymbol("E");
+    NonTerminalSymbol t = new NonTerminalSymbol("T");
+    NonTerminalSymbol f = new NonTerminalSymbol("F");
+    TerminalSymbol<String> plus = new TerminalSymbol<>("+");
+    TerminalSymbol<String> times = new TerminalSymbol<>("*");
+    TerminalSymbol<String> n = new TerminalSymbol<>("n");
+    TerminalSymbol<String> lparen = new TerminalSymbol<>("(");
+    TerminalSymbol<String> rparen = new TerminalSymbol<>(")");
+    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
+    Rule r1 = new Rule(e, List.of(t));
+    Rule r2 = new Rule(e, List.of(e, plus, t));
+    Rule r3 = new Rule(t, List.of(f));
+    Rule r4 = new Rule(t, List.of(t, times, f));
+    Rule r5 = new Rule(f, List.of(n));
+    Rule r6 = new Rule(f, List.of(lparen, e, rparen));
+    Rules rules = new Rules(List.of(r1,r2,r3,r4,r5,r6), eof);
+    LRParser parser = LRItem.makeItemGraph(rules);
+    Assert.assertEquals(12, parser.items.size());
+    System.out.println(parser.getTable(rules));
+    List<String> input = List.of("n", "+", "n", "eof");
+    ParseTree tree = Parser.parse(parser.getTable(rules), input.iterator(), rules.getStart().getSource());
+    System.out.println(tree);
+  }
+
+  @Test
+  public void testMakeItemGraph2() {
+    NonTerminalSymbol s = new NonTerminalSymbol("S");
+    NonTerminalSymbol a = new NonTerminalSymbol("A");
+    NonTerminalSymbol b = new NonTerminalSymbol("B");
+    TerminalSymbol<String> x = new TerminalSymbol<>("x");
+    TerminalSymbol<String> y = new TerminalSymbol<>("y");
+    TerminalSymbol<String> z = new TerminalSymbol<>("z");
+    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
+    Rule r1 = new Rule(s, List.of(a, b));
+    Rule r2 = new Rule(a, List.of(x, a, b));
+    Rule r3 = new Rule(a, List.of());
+    Rule r4 = new Rule(b, List.of(y));
+    Rule r5 = new Rule(b, List.of(z));
+    Rules rules = new Rules(List.of(r1,r2,r3,r4,r5), eof);
+    LRParser parser = LRItem.makeItemGraph(rules);
+    Assert.assertEquals(9, parser.items.size());
+  }
+
+  @Test
+  public void testParser() {
+    NonTerminalSymbol start = new NonTerminalSymbol("start");
+    NonTerminalSymbol s = new NonTerminalSymbol("S");
+    NonTerminalSymbol a = new NonTerminalSymbol("A");
+    NonTerminalSymbol b = new NonTerminalSymbol("B");
+    TerminalSymbol<String> x = new TerminalSymbol<>("x");
+    TerminalSymbol<String> y = new TerminalSymbol<>("y");
+    TerminalSymbol<String> z = new TerminalSymbol<>("z");
+    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
+    Rule r0 = new Rule(start, List.of(s));
+    Rule r1 = new Rule(s, List.of(a, b));
+    Rule r2 = new Rule(a, List.of(x, a, b));
+    Rule r3 = new Rule(a, List.of());
+    Rule r4 = new Rule(b, List.of(y));
+    Rule r5 = new Rule(b, List.of(z));
+    List<Rule> rs = List.of(r0,r1,r2,r3,r4,r5);
+    Rules rules = new Rules(rs, eof);
+    LRParser parser = LRItem.makeItemGraph(rules);
+    LRTable table = parser.getTable(rules);
+    //System.out.println(parser);
+    // System.out.println(table);
+    //List<String> input = List.of("x", "x", "y", "z");
+    // ParseTree<String> tree = Parser.parse(table, input.iterator(), start);
+    // System.out.println(tree);
+  }
+}
