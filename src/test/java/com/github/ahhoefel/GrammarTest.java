@@ -9,13 +9,12 @@ import java.util.Set;
 public class GrammarTest {
   @Test
   public void testIsEpsilon() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol a = sb.newNonTerminal("A");
-    NonTerminalSymbol b = sb.newNonTerminal("B");
-    TerminalSymbol x = sb.newTerminal("x");
-    TerminalSymbol y = sb.newTerminal("y");
-    TerminalSymbol z = sb.newTerminal("z");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol a = symbols.newNonTerminal("A");
+    NonTerminalSymbol b = symbols.newNonTerminal("B");
+    TerminalSymbol x = symbols.newTerminal("x");
+    TerminalSymbol y = symbols.newTerminal("y");
+    TerminalSymbol z = symbols.newTerminal("z");
     NonTerminalSymbol s = symbols.getStart();
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
@@ -31,13 +30,12 @@ public class GrammarTest {
 
   @Test
   public void testFirsts() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol a = sb.newNonTerminal("A");
-    NonTerminalSymbol b = sb.newNonTerminal("B");
-    TerminalSymbol x = sb.newTerminal("x");
-    TerminalSymbol y = sb.newTerminal("y");
-    TerminalSymbol z = sb.newTerminal("z");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol a = symbols.newNonTerminal("A");
+    NonTerminalSymbol b = symbols.newNonTerminal("B");
+    TerminalSymbol x = symbols.newTerminal("x");
+    TerminalSymbol y = symbols.newTerminal("y");
+    TerminalSymbol z = symbols.newTerminal("z");
     NonTerminalSymbol s = symbols.getStart();
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
@@ -62,17 +60,16 @@ public class GrammarTest {
 
   @Test
   public void testFirstsTwo() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol a = sb.newNonTerminal("A");
-    NonTerminalSymbol b = sb.newNonTerminal("B");
-    NonTerminalSymbol c = sb.newNonTerminal("C");
-    NonTerminalSymbol d = sb.newNonTerminal("D");
-    NonTerminalSymbol e = sb.newNonTerminal("E");
-    TerminalSymbol x = sb.newTerminal("x");
-    TerminalSymbol w = sb.newTerminal("w");
-    TerminalSymbol y = sb.newTerminal("y");
-    TerminalSymbol z = sb.newTerminal("z");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol a = symbols.newNonTerminal("A");
+    NonTerminalSymbol b = symbols.newNonTerminal("B");
+    NonTerminalSymbol c = symbols.newNonTerminal("C");
+    NonTerminalSymbol d = symbols.newNonTerminal("D");
+    NonTerminalSymbol e = symbols.newNonTerminal("E");
+    TerminalSymbol x = symbols.newTerminal("x");
+    TerminalSymbol w = symbols.newTerminal("w");
+    TerminalSymbol y = symbols.newTerminal("y");
+    TerminalSymbol z = symbols.newTerminal("z");
     NonTerminalSymbol s = symbols.getStart();
     Rule r0 = new Rule(s, List.of(a));
     Rule r1 = new Rule(a, List.of(b));
@@ -108,14 +105,13 @@ public class GrammarTest {
 
   @Test
   public void testFollowing() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol a = sb.newNonTerminal("A");
-    NonTerminalSymbol b = sb.newNonTerminal("B");
-    NonTerminalSymbol c = sb.newNonTerminal("C");
-    TerminalSymbol x = sb.newTerminal("x");
-    TerminalSymbol y = sb.newTerminal("y");
-    TerminalSymbol z = sb.newTerminal("z");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol a = symbols.newNonTerminal("A");
+    NonTerminalSymbol b = symbols.newNonTerminal("B");
+    NonTerminalSymbol c = symbols.newNonTerminal("C");
+    TerminalSymbol x = symbols.newTerminal("x");
+    TerminalSymbol y = symbols.newTerminal("y");
+    TerminalSymbol z = symbols.newTerminal("z");
     NonTerminalSymbol s = symbols.getStart();
 
     Rule r0 = new Rule(s, List.of(a, b, c));

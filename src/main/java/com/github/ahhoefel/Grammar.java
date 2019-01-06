@@ -4,12 +4,12 @@ import java.util.*;
 
 public class Grammar {
 
-  private SymbolFactory symbols;
+  private SymbolTable symbols;
   private List<Rule> rules;
   private List<List<Rule>> rulesBySymbolIndex;
   private Rule augmentedStart;
 
-  public Grammar(SymbolFactory symbols, List<Rule> rules) {
+  public Grammar(SymbolTable symbols, List<Rule> rules) {
     this.symbols = symbols;
     this.augmentedStart = new Rule(symbols.getAugmentedStart(), List.of(symbols.getStart()));
     this.rules = new ArrayList<>();
@@ -31,7 +31,7 @@ public class Grammar {
     return out.toString();
   }
 
-  public SymbolFactory getSymbols() {
+  public SymbolTable getSymbols() {
     return symbols;
   }
 

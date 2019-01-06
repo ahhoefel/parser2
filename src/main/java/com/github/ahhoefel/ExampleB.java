@@ -5,7 +5,6 @@ import java.util.List;
 public class ExampleB {
 
   Grammar grammar;
-  SymbolFactory.Builder sb;
   NonTerminalSymbol t;
   NonTerminalSymbol f;
   TerminalSymbol plus;
@@ -13,21 +12,20 @@ public class ExampleB {
   TerminalSymbol n;
   TerminalSymbol lparen;
   TerminalSymbol rparen;
-  SymbolFactory symbols;
+  SymbolTable symbols;
   NonTerminalSymbol startp;
   NonTerminalSymbol start;
   TerminalSymbol eof;
 
   public ExampleB() {
-    sb = SymbolFactory.newBuilder();
-    t = sb.newNonTerminal("T");
-    f = sb.newNonTerminal("F");
-    plus = sb.newTerminal("+");
-    times = sb.newTerminal("*");
-    n = sb.newTerminal("n");
-    lparen = sb.newTerminal("(");
-    rparen = sb.newTerminal(")");
-    symbols = sb.build();
+    symbols = new SymbolTable();
+    t = symbols.newNonTerminal("T");
+    f = symbols.newNonTerminal("F");
+    plus = symbols.newTerminal("+");
+    times = symbols.newTerminal("*");
+    n = symbols.newTerminal("n");
+    lparen = symbols.newTerminal("(");
+    rparen = symbols.newTerminal(")");
     startp = symbols.getAugmentedStart();
     start = symbols.getStart();
     eof = symbols.getEof();

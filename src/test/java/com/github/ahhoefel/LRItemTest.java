@@ -10,13 +10,12 @@ public class LRItemTest {
 
   @Test
   public void testClosure() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol a = sb.newNonTerminal("A");
-    NonTerminalSymbol b = sb.newNonTerminal("B");
-    TerminalSymbol x = sb.newTerminal("x");
-    TerminalSymbol y = sb.newTerminal("y");
-    TerminalSymbol z = sb.newTerminal("z");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol a = symbols.newNonTerminal("A");
+    NonTerminalSymbol b = symbols.newNonTerminal("B");
+    TerminalSymbol x = symbols.newTerminal("x");
+    TerminalSymbol y = symbols.newTerminal("y");
+    TerminalSymbol z = symbols.newTerminal("z");
     NonTerminalSymbol start = symbols.getStart();
     Rule r0 = new Rule(start, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
@@ -34,15 +33,14 @@ public class LRItemTest {
 
   @Test
   public void testClosureSeed() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol t = sb.newNonTerminal("T");
-    NonTerminalSymbol f = sb.newNonTerminal("F");
-    TerminalSymbol plus = sb.newTerminal("+");
-    TerminalSymbol times = sb.newTerminal("*");
-    TerminalSymbol n = sb.newTerminal("n");
-    TerminalSymbol lparen = sb.newTerminal("(");
-    TerminalSymbol rparen = sb.newTerminal(")");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol t = symbols.newNonTerminal("T");
+    NonTerminalSymbol f = symbols.newNonTerminal("F");
+    TerminalSymbol plus = symbols.newTerminal("+");
+    TerminalSymbol times = symbols.newTerminal("*");
+    TerminalSymbol n = symbols.newTerminal("n");
+    TerminalSymbol lparen = symbols.newTerminal("(");
+    TerminalSymbol rparen = symbols.newTerminal(")");
     NonTerminalSymbol start = symbols.getStart();
     Rule r1 = new Rule(start, List.of(t));
     Rule r2 = new Rule(start, List.of(start, plus, t));
@@ -74,15 +72,14 @@ public class LRItemTest {
 
   @Test
   public void testMakeItemGraph() {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol t = sb.newNonTerminal("T");
-    NonTerminalSymbol f = sb.newNonTerminal("F");
-    TerminalSymbol plus = sb.newTerminal("+");
-    TerminalSymbol times = sb.newTerminal("*");
-    TerminalSymbol n = sb.newTerminal("n");
-    TerminalSymbol lparen = sb.newTerminal("(");
-    TerminalSymbol rparen = sb.newTerminal(")");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol t = symbols.newNonTerminal("T");
+    NonTerminalSymbol f = symbols.newNonTerminal("F");
+    TerminalSymbol plus = symbols.newTerminal("+");
+    TerminalSymbol times = symbols.newTerminal("*");
+    TerminalSymbol n = symbols.newTerminal("n");
+    TerminalSymbol lparen = symbols.newTerminal("(");
+    TerminalSymbol rparen = symbols.newTerminal(")");
     NonTerminalSymbol start = symbols.getStart();
     TerminalSymbol eof = symbols.getEof();
     Rule r1 = new Rule(start, List.of(t));

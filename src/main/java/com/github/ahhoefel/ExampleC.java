@@ -8,8 +8,7 @@ import java.util.List;
 
 public class ExampleC {
 
-  SymbolFactory.Builder sb;
-  SymbolFactory sf;
+  SymbolTable symbols;
   CharRange ch;
   NonTerminalSymbol start;
   NonTerminalSymbol statement;
@@ -24,16 +23,15 @@ public class ExampleC {
 
 
   public ExampleC() {
-    sb = SymbolFactory.newBuilder();
-    ch = new CharRange(sb);
-    statement = sb.newNonTerminal("statement");
-    number = sb.newNonTerminal("number");
-    identifier = sb.newNonTerminal("identifier");
-    identifierSuffix = sb.newNonTerminal("identifier_suffix");
-    whitespace = sb.newNonTerminal("whitespace");
+    symbols = new SymbolTable();
+    ch = new CharRange(symbols);
+    statement = symbols.newNonTerminal("statement");
+    number = symbols.newNonTerminal("number");
+    identifier = symbols.newNonTerminal("identifier");
+    identifierSuffix = symbols.newNonTerminal("identifier_suffix");
+    whitespace = symbols.newNonTerminal("whitespace");
 
-    sf = sb.build();
-    start = sf.getStart();
+    start = symbols.getStart();
     List<Rule> rules = new ArrayList<>();
     statements = new Rule(start, List.<Symbol>of(statement, start));
     noStatements = new Rule(start, List.<Symbol>of());
@@ -54,7 +52,7 @@ public class ExampleC {
     rules.add(new Rule(identifierSuffix, List.<Symbol>of(ch.number, identifierSuffix)));
     rules.add(new Rule(identifierSuffix, List.<Symbol>of()));
 
-    grammar = new Grammar(sf, rules);
+    grammar = new Grammar(symbols, rules);
   }
 
   public static void main(String[] args) throws IOException {
@@ -62,7 +60,7 @@ public class ExampleC {
     LRParser parser = LRItem.makeItemGraph(c.grammar);
     Reader r = new CharArrayReader("foc 123 d12".toCharArray());
 
-    Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.sf.getEof()), r, c.sf.getEof());
+    Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.symbols.getEof()), r, c.symbols.getEof());
 
     LRTable table = parser.getTable(c.grammar);
     System.out.println(table);

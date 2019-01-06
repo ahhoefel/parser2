@@ -11,14 +11,14 @@ public class CharRange {
   public final TerminalSymbol newline;
   public final TerminalSymbol unknown;
 
-  public CharRange(SymbolFactory.Builder sf) {
-    letter = sf.newTerminal("letter");
-    number = sf.newTerminal("number");
-    hypen = sf.newTerminal("hypen");
-    space = sf.newTerminal("space");
-    lparen = sf.newTerminal("lparen");
-    rparen = sf.newTerminal("rparen");
-    newline = sf.newTerminal("newline");
-    unknown = sf.newTerminal("unknown");
+  public CharRange(SymbolTable symbols) {
+    letter = symbols.newTerminal("letter");
+    number = symbols.newTerminal("number");
+    hypen = symbols.newTerminal("hypen");
+    space = symbols.newTerminal("space");
+    lparen = symbols.newTerminal("lparen");
+    rparen = symbols.newTerminal("rparen");
+    newline = symbols.newTerminal("newline");
+    unknown = symbols.newTerminal("unknown");
   }
 }

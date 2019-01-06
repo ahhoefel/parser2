@@ -15,9 +15,9 @@ public class Rules {
 
   private Map<NonTerminalSymbol, Set<NonTerminalSymbol>> followingNonTerminals;
   private Map<NonTerminalSymbol, Set<TerminalSymbol>> followingTerminals;
-  private SymbolFactory symbols;
+  private SymbolTable symbols;
 
-  public Rules(SymbolFactory symbols, List<Rule> rules) {
+  public Rules(SymbolTable symbols, List<Rule> rules) {
     this.symbols = symbols;
     this.rules = new ArrayList<>();
     this.rules.add(0, new Rule(symbols.getAugmentedStart(), List.of(symbols.getStart())));

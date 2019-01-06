@@ -6,14 +6,13 @@ import java.util.Map;
 
 public class ExampleA {
   public static void main(String[] args) {
-    SymbolFactory.Builder sb = SymbolFactory.newBuilder();
-    NonTerminalSymbol value = sb.newNonTerminal("value");
-    NonTerminalSymbol products = sb.newNonTerminal("products");
-    TerminalSymbol times = sb.newTerminal("*");
-    TerminalSymbol plus = sb.newTerminal("+");
-    TerminalSymbol id = sb.newTerminal("id");
-    TerminalSymbol num = sb.newTerminal("num");
-    SymbolFactory symbols = sb.build();
+    SymbolTable symbols = new SymbolTable();
+    NonTerminalSymbol value = symbols.newNonTerminal("value");
+    NonTerminalSymbol products = symbols.newNonTerminal("products");
+    TerminalSymbol times = symbols.newTerminal("*");
+    TerminalSymbol plus = symbols.newTerminal("+");
+    TerminalSymbol id = symbols.newTerminal("id");
+    TerminalSymbol num = symbols.newTerminal("num");
     NonTerminalSymbol sums = symbols.getStart();
     TerminalSymbol eof = symbols.getEof();
     Rule r1 = new Rule(sums, List.of(sums, plus, products));
