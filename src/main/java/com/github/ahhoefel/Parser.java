@@ -34,40 +34,67 @@ public class Parser<T> {
     }
   }
 
-  public static <T> ParseTree parse(LRTable<T> table, Iterator<T> iter, NonTerminalSymbol start) {
+  private static class TerminalSymbolIterator implements Iterator<Token> {
+
+    private Iterator<TerminalSymbol> iter;
+
+    public TerminalSymbolIterator(Iterator<TerminalSymbol> iter) {
+      this.iter = iter;
+    }
+
+
+    @Override
+    public boolean hasNext() {
+      return iter.hasNext();
+    }
+
+    @Override
+    public Token next() {
+      TerminalSymbol next = iter.next();
+      if (next == null) {
+        return null;
+      }
+      return new Token(next, next.toString());
+    }
+  }
+
+  public static ParseTree parseTerminals(LRTable table, Iterator<TerminalSymbol> iter, NonTerminalSymbol start) {
+    return parseTokens(table, new TerminalSymbolIterator(iter), start);
+  }
+
+  public static ParseTree parseTokens(LRTable table, Iterator<Token> iter, NonTerminalSymbol start) {
     Stack<SymbolState> stack = new Stack<>();
     Stack<ParseTree> result = new Stack<>();
-    T next = iter.next();
-    TerminalSymbol nextSymbol = new TerminalSymbol(next);
+    Token nextToken = iter.next();
+    TerminalSymbol nextSymbol = nextToken.getTerminal();
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
-      LRTable.State<T> state = table.state.get(symbolState.stateIndex);
-      System.out.println(String.format("next: %s, state: %d, stack: %s", next.toString(), symbolState.stateIndex, stack.toString()));
-      if (state.reduce.containsKey(nextSymbol)) {
-        Rule rule = state.reduce.get(nextSymbol);
-        List<ParseTree> children = new ArrayList<>();
-        for (int i = 0; i < rule.getSymbols().size(); i++) {
-          stack.pop();
-          children.add(result.pop());
-        }
-        stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
-        result.push(new ParseTree(rule, children));
-      } else if (state.shift.containsKey(nextSymbol)) {
+      LRTable.State state = table.state.get(symbolState.stateIndex);
+      System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
+      if (state.shift.containsKey(nextSymbol)) {
         if (state.shift.get(nextSymbol) == -1) {
           break;
         }
         stack.push(new SymbolState(nextSymbol, state.shift.get(nextSymbol)));
-        result.push(new ParseTree(next));
+        result.push(new ParseTree(nextToken));
         if (iter.hasNext()) {
-          next = iter.next();
-          nextSymbol = new TerminalSymbol(next);
+          nextToken = iter.next();
+          nextSymbol = nextToken.getTerminal();
         }
+      } else if (state.reduce.containsKey(nextSymbol)) {
+        Rule rule = state.reduce.get(nextSymbol);
+        ParseTree[] children = new ParseTree[rule.getSymbols().size()];
+        for (int i = rule.getSymbols().size() - 1; i >= 0; i--) {
+          stack.pop();
+          children[i] = result.pop();
+        }
+        stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
+        result.push(new ParseTree(rule, List.of(children)));
       } else {
-        throw new RuntimeException("Parse error");
+        throw new RuntimeException("parseTerminals error");
       }
       symbolState = stack.peek();
     }
     return result.pop();
   }
-
 }

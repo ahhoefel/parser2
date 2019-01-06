@@ -2,18 +2,30 @@ package com.github.ahhoefel;
 
 import java.util.List;
 
-public class ParseTree<T> {
+public class ParseTree {
   private List<ParseTree> children;
   private Rule rule;
-  private T token;
+  private Token token;
 
   public ParseTree(Rule rule, List<ParseTree> children) {
     this.rule = rule;
     this.children = children;
   }
 
-  public ParseTree(T token) {
+  public ParseTree(Token token) {
     this.token = token;
+  }
+
+  public Rule getRule() {
+    return rule;
+  }
+
+  public List<ParseTree> getChildren() {
+    return children;
+  }
+
+  public Token getToken() {
+    return token;
   }
 
   public String toString() {

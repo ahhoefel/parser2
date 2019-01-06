@@ -1,32 +1,11 @@
 package com.github.ahhoefel;
 
-public class TerminalSymbol<L> implements Symbol {
-
-  private L label;
-
-  public TerminalSymbol(L label) {
-    this.label = label;
+public class TerminalSymbol extends Symbol {
+  public TerminalSymbol(String label, int index) {
+    super(label, index);
   }
 
-  @Override
   public boolean isTerminal() {
     return true;
   }
-
-  public String toString() {
-    return label.toString();
-  }
-
-  public boolean equals(Object o) {
-    if (o instanceof TerminalSymbol) {
-      return ((TerminalSymbol<L>) o).label.equals(label);
-    }
-    return false;
-  }
-
-  @Override
-  public int hashCode() {
-    return label.hashCode();
-  }
 }
-

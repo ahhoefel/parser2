@@ -41,6 +41,15 @@ public class MarkedRule {
   }
 
   public String toString() {
-    return String.format("MarkedRule(%s, %d)", rule, index);
+    StringBuffer buf = new StringBuffer();
+    buf.append(rule.getSource());
+    buf.append("=>");
+    for (int i = 0; i < rule.getSymbols().size(); i++) {
+      if (i == index) {
+        buf.append('^');
+      }
+      buf.append(rule.getSymbols().get(i));
+    }
+    return buf.toString();
   }
 }

@@ -24,7 +24,8 @@ public class Rule {
     buf.append(source.toString());
     buf.append(" ->");
     for (Symbol symbol : symbols) {
-      buf.append(" ").append(symbol.toString());
+      buf.append(" ");
+      buf.append(symbol.toString());
     }
     return buf.toString();
   }

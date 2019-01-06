@@ -21,11 +21,20 @@ public class LRParser {
     return out.toString();
   }
 
-  public LRTable<String> getTable(Rules rules) {
-    List<LRTable.State<String>> states = new ArrayList<>();
+  public LRTable getTable(Rules rules) {
+    List<LRTable.State> states = new ArrayList<>();
     for (LRItem item : items) {
       states.add(item.toState(rules));
     }
-    return new LRTable<>(states);
+    return new LRTable(states);
+  }
+
+  public LRTable getTable(Grammar grammar) {
+    Grammar.FollowingSymbols following = Grammar.following(grammar);
+    List<LRTable.State> states = new ArrayList<>();
+    for (LRItem item : items) {
+      states.add(item.toState(grammar, following));
+    }
+    return new LRTable(states);
   }
 }
