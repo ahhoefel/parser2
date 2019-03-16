@@ -20,14 +20,17 @@ public class RangeTokenizer implements Tokenizer {
     for (int i = 65; i < 91; i++) {
       charTerminalMap[i] = chars.letter;
     }
-    for (int i = 97; i < 122; i++) {
+    for (int i = 97; i < 123; i++) {
       charTerminalMap[i] = chars.letter;
     }
     charTerminalMap[40] = chars.lparen;
     charTerminalMap[41] = chars.rparen;
     charTerminalMap[45] = chars.hypen;
     charTerminalMap[32] = chars.space;
+    charTerminalMap[9] = chars.tab;
     charTerminalMap[10] = chars.newline;
+    charTerminalMap[46] = chars.period;
+    charTerminalMap[44] = chars.comma;
   }
 
   public Token of(int c) {
@@ -52,5 +55,6 @@ public class RangeTokenizer implements Tokenizer {
     System.out.println(String.format("%c %d", ')', (int) ')'));
     System.out.println(String.format("%c %d", ' ', (int) ' '));
     System.out.println(String.format("%c %d", '\n', (int) '\n'));
+    System.out.println(String.format("%c %d", '\t', (int) '\t'));
   }
 }

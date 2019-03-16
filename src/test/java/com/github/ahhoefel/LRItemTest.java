@@ -103,7 +103,7 @@ public class LRItemTest {
 
 
     List<TerminalSymbol> input = List.of(n, plus, n, eof);
-    ParseTree tree = Parser.parseTerminals(parser.getTable(grammar), input.iterator(), grammar.getAugmentedStartRule().getSource());
+    Object tree = Parser.parseTerminals(parser.getTable(grammar), input.iterator(), grammar.getAugmentedStartRule().getSource());
     System.out.println(tree);
   }
 /*

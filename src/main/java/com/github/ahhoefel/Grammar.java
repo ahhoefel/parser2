@@ -262,9 +262,11 @@ public class Grammar {
       for (NonTerminalSymbol x : g.symbols.getNonTerminals()) {
         Set<NonTerminalSymbol> ys = followingNonTerminals.get(x);
         int sizeBefore = ys.size();
+        List<NonTerminalSymbol> toAdd = new ArrayList<>();
         for (NonTerminalSymbol y : ys) {
-          ys.addAll(followingNonTerminals.get(y));
+          toAdd.addAll(followingNonTerminals.get(y));
         }
+        ys.addAll(toAdd);
         for (NonTerminalSymbol y : followFollowingNonTerminals.get(x)) {
           ys.addAll(followingNonTerminals.get(y));
         }

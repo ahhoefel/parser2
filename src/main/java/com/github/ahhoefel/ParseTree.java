@@ -47,4 +47,20 @@ public class ParseTree {
       buf.append(indent).append("}\n");
     }
   }
+
+  public String getText() {
+    StringBuffer buf = new StringBuffer();
+    appendText(buf);
+    return buf.toString();
+  }
+
+  private void appendText(StringBuffer buf) {
+    if (token != null) {
+      buf.append(token.getValue());
+      return;
+    }
+    for (ParseTree child : children) {
+      child.appendText(buf);
+    }
+  }
 }

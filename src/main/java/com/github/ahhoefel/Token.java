@@ -21,4 +21,12 @@ public class Token {
   public String getValue() {
     return value;
   }
+
+  public boolean equals(Object o) {
+    if (!(o instanceof Token)) {
+      return false;
+    }
+    Token t = (Token) o;
+    return value.equals(t.value) && symbol.equals(t.symbol);
+  }
 }

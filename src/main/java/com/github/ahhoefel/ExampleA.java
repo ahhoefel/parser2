@@ -81,7 +81,7 @@ public class ExampleA {
 
     List<TerminalSymbol> input = Arrays.asList(id, times, id, plus, num, eof);
     System.out.println(table);
-    ParseTree tree = Parser.parseTerminals(table, input.iterator(), symbols.getAugmentedStart());
+    Object tree = Parser.parseTerminals(table, input.iterator(), symbols.getAugmentedStart());
     System.out.println(tree);
 
     LRParser parser = LRItem.makeItemGraph(rules);

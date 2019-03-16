@@ -43,12 +43,16 @@ public class MarkedRule {
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append(rule.getSource());
-    buf.append("=>");
+    buf.append(" => ");
     for (int i = 0; i < rule.getSymbols().size(); i++) {
       if (i == index) {
-        buf.append('^');
+        buf.append("^ ");
       }
       buf.append(rule.getSymbols().get(i));
+      buf.append(' ');
+    }
+    if (index == rule.getSymbols().size()) {
+      buf.append('^');
     }
     return buf.toString();
   }

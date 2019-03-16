@@ -2,7 +2,6 @@ package com.github.ahhoefel;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 public class Parser<T> {
 
@@ -58,13 +57,13 @@ public class Parser<T> {
     }
   }
 
-  public static ParseTree parseTerminals(LRTable table, Iterator<TerminalSymbol> iter, NonTerminalSymbol start) {
+  public static Object parseTerminals(LRTable table, Iterator<TerminalSymbol> iter, NonTerminalSymbol start) {
     return parseTokens(table, new TerminalSymbolIterator(iter), start);
   }
 
-  public static ParseTree parseTokens(LRTable table, Iterator<Token> iter, NonTerminalSymbol start) {
+  public static Object parseTokens(LRTable table, Iterator<Token> iter, NonTerminalSymbol start) {
     Stack<SymbolState> stack = new Stack<>();
-    Stack<ParseTree> result = new Stack<>();
+    Stack<Object> result = new Stack<>();
     Token nextToken = iter.next();
     TerminalSymbol nextSymbol = nextToken.getTerminal();
     SymbolState symbolState = new SymbolState(start, 0);
@@ -76,20 +75,20 @@ public class Parser<T> {
           break;
         }
         stack.push(new SymbolState(nextSymbol, state.shift.get(nextSymbol)));
-        result.push(new ParseTree(nextToken));
+        result.push(nextToken);
         if (iter.hasNext()) {
           nextToken = iter.next();
           nextSymbol = nextToken.getTerminal();
         }
       } else if (state.reduce.containsKey(nextSymbol)) {
         Rule rule = state.reduce.get(nextSymbol);
-        ParseTree[] children = new ParseTree[rule.getSymbols().size()];
+        Object[] children = new Object[rule.getSymbols().size()];
         for (int i = rule.getSymbols().size() - 1; i >= 0; i--) {
           stack.pop();
           children[i] = result.pop();
         }
         stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
-        result.push(new ParseTree(rule, List.of(children)));
+        result.push(rule.getAction().apply(children));
       } else {
         throw new RuntimeException("parseTerminals error");
       }
