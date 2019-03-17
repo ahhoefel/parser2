@@ -12,10 +12,11 @@ import java.util.List;
 
 public class ExampleC {
 
-  SymbolTable symbols;
+  SymbolTable.TerminalTable terminals;
+  SymbolTable.NonTerminalTable nonTerminals;
   CharRange ch;
-  NonTerminalSymbol start;
-  NonTerminalSymbol statement;
+  Symbol start;
+  Symbol statement;
   Number number;
   Identifier identifier;
   Whitespace whitespace;
@@ -26,15 +27,16 @@ public class ExampleC {
 
 
   public ExampleC() {
-    symbols = new SymbolTable();
-    ch = new CharRange(symbols);
-    statement = symbols.newNonTerminal("statement");
+    terminals = new SymbolTable.TerminalTable();
+    nonTerminals = new SymbolTable.NonTerminalTable();
+    ch = new CharRange(terminals);
+    statement = nonTerminals.newSymbol("statement");
     List<Rule> rules = new ArrayList<>();
-    number = new Number(symbols, ch, rules);
-    identifier = new Identifier(symbols, ch, rules);
-    whitespace = new Whitespace(symbols, ch, rules);
+    number = new Number(nonTerminals, ch, rules);
+    identifier = new Identifier(nonTerminals, ch, rules);
+    whitespace = new Whitespace(nonTerminals, ch, rules);
 
-    start = symbols.getStart();
+    start = nonTerminals.getStart();
     statements = new Rule(start, List.<Symbol>of(statement, start));
     noStatements = new Rule(start, List.<Symbol>of());
     rules.add(statements);
@@ -44,7 +46,7 @@ public class ExampleC {
     rules.add(new Rule(statement, List.<Symbol>of(identifier.identifier)));
     rules.add(new Rule(statement, List.<Symbol>of(whitespace.whitespace)));
 
-    grammar = new Grammar(symbols, rules);
+    grammar = new Grammar(terminals, nonTerminals, rules);
   }
 
   public static void main(String[] args) throws IOException {
@@ -52,7 +54,7 @@ public class ExampleC {
     LRParser parser = LRItem.makeItemGraph(c.grammar);
     Reader r = new CharArrayReader("foc 123 d12".toCharArray());
 
-    Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.symbols.getEof()), r, c.symbols.getEof());
+    Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.terminals.getEof()), r, c.terminals.getEof());
 
     LRTable table = parser.getTable(c.grammar);
     System.out.println(table);

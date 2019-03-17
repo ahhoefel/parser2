@@ -19,9 +19,9 @@ public interface Tokenizer {
     private ReaderIterator iter;
     private Tokenizer tokenizer;
     private boolean eofSent;
-    private TerminalSymbol eof;
+    private Symbol eof;
 
-    public TokenIterator(Tokenizer tokenizer, Reader reader, TerminalSymbol eof) throws IOException {
+    public TokenIterator(Tokenizer tokenizer, Reader reader, Symbol eof) throws IOException {
       this.iter = new ReaderIterator(reader);
       this.tokenizer = tokenizer;
       this.eof = eof;

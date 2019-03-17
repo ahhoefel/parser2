@@ -15,11 +15,13 @@ public class LRItem {
     this.nextIndex = new HashMap<>();
   }
 
+  /*
   public static Set<MarkedRule> closure(MarkedRule start, Rules rules) {
     Set<MarkedRule> seed = new HashSet<>();
     seed.add(start);
     return closure(seed, rules);
   }
+  */
 
   public static Set<MarkedRule> closure(MarkedRule start, Grammar grammar) {
     Set<MarkedRule> seed = new HashSet<>();
@@ -27,6 +29,7 @@ public class LRItem {
     return closure(seed, grammar);
   }
 
+  /*
   public static Set<MarkedRule> closure(Set<MarkedRule> seed, Rules rules) {
     Set<MarkedRule> markedRules = new HashSet<>();
     List<MarkedRule> toVisit = new ArrayList<>();
@@ -48,6 +51,7 @@ public class LRItem {
     }
     return markedRules;
   }
+*/
 
   public static Set<MarkedRule> closure(Set<MarkedRule> seed, Grammar grammar) {
     Set<MarkedRule> markedRules = new HashSet<>();
@@ -57,8 +61,8 @@ public class LRItem {
     while (!toVisit.isEmpty()) {
       MarkedRule markedRule = toVisit.remove(toVisit.size() - 1);
       Optional<Symbol> symbol = markedRule.getSymbolAtIndex();
-      if (symbol.isPresent() && !symbol.get().isTerminal()) {
-        List<Rule> nextRules = grammar.get(symbol.get().getNonTerminal());
+      if (symbol.isPresent() && !grammar.isTerminal(symbol.get())) {
+        List<Rule> nextRules = grammar.get(symbol.get());
         for (Rule nextRule : nextRules) {
           MarkedRule nextMarkedRule = new MarkedRule(nextRule, 0);
           if (!markedRules.contains(nextMarkedRule)) {
@@ -71,6 +75,7 @@ public class LRItem {
     return markedRules;
   }
 
+  /*
   public static LRParser makeItemGraph(Rules rules) {
     Rule start = rules.getStart();
     MarkedRule markedStart = new MarkedRule(start, 0);
@@ -118,6 +123,7 @@ public class LRItem {
     }
     return new LRParser(startItem, items);
   }
+*/
 
   public static LRParser makeItemGraph(Grammar grammar) {
     Rule start = grammar.getAugmentedStartRule();
@@ -193,6 +199,7 @@ public class LRItem {
     return rules.hashCode();
   }
 
+  /*
   public LRTable.State toState(Rules rules) {
     Map<TerminalSymbol, Rule> reduce = new HashMap<>();
     Map<TerminalSymbol, Integer> shift = new HashMap<>();
@@ -231,18 +238,19 @@ public class LRItem {
 
     return new LRTable.State(reduce, shift, state);
   }
+*/
 
   public LRTable.State toState(Grammar grammar, Grammar.FollowingSymbols followingSymbols) {
-    Map<TerminalSymbol, Rule> reduce = new HashMap<>();
-    Map<TerminalSymbol, Integer> shift = new HashMap<>();
-    Map<NonTerminalSymbol, Integer> state = new HashMap<>();
+    Map<Symbol, Rule> reduce = new HashMap<>();
+    Map<Symbol, Integer> shift = new HashMap<>();
+    Map<Symbol, Integer> state = new HashMap<>();
 
     for (MarkedRule rule : this.rules) {
       if (rule.getIndex() == rule.getRule().getSymbols().size()) {
         if (rule.getRule() == grammar.getAugmentedStartRule()) {
-          shift.put(grammar.getSymbols().getEof(), -1);
+          shift.put(grammar.getTerminals().getEof(), -1);
         } else {
-          for (TerminalSymbol terminal : followingSymbols.getTerminals(rule.getRule().getSource())) {
+          for (Symbol terminal : followingSymbols.getTerminals(rule.getRule().getSource())) {
             if (reduce.containsKey(terminal)) {
               throw new RuntimeException("Reduce error constructing LR(0) table.");
             }
@@ -253,14 +261,14 @@ public class LRItem {
     }
 
     for (Map.Entry<Symbol, Integer> entry : nextIndex.entrySet()) {
-      if (entry.getKey().isTerminal()) {
-        TerminalSymbol terminal = entry.getKey().getTerminal();
+      if (grammar.isTerminal(entry.getKey())) {
+        Symbol terminal = entry.getKey();
         if (shift.containsKey(terminal)) {
           throw new RuntimeException("Shift error constructing LR(0) table.");
         }
         shift.put(terminal, entry.getValue());
       } else {
-        NonTerminalSymbol nonTerminal = entry.getKey().getNonTerminal();
+        Symbol nonTerminal = entry.getKey();
         if (state.containsKey(nonTerminal)) {
           throw new RuntimeException("State error constructing LR(0) table.");
         }

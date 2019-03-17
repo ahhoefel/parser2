@@ -5,30 +5,32 @@ import java.util.*;
 public class Rules {
 
   private List<Rule> rules;
-  private Map<NonTerminalSymbol, List<Rule>> rulesBySymbol;
-  private Set<NonTerminalSymbol> epsilonRules;
+  private Map<Symbol, List<Rule>> rulesBySymbol;
+  private Set<Symbol> epsilonRules;
 
-  private Map<NonTerminalSymbol, Set<TerminalSymbol>> firstTerminals;
-  private Map<NonTerminalSymbol, Set<TerminalSymbol>> simpleFirstTerminals;
-  private Map<NonTerminalSymbol, Set<NonTerminalSymbol>> firstNonTerminals;
-  private Map<NonTerminalSymbol, Set<NonTerminalSymbol>> simpleFirstNonTerminals;
+  private Map<Symbol, Set<Symbol>> firstTerminals;
+  private Map<Symbol, Set<Symbol>> simpleFirstTerminals;
+  private Map<Symbol, Set<Symbol>> firstNonTerminals;
+  private Map<Symbol, Set<Symbol>> simpleFirstNonTerminals;
 
-  private Map<NonTerminalSymbol, Set<NonTerminalSymbol>> followingNonTerminals;
-  private Map<NonTerminalSymbol, Set<TerminalSymbol>> followingTerminals;
-  private SymbolTable symbols;
+  private Map<Symbol, Set<Symbol>> followingNonTerminals;
+  private Map<Symbol, Set<Symbol>> followingTerminals;
+  private SymbolTable.TerminalTable terminals;
+  private SymbolTable.NonTerminalTable nonTerminals;
 
-  public Rules(SymbolTable symbols, List<Rule> rules) {
-    this.symbols = symbols;
+  public Rules(SymbolTable.TerminalTable terminals, SymbolTable.NonTerminalTable nonTerminals, List<Rule> rules) {
+    this.terminals = terminals;
+    this.nonTerminals = nonTerminals;
     this.rules = new ArrayList<>();
-    this.rules.add(0, new Rule(symbols.getAugmentedStart(), List.of(symbols.getStart())));
+    this.rules.add(0, new Rule(nonTerminals.getAugmentedStart(), List.of(nonTerminals.getStart())));
     this.rules.addAll(rules);
     rulesBySymbol = makeRulesBySymbol(this.rules);
     epsilonRules = makeEpsilonRules();
     makeFirstTerminals();
   }
 
-  private static Map<NonTerminalSymbol, List<Rule>> makeRulesBySymbol(List<Rule> rules) {
-    Map<NonTerminalSymbol, List<Rule>> rulesBySymbol = new HashMap<>();
+  private static Map<Symbol, List<Rule>> makeRulesBySymbol(List<Rule> rules) {
+    Map<Symbol, List<Rule>> rulesBySymbol = new HashMap<>();
     for (Rule rule : rules) {
       List<Rule> rulesForSource = rulesBySymbol.get(rule.getSource());
       if (rulesForSource == null) {
@@ -40,16 +42,16 @@ public class Rules {
     return rulesBySymbol;
   }
 
-  private Set<NonTerminalSymbol> makeEpsilonRules() {
-    Set<NonTerminalSymbol> epsilonRules = new HashSet<>();
-    Set<NonTerminalSymbol> visited = new HashSet<>();
-    for (NonTerminalSymbol symbol : rulesBySymbol.keySet()) {
+  private Set<Symbol> makeEpsilonRules() {
+    Set<Symbol> epsilonRules = new HashSet<>();
+    Set<Symbol> visited = new HashSet<>();
+    for (Symbol symbol : rulesBySymbol.keySet()) {
       isEpsilonNonTerminal(epsilonRules, visited, symbol);
     }
     return epsilonRules;
   }
 
-  private boolean isEpsilonNonTerminal(Set<NonTerminalSymbol> epsilonRules, Set<NonTerminalSymbol> visited, NonTerminalSymbol source) {
+  private boolean isEpsilonNonTerminal(Set<Symbol> epsilonRules, Set<Symbol> visited, Symbol source) {
     if (visited.contains(source)) {
       return epsilonRules.contains(source);
     }
@@ -63,21 +65,21 @@ public class Rules {
     return false;
   }
 
-  private boolean isEpsilonRule(Set<NonTerminalSymbol> epsilonRules, Set<NonTerminalSymbol> visited, Rule rule) {
+  private boolean isEpsilonRule(Set<Symbol> epsilonRules, Set<Symbol> visited, Rule rule) {
     for (Symbol symbol : rule.getSymbols()) {
-      if (symbol.isTerminal()) {
+      if (terminals.contains(symbol)) {
         return false;
       }
     }
     for (Symbol symbol : rule.getSymbols()) {
-      if (!isEpsilonNonTerminal(epsilonRules, visited, symbol.getNonTerminal())) {
+      if (!isEpsilonNonTerminal(epsilonRules, visited, symbol)) {
         return false;
       }
     }
     return true;
   }
 
-  public boolean isEpsilon(NonTerminalSymbol nonTerminalSymbol) {
+  public boolean isEpsilon(Symbol nonTerminalSymbol) {
     return epsilonRules.contains(nonTerminalSymbol);
   }
 
@@ -85,38 +87,38 @@ public class Rules {
     return rules;
   }
 
-  public Set<NonTerminalSymbol> getNonTerminals() {
+  public Set<Symbol> getNonTerminals() {
     return rulesBySymbol.keySet();
   }
 
-  public List<Rule> getRulesForNonTerminal(NonTerminalSymbol nonTerminalSymbol) {
+  public List<Rule> getRulesForNonTerminal(Symbol nonTerminalSymbol) {
     return rulesBySymbol.get(nonTerminalSymbol);
   }
 
   private void makeFirstTerminals() {
     simpleFirstTerminals = new HashMap<>();
-    for (NonTerminalSymbol symbol : getNonTerminals()) {
+    for (Symbol symbol : getNonTerminals()) {
       simpleFirstTerminals.put(symbol, makeSimpleFirstTerminals(symbol));
     }
 
     simpleFirstNonTerminals = new HashMap<>();
-    for (NonTerminalSymbol symbol : getNonTerminals()) {
+    for (Symbol symbol : getNonTerminals()) {
       simpleFirstNonTerminals.put(symbol, makeSimpleFirstNonTerminals(symbol));
     }
 
     firstNonTerminals = new HashMap<>();
-    for (NonTerminalSymbol symbol : getNonTerminals()) {
+    for (Symbol symbol : getNonTerminals()) {
       firstNonTerminals.put(symbol, makeFirstNonTerminals(symbol, simpleFirstNonTerminals));
     }
 
     firstTerminals = new HashMap<>();
-    for (NonTerminalSymbol symbol : getNonTerminals()) {
+    for (Symbol symbol : getNonTerminals()) {
       firstTerminals.put(symbol, makeFirstTerminals(symbol, simpleFirstTerminals, firstNonTerminals));
     }
 
     followingNonTerminals = new HashMap<>();
     followingTerminals = new HashMap<>();
-    for (NonTerminalSymbol symbol : rulesBySymbol.keySet()) {
+    for (Symbol symbol : rulesBySymbol.keySet()) {
       followingNonTerminals.put(symbol, new HashSet<>());
       followingTerminals.put(symbol, new HashSet<>());
     }
@@ -126,26 +128,25 @@ public class Rules {
     cascadeFollowing();
   }
 
-  private Set<TerminalSymbol> makeSimpleFirstTerminals(NonTerminalSymbol start) {
-    Set<TerminalSymbol> firsts = new HashSet<>();
+  private Set<Symbol> makeSimpleFirstTerminals(Symbol start) {
+    Set<Symbol> firsts = new HashSet<>();
     for (Rule rule : getRulesForNonTerminal(start)) {
-      if (!rule.getSymbols().isEmpty() && rule.getSymbols().get(0).isTerminal()) {
-        firsts.add(rule.getSymbols().get(0).getTerminal());
+      if (!rule.getSymbols().isEmpty() && terminals.contains(rule.getSymbols().get(0))) {
+        firsts.add(rule.getSymbols().get(0));
       }
     }
     return firsts;
   }
 
-  private Set<NonTerminalSymbol> makeSimpleFirstNonTerminals(NonTerminalSymbol start) {
-    Set<NonTerminalSymbol> firsts = new HashSet<>();
+  private Set<Symbol> makeSimpleFirstNonTerminals(Symbol start) {
+    Set<Symbol> firsts = new HashSet<>();
     for (Rule rule : getRulesForNonTerminal(start)) {
       for (Symbol symbol : rule.getSymbols()) {
-        if (rule.getSymbols().get(0).isTerminal()) {
+        if (terminals.contains(rule.getSymbols().get(0))) {
           continue;
         }
-        NonTerminalSymbol nonTerminal = symbol.getNonTerminal();
-        firsts.add(nonTerminal);
-        if (!isEpsilon(nonTerminal)) {
+        firsts.add(symbol);
+        if (!isEpsilon(symbol)) {
           break;
         }
       }
@@ -153,15 +154,15 @@ public class Rules {
     return firsts;
   }
 
-  private Set<NonTerminalSymbol> makeFirstNonTerminals(NonTerminalSymbol start, Map<NonTerminalSymbol, Set<NonTerminalSymbol>> simpleFirstNonTerminals) {
-    Set<NonTerminalSymbol> firsts = new HashSet<>();
-    List<NonTerminalSymbol> toVisit = new ArrayList<>();
+  private Set<Symbol> makeFirstNonTerminals(Symbol start, Map<Symbol, Set<Symbol>> simpleFirstNonTerminals) {
+    Set<Symbol> firsts = new HashSet<>();
+    List<Symbol> toVisit = new ArrayList<>();
     firsts.add(start);
     toVisit.add(start);
     while (!toVisit.isEmpty()) {
-      NonTerminalSymbol symbol = toVisit.remove(toVisit.size() - 1);
-      Set<NonTerminalSymbol> nexts = simpleFirstNonTerminals.get(symbol);
-      for (NonTerminalSymbol next : nexts) {
+      Symbol symbol = toVisit.remove(toVisit.size() - 1);
+      Set<Symbol> nexts = simpleFirstNonTerminals.get(symbol);
+      for (Symbol next : nexts) {
         if (!firsts.contains(next)) {
           firsts.add(next);
           toVisit.add(next);
@@ -171,9 +172,9 @@ public class Rules {
     return firsts;
   }
 
-  private Set<TerminalSymbol> makeFirstTerminals(NonTerminalSymbol start, Map<NonTerminalSymbol, Set<TerminalSymbol>> simpleFirstTerminals, Map<NonTerminalSymbol, Set<NonTerminalSymbol>> firstNonTerminals) {
-    Set<TerminalSymbol> firstTerminals = new HashSet<>();
-    for (NonTerminalSymbol symbol : firstNonTerminals.get(start)) {
+  private Set<Symbol> makeFirstTerminals(Symbol start, Map<Symbol, Set<Symbol>> simpleFirstTerminals, Map<Symbol, Set<Symbol>> firstNonTerminals) {
+    Set<Symbol> firstTerminals = new HashSet<>();
+    for (Symbol symbol : firstNonTerminals.get(start)) {
       firstTerminals.addAll(simpleFirstTerminals.get(symbol));
     }
     return firstTerminals;
@@ -182,24 +183,23 @@ public class Rules {
   private void fillFollowing(Rule rule) {
     // TODO: this is quadratic. I think it could be made linear by
     // starting from the end and working backwards.
-    followingTerminals.get(getStart().getSource()).add(this.symbols.getEof());
+    followingTerminals.get(getStart().getSource()).add(terminals.getEof());
 
     for (int i = 0; i < rule.getSymbols().size(); i++) {
-      if (rule.getSymbols().get(i).isTerminal()) {
+      if (terminals.contains(rule.getSymbols().get(i))) {
         continue;
       }
-      NonTerminalSymbol nonTerminal = rule.getSymbols().get(i).getNonTerminal();
+      Symbol nonTerminal = rule.getSymbols().get(i);
       boolean done = false;
       int j;
       for (j = i + 1; !done && j < rule.getSymbols().size(); j++) {
         Symbol t = rule.getSymbols().get(j);
-        if (t.isTerminal()) {
-          followingTerminals.get(nonTerminal).add(t.getTerminal());
+        if (terminals.contains(t)) {
+          followingTerminals.get(nonTerminal).add(t);
           done = true;
         } else {
-          NonTerminalSymbol tt = t.getNonTerminal();
-          followingNonTerminals.get(nonTerminal).add(tt);
-          if (!isEpsilon(tt)) {
+          followingNonTerminals.get(nonTerminal).add(t);
+          if (!isEpsilon(t)) {
             done = true;
           }
         }
@@ -214,10 +214,10 @@ public class Rules {
     boolean changed = true;
     while (changed) {
       changed = false;
-      for (Map.Entry<NonTerminalSymbol, Set<NonTerminalSymbol>> entry : followingNonTerminals.entrySet()) {
-        Set<TerminalSymbol> from = followingTerminals.get(entry.getKey());
-        for (NonTerminalSymbol toNonTerminal : entry.getValue()) {
-          Set<TerminalSymbol> to = followingTerminals.get(toNonTerminal);
+      for (Map.Entry<Symbol, Set<Symbol>> entry : followingNonTerminals.entrySet()) {
+        Set<Symbol> from = followingTerminals.get(entry.getKey());
+        for (Symbol toNonTerminal : entry.getValue()) {
+          Set<Symbol> to = followingTerminals.get(toNonTerminal);
           int sizeBefore = to.size();
           to.addAll(from);
           if (sizeBefore != to.size()) {
@@ -228,23 +228,23 @@ public class Rules {
     }
   }
 
-  public Set<TerminalSymbol> getFirstTerminals(NonTerminalSymbol symbol) {
+  public Set<Symbol> getFirstTerminals(Symbol symbol) {
     return firstTerminals.get(symbol);
   }
 
-  public Set<TerminalSymbol> getSimpleFirstTerminals(NonTerminalSymbol symbol) {
+  public Set<Symbol> getSimpleFirstTerminals(Symbol symbol) {
     return simpleFirstTerminals.get(symbol);
   }
 
-  public Set<NonTerminalSymbol> getSimpleFirstNonTerminals(NonTerminalSymbol symbol) {
+  public Set<Symbol> getSimpleFirstNonTerminals(Symbol symbol) {
     return simpleFirstNonTerminals.get(symbol);
   }
 
-  public Set<NonTerminalSymbol> getFirstNonTerminals(NonTerminalSymbol symbol) {
+  public Set<Symbol> getFirstNonTerminals(Symbol symbol) {
     return firstNonTerminals.get(symbol);
   }
 
-  public Set<TerminalSymbol> getFollow(NonTerminalSymbol symbol) {
+  public Set<Symbol> getFollow(Symbol symbol) {
     return followingTerminals.get(symbol);
   }
 
@@ -252,7 +252,7 @@ public class Rules {
     return this.rules.get(0);
   }
 
-  public TerminalSymbol getEof() {
-    return this.symbols.getEof();
+  public Symbol getEof() {
+    return this.terminals.getEof();
   }
 }

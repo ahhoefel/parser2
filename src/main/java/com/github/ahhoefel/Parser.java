@@ -35,9 +35,9 @@ public class Parser<T> {
 
   private static class TerminalSymbolIterator implements Iterator<Token> {
 
-    private Iterator<TerminalSymbol> iter;
+    private Iterator<Symbol> iter;
 
-    public TerminalSymbolIterator(Iterator<TerminalSymbol> iter) {
+    public TerminalSymbolIterator(Iterator<Symbol> iter) {
       this.iter = iter;
     }
 
@@ -49,7 +49,7 @@ public class Parser<T> {
 
     @Override
     public Token next() {
-      TerminalSymbol next = iter.next();
+      Symbol next = iter.next();
       if (next == null) {
         return null;
       }
@@ -57,15 +57,15 @@ public class Parser<T> {
     }
   }
 
-  public static Object parseTerminals(LRTable table, Iterator<TerminalSymbol> iter, NonTerminalSymbol start) {
+  public static Object parseTerminals(LRTable table, Iterator<Symbol> iter, Symbol start) {
     return parseTokens(table, new TerminalSymbolIterator(iter), start);
   }
 
-  public static Object parseTokens(LRTable table, Iterator<Token> iter, NonTerminalSymbol start) {
+  public static Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start) {
     Stack<SymbolState> stack = new Stack<>();
     Stack<Object> result = new Stack<>();
     Token nextToken = iter.next();
-    TerminalSymbol nextSymbol = nextToken.getTerminal();
+    Symbol nextSymbol = nextToken.getSymbol();
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
       LRTable.State state = table.state.get(symbolState.stateIndex);
@@ -78,7 +78,7 @@ public class Parser<T> {
         result.push(nextToken);
         if (iter.hasNext()) {
           nextToken = iter.next();
-          nextSymbol = nextToken.getTerminal();
+          nextSymbol = nextToken.getSymbol();
         }
       } else if (state.reduce.containsKey(nextSymbol)) {
         Rule rule = state.reduce.get(nextSymbol);

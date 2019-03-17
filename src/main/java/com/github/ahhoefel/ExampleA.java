@@ -6,15 +6,18 @@ import java.util.Map;
 
 public class ExampleA {
   public static void main(String[] args) {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol value = symbols.newNonTerminal("value");
-    NonTerminalSymbol products = symbols.newNonTerminal("products");
-    TerminalSymbol times = symbols.newTerminal("*");
-    TerminalSymbol plus = symbols.newTerminal("+");
-    TerminalSymbol id = symbols.newTerminal("id");
-    TerminalSymbol num = symbols.newTerminal("num");
-    NonTerminalSymbol sums = symbols.getStart();
-    TerminalSymbol eof = symbols.getEof();
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol times = terminals.newSymbol("*");
+    Symbol plus = terminals.newSymbol("+");
+    Symbol id = terminals.newSymbol("id");
+    Symbol num = terminals.newSymbol("num");
+    Symbol eof = terminals.getEof();
+
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol value = nonTerminals.newSymbol("value");
+    Symbol products = nonTerminals.newSymbol("products");
+    Symbol sums = nonTerminals.getStart();
+
     Rule r1 = new Rule(sums, List.of(sums, plus, products));
     Rule r2 = new Rule(sums, List.of(products));
     Rule r3 = new Rule(products, List.of(products, times, value));
@@ -22,7 +25,7 @@ public class ExampleA {
     Rule r5 = new Rule(value, List.of(num));
     Rule r6 = new Rule(value, List.of(id));
     List<Rule> ruleList = List.of(r1, r2, r3, r4, r5, r6);
-    Rules rules = new Rules(symbols, ruleList);
+    Grammar grammar = new Grammar(terminals, nonTerminals, ruleList);
 
     LRTable table = new LRTable(
         Arrays.asList(
@@ -79,15 +82,15 @@ public class ExampleA {
         )
     );
 
-    List<TerminalSymbol> input = Arrays.asList(id, times, id, plus, num, eof);
+    List<Symbol> input = Arrays.asList(id, times, id, plus, num, eof);
     System.out.println(table);
-    Object tree = Parser.parseTerminals(table, input.iterator(), symbols.getAugmentedStart());
+    Object tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
     System.out.println(tree);
 
-    LRParser parser = LRItem.makeItemGraph(rules);
-    table = parser.getTable(rules);
+    LRParser parser = LRItem.makeItemGraph(grammar);
+    table = parser.getTable(grammar);
     System.out.println(table);
-    tree = Parser.parseTerminals(parser.getTable(rules), input.iterator(), symbols.getAugmentedStart());
+    tree = Parser.parseTerminals(parser.getTable(grammar), input.iterator(), nonTerminals.getAugmentedStart());
     System.out.println(tree);
   }
 }

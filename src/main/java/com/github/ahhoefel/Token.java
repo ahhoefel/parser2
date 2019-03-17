@@ -3,9 +3,9 @@ package com.github.ahhoefel;
 public class Token {
 
   private final String value;
-  private final TerminalSymbol symbol;
+  private final Symbol symbol;
 
-  public Token(TerminalSymbol symbol, String value) {
+  public Token(Symbol symbol, String value) {
     this.symbol = symbol;
     this.value = value;
   }
@@ -14,7 +14,7 @@ public class Token {
     return String.format("%s(%s)", symbol, value);
   }
 
-  public TerminalSymbol getTerminal() {
+  public Symbol getSymbol() {
     return symbol;
   }
 

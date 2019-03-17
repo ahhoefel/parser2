@@ -4,9 +4,9 @@ import java.util.function.Function;
 
 public class TokenAction implements Function<Object[], Object> {
 
-  private TerminalSymbol terminal;
+  private Symbol terminal;
 
-  public TokenAction(TerminalSymbol terminal) {
+  public TokenAction(Symbol terminal) {
     this.terminal = terminal;
   }
 

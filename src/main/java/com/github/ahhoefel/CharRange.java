@@ -2,29 +2,29 @@ package com.github.ahhoefel;
 
 public class CharRange {
 
-  public final TerminalSymbol letter;
-  public final TerminalSymbol number;
-  public final TerminalSymbol hypen;
-  public final TerminalSymbol space;
-  public final TerminalSymbol tab;
-  public final TerminalSymbol lparen;
-  public final TerminalSymbol rparen;
-  public final TerminalSymbol newline;
-  public final TerminalSymbol period;
-  public final TerminalSymbol comma;
-  public final TerminalSymbol unknown;
+  public final Symbol letter;
+  public final Symbol number;
+  public final Symbol hypen;
+  public final Symbol space;
+  public final Symbol tab;
+  public final Symbol lparen;
+  public final Symbol rparen;
+  public final Symbol newline;
+  public final Symbol period;
+  public final Symbol comma;
+  public final Symbol unknown;
 
   public CharRange(SymbolTable symbols) {
-    letter = symbols.newTerminal("letter");
-    number = symbols.newTerminal("number");
-    hypen = symbols.newTerminal("hypen");
-    space = symbols.newTerminal("space");
-    tab = symbols.newTerminal("tab");
-    lparen = symbols.newTerminal("lparen");
-    rparen = symbols.newTerminal("rparen");
-    newline = symbols.newTerminal("newline");
-    period = symbols.newTerminal("period");
-    comma = symbols.newTerminal("comma");
-    unknown = symbols.newTerminal("unknown");
+    letter = symbols.newSymbol("letter");
+    number = symbols.newSymbol("number");
+    hypen = symbols.newSymbol("hypen");
+    space = symbols.newSymbol("space");
+    tab = symbols.newSymbol("tab");
+    lparen = symbols.newSymbol("lparen");
+    rparen = symbols.newSymbol("rparen");
+    newline = symbols.newSymbol("newline");
+    period = symbols.newSymbol("period");
+    comma = symbols.newSymbol("comma");
+    unknown = symbols.newSymbol("unknown");
   }
 }

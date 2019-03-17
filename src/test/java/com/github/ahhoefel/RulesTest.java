@@ -10,20 +10,23 @@ public class RulesTest {
 
   @Test
   public void testIsEpsilon() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
+
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
+
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
-    Rules rules = new Rules(symbols, rs);
+    Rules rules = new Rules(terminals, nonTerminals, rs);
     Assert.assertFalse(rules.isEpsilon(s));
     Assert.assertTrue(rules.isEpsilon(a));
     Assert.assertFalse(rules.isEpsilon(b));
@@ -31,20 +34,22 @@ public class RulesTest {
 
   @Test
   public void testFirsts() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
+
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
-    Rules rules = new Rules(symbols, rs);
+    Rules rules = new Rules(terminals, nonTerminals, rs);
 
     Assert.assertEquals(Set.of(), rules.getSimpleFirstTerminals(s));
     Assert.assertEquals(Set.of(x), rules.getSimpleFirstTerminals(a));

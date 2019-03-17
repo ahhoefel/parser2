@@ -9,34 +9,36 @@ import java.util.Set;
 public class GrammarTest {
   @Test
   public void testIsEpsilon() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
-    Grammar grammar = new Grammar(symbols, rs);
-    Set<NonTerminalSymbol> epsilons = Grammar.epsilons(grammar);
-    Set<NonTerminalSymbol> expectedEpsilons = Set.of(a);
+    Grammar grammar = new Grammar(terminals, nonTerminals, rs);
+    Set<Symbol> epsilons = Grammar.epsilons(grammar);
+    Set<Symbol> expectedEpsilons = Set.of(a);
     Assert.assertEquals(expectedEpsilons, epsilons);
   }
 
   @Test
   public void testFirsts() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
     Rule r0 = new Rule(s, List.of(a, b));
     Rule r1 = new Rule(a, List.of(x, a, b));
     Rule r2 = new Rule(a, List.of());
@@ -44,10 +46,10 @@ public class GrammarTest {
     Rule r4 = new Rule(b, List.of(z));
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
 
-    Grammar grammar = new Grammar(symbols, rs);
-    Set<NonTerminalSymbol> epsilons = Grammar.epsilons(grammar);
-    Grammar.NonTerminalMap<Set<NonTerminalSymbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
-    Grammar.NonTerminalMap<Set<TerminalSymbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
+    Grammar grammar = new Grammar(terminals, nonTerminals, rs);
+    Set<Symbol> epsilons = Grammar.epsilons(grammar);
+    Grammar.NonTerminalMap<Set<Symbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
+    Grammar.NonTerminalMap<Set<Symbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
 
     Assert.assertEquals(Set.of(a, b), firstNonTerminals.get(s));
     Assert.assertEquals(Set.of(), firstNonTerminals.get(a));
@@ -60,17 +62,20 @@ public class GrammarTest {
 
   @Test
   public void testFirstsTwo() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    NonTerminalSymbol c = symbols.newNonTerminal("C");
-    NonTerminalSymbol d = symbols.newNonTerminal("D");
-    NonTerminalSymbol e = symbols.newNonTerminal("E");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol w = symbols.newTerminal("w");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol w = terminals.newSymbol("w");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
+
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
+    Symbol c = nonTerminals.newSymbol("C");
+    Symbol d = nonTerminals.newSymbol("D");
+    Symbol e = nonTerminals.newSymbol("E");
+
     Rule r0 = new Rule(s, List.of(a));
     Rule r1 = new Rule(a, List.of(b));
     Rule r2 = new Rule(a, List.of(a, c));
@@ -81,10 +86,10 @@ public class GrammarTest {
     Rule r7 = new Rule(d, List.of());
     Rule r8 = new Rule(e, List.of(z));
 
-    Grammar grammar = new Grammar(symbols, List.of(r0, r1, r2, r3, r4, r5, r6, r7, r8));
-    Set<NonTerminalSymbol> epsilons = Grammar.epsilons(grammar);
-    Grammar.NonTerminalMap<Set<NonTerminalSymbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
-    Grammar.NonTerminalMap<Set<TerminalSymbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
+    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4, r5, r6, r7, r8));
+    Set<Symbol> epsilons = Grammar.epsilons(grammar);
+    Grammar.NonTerminalMap<Set<Symbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
+    Grammar.NonTerminalMap<Set<Symbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
 
     Assert.assertEquals(Set.of(d), epsilons);
 
@@ -105,14 +110,16 @@ public class GrammarTest {
 
   @Test
   public void testFollowing() {
-    SymbolTable symbols = new SymbolTable();
-    NonTerminalSymbol a = symbols.newNonTerminal("A");
-    NonTerminalSymbol b = symbols.newNonTerminal("B");
-    NonTerminalSymbol c = symbols.newNonTerminal("C");
-    TerminalSymbol x = symbols.newTerminal("x");
-    TerminalSymbol y = symbols.newTerminal("y");
-    TerminalSymbol z = symbols.newTerminal("z");
-    NonTerminalSymbol s = symbols.getStart();
+    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
+    Symbol x = terminals.newSymbol("x");
+    Symbol y = terminals.newSymbol("y");
+    Symbol z = terminals.newSymbol("z");
+
+    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
+    Symbol s = nonTerminals.getStart();
+    Symbol a = nonTerminals.newSymbol("A");
+    Symbol b = nonTerminals.newSymbol("B");
+    Symbol c = nonTerminals.newSymbol("C");
 
     Rule r0 = new Rule(s, List.of(a, b, c));
     Rule r1 = new Rule(a, List.of(x));
@@ -120,7 +127,7 @@ public class GrammarTest {
     Rule r3 = new Rule(b, List.of());
     Rule r4 = new Rule(c, List.of(z));
 
-    Grammar grammar = new Grammar(symbols, List.of(r0, r1, r2, r3, r4));
+    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
     Grammar.FollowingSymbols follow = Grammar.following(grammar);
 
     Assert.assertEquals(Set.of(b, c), follow.getNonTerminals(a));
@@ -129,6 +136,6 @@ public class GrammarTest {
 
     Assert.assertEquals(Set.of(y, z), follow.getTerminals(a));
     Assert.assertEquals(Set.of(z), follow.getTerminals(b));
-    Assert.assertEquals(Set.of(symbols.getEof()), follow.getTerminals(c));
+    Assert.assertEquals(Set.of(terminals.getEof()), follow.getTerminals(c));
   }
 }

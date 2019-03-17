@@ -5,23 +5,23 @@ import java.util.List;
 import java.util.function.Function;
 
 public class Rule {
-  private NonTerminalSymbol source;
+  private Symbol source;
   private List<Symbol> symbols;
   private Function<Object[], Object> action;
 
-  public Rule(NonTerminalSymbol source, List<Symbol> symbols) {
+  public Rule(Symbol source, List<Symbol> symbols) {
     this.source = source;
     this.symbols = symbols;
     this.action = new ParseTreeAction();
   }
 
-  public Rule(NonTerminalSymbol source, List<Symbol> symbols, Function<Object[], Object> action) {
+  public Rule(Symbol source, List<Symbol> symbols, Function<Object[], Object> action) {
     this.source = source;
     this.symbols = symbols;
     this.action = action;
   }
 
-  public NonTerminalSymbol getSource() {
+  public Symbol getSource() {
     return source;
   }
 

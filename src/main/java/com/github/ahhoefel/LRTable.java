@@ -11,11 +11,11 @@ public class LRTable {
   }
 
   public static class State {
-    public Map<TerminalSymbol, Rule> reduce;
-    public Map<TerminalSymbol, Integer> shift;
-    public Map<NonTerminalSymbol, Integer> state;
+    public Map<Symbol, Rule> reduce;
+    public Map<Symbol, Integer> shift;
+    public Map<Symbol, Integer> state;
 
-    public State(Map<TerminalSymbol, Rule> reduce, Map<TerminalSymbol, Integer> shift, Map<NonTerminalSymbol, Integer> state) {
+    public State(Map<Symbol, Rule> reduce, Map<Symbol, Integer> shift, Map<Symbol, Integer> state) {
       this.reduce = reduce;
       this.shift = shift;
       this.state = state;

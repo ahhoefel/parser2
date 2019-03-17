@@ -21,6 +21,7 @@ public class LRParser {
     return out.toString();
   }
 
+  /*
   public LRTable getTable(Rules rules) {
     List<LRTable.State> states = new ArrayList<>();
     for (LRItem item : items) {
@@ -28,6 +29,7 @@ public class LRParser {
     }
     return new LRTable(states);
   }
+*/
 
   public LRTable getTable(Grammar grammar) {
     Grammar.FollowingSymbols following = Grammar.following(grammar);

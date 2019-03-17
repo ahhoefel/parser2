@@ -2,12 +2,12 @@ package com.github.ahhoefel;
 
 public class RangeTokenizer implements Tokenizer {
 
-  private TerminalSymbol[] charTerminalMap;
-  private TerminalSymbol unknown;
-  private TerminalSymbol eof;
+  private Symbol[] charTerminalMap;
+  private Symbol unknown;
+  private Symbol eof;
 
-  public RangeTokenizer(CharRange chars, TerminalSymbol eof) {
-    this.charTerminalMap = new TerminalSymbol[256];
+  public RangeTokenizer(CharRange chars, Symbol eof) {
+    this.charTerminalMap = new Symbol[256];
     this.unknown = chars.unknown;
     this.eof = eof;
     for (int i = 0; i < 256; i++) {
