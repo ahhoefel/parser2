@@ -30,6 +30,9 @@ public class Lexicon {
   public Symbol lParenTerminal;
   public Symbol rParenTerminal;
   public Symbol commaTerminal;
+  public Symbol equalsTerminal;
+  public Symbol plusTerminal;
+  public Symbol timesTerminal;
 
   public Lexicon() {
     terminals = new SymbolTable.TerminalTable();
@@ -44,6 +47,9 @@ public class Lexicon {
     lParenTerminal = resultSymbols.newSymbol("lparen");
     rParenTerminal = resultSymbols.newSymbol("rparen");
     commaTerminal = resultSymbols.newSymbol("comma");
+    equalsTerminal = resultSymbols.newSymbol("equals");
+    plusTerminal = resultSymbols.newSymbol("plus");
+    timesTerminal = resultSymbols.newSymbol("times");
 
     List<Rule> rules = new ArrayList<>();
     this.identifier = new Identifier(nonTerminals, chars, rules);
@@ -61,10 +67,12 @@ public class Lexicon {
     rules.add(new Rule(word, List.of(chars.lparen), new TokenAction(lParenTerminal)));
     rules.add(new Rule(word, List.of(chars.rparen), new TokenAction(rParenTerminal)));
     rules.add(new Rule(word, List.of(chars.comma), new TokenAction(commaTerminal)));
+    rules.add(new Rule(word, List.of(chars.eq), new TokenAction(equalsTerminal)));
+    rules.add(new Rule(word, List.of(chars.times), new TokenAction(timesTerminal)));
+    rules.add(new Rule(word, List.of(chars.plus), new TokenAction(plusTerminal)));
 
     grammar = new Grammar(terminals, nonTerminals, rules);
-    LRParser parser = LRItem.makeItemGraph(grammar);
-    table = parser.getTable(grammar);
+    table = LRParser.getSLRTable(grammar);
   }
 
   public List<Token> getTokens(Reader r) throws IOException {

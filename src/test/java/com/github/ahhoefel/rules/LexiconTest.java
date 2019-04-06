@@ -10,7 +10,6 @@ import java.io.Reader;
 import java.util.List;
 
 public class LexiconTest {
-
   @Test
   public void test() throws IOException {
     Lexicon lex = new Lexicon();

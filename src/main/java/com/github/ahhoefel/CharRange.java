@@ -12,6 +12,9 @@ public class CharRange {
   public final Symbol newline;
   public final Symbol period;
   public final Symbol comma;
+  public final Symbol eq;
+  public final Symbol plus;
+  public final Symbol times;
   public final Symbol unknown;
 
   public CharRange(SymbolTable symbols) {
@@ -25,6 +28,9 @@ public class CharRange {
     newline = symbols.newSymbol("newline");
     period = symbols.newSymbol("period");
     comma = symbols.newSymbol("comma");
+    eq = symbols.newSymbol("equals");
+    plus = symbols.newSymbol("plus");
+    times = symbols.newSymbol("times");
     unknown = symbols.newSymbol("unknown");
   }
 }

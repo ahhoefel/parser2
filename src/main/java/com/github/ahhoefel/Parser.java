@@ -90,7 +90,7 @@ public class Parser<T> {
         stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
         result.push(rule.getAction().apply(children));
       } else {
-        throw new RuntimeException("parseTerminals error");
+        throw new RuntimeException("Parsing error");
       }
       symbolState = stack.peek();
     }

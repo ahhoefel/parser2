@@ -87,10 +87,9 @@ public class ExampleA {
     Object tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
     System.out.println(tree);
 
-    LRParser parser = LRItem.makeItemGraph(grammar);
-    table = parser.getTable(grammar);
+    table = LRParser.getSLRTable(grammar);
     System.out.println(table);
-    tree = Parser.parseTerminals(parser.getTable(grammar), input.iterator(), nonTerminals.getAugmentedStart());
+    tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
     System.out.println(tree);
   }
 }

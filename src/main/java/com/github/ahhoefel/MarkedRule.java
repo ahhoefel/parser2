@@ -5,10 +5,12 @@ import java.util.Optional;
 public class MarkedRule {
   private Rule rule;
   private int index;
+  private Symbol lookAhead;
 
-  public MarkedRule(Rule rule, int index) {
+  public MarkedRule(Rule rule, int index, Symbol lookAhead) {
     this.rule = rule;
     this.index = index;
+    this.lookAhead = lookAhead;
   }
 
   public Rule getRule() {
@@ -17,6 +19,10 @@ public class MarkedRule {
 
   public int getIndex() {
     return index;
+  }
+
+  public Symbol getLookAhead() {
+    return lookAhead;
   }
 
   public Optional<Symbol> getSymbolAtIndex() {
@@ -32,16 +38,17 @@ public class MarkedRule {
       return false;
     }
     MarkedRule other = (MarkedRule) o;
-    return other.rule.equals(rule) && other.index == index;
+    return other.rule.equals(rule) && other.index == index && lookAhead.equals(other.lookAhead);
   }
 
   @Override
   public int hashCode() {
-    return 31 * rule.hashCode() + index;
+    return 31 * rule.hashCode() + index + 31 * 31 * lookAhead.hashCode();
   }
 
   public String toString() {
     StringBuffer buf = new StringBuffer();
+    buf.append('[');
     buf.append(rule.getSource());
     buf.append(" => ");
     for (int i = 0; i < rule.getSymbols().size(); i++) {
@@ -54,6 +61,9 @@ public class MarkedRule {
     if (index == rule.getSymbols().size()) {
       buf.append('^');
     }
+    buf.append(", ");
+    buf.append(lookAhead);
+    buf.append(']');
     return buf.toString();
   }
 }

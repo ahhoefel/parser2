@@ -128,7 +128,9 @@ public class GrammarTest {
     Rule r4 = new Rule(c, List.of(z));
 
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
-    Grammar.FollowingSymbols follow = Grammar.following(grammar);
+    Grammar.FollowingSymbols follow = grammar.following();
+
+    System.out.println(follow.toString());
 
     Assert.assertEquals(Set.of(b, c), follow.getNonTerminals(a));
     Assert.assertEquals(Set.of(c), follow.getNonTerminals(b));

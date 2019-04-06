@@ -53,6 +53,11 @@ public class Grammar {
     return terminals.contains(symbol);
   }
 
+
+  public FirstSymbols first() {
+    return new FirstSymbols();
+  }
+
   public static Set<Symbol> epsilons(Grammar g) {
     Set<Symbol> epsilonRules = new HashSet<>();
     Set<Symbol> visited = new HashSet<>();
@@ -193,24 +198,24 @@ public class Grammar {
     return firsts;
   }
 
-  public static FollowingSymbols following(Grammar g) {
-    Set<Symbol> epsilons = epsilons(g);
-    NonTerminalMap<Set<Symbol>> firstNonTerminals = firstNonTerminals(g, epsilons);
-    NonTerminalMap<Set<Symbol>> firstTerminals = firstTerminals(g, epsilons, firstNonTerminals);
+  public FollowingSymbols following() {
+    return following(this.first());
+  }
 
-    NonTerminalMap<Set<Symbol>> followingNonTerminals = new NonTerminalMap<>(g);
-    NonTerminalMap<Set<Symbol>> followFollowingNonTerminals = new NonTerminalMap<>(g);
-    NonTerminalMap<Set<Symbol>> followingTerminals = new NonTerminalMap<>(g);
-    for (Symbol symbol : g.nonTerminals.getSymbols()) {
+  public FollowingSymbols following(FirstSymbols first) {
+    NonTerminalMap<Set<Symbol>> followingNonTerminals = new NonTerminalMap<>(this);
+    NonTerminalMap<Set<Symbol>> followFollowingNonTerminals = new NonTerminalMap<>(this);
+    NonTerminalMap<Set<Symbol>> followingTerminals = new NonTerminalMap<>(this);
+    for (Symbol symbol : this.nonTerminals.getSymbols()) {
       followingNonTerminals.set(symbol, new HashSet<>());
       followFollowingNonTerminals.set(symbol, new HashSet<>());
       followingTerminals.set(symbol, new HashSet<>());
     }
-    followingTerminals.get(g.nonTerminals.getStart()).add(g.terminals.getEof());
-    for (Rule rule : g.rules) {
-      fillFollowing(g, followingNonTerminals, followFollowingNonTerminals, followingTerminals, epsilons, firstNonTerminals, firstTerminals, rule);
+    followingTerminals.get(this.nonTerminals.getStart()).add(this.terminals.getEof());
+    for (Rule rule : this.rules) {
+      fillFollowing(this, followingNonTerminals, followFollowingNonTerminals, followingTerminals, first, rule);
     }
-    cascadeFollowing(g, followingNonTerminals, followFollowingNonTerminals, followingTerminals);
+    cascadeFollowing(this, followingNonTerminals, followFollowingNonTerminals, followingTerminals);
     return new FollowingSymbols(followingNonTerminals, followingTerminals);
   }
 
@@ -219,9 +224,7 @@ public class Grammar {
       NonTerminalMap<Set<Symbol>> followingNonTerminals,
       NonTerminalMap<Set<Symbol>> followFollowingNonTerminals,
       NonTerminalMap<Set<Symbol>> followingTerminals,
-      Set<Symbol> epsilons,
-      NonTerminalMap<Set<Symbol>> firstNonTerminals,
-      NonTerminalMap<Set<Symbol>> firstTerminals,
+      FirstSymbols first,
       Rule rule) {
     // TODO: this is quadratic. I think it could be made linear by
     // starting from the end and working backwards.
@@ -240,9 +243,9 @@ public class Grammar {
           done = true;
         } else {
           followingNonTerminals.get(nonTerminal).add(t);
-          followingNonTerminals.get(nonTerminal).addAll(firstNonTerminals.get(t));
-          followingTerminals.get(nonTerminal).addAll(firstTerminals.get(t));
-          if (!epsilons.contains(t)) {
+          followingNonTerminals.get(nonTerminal).addAll(first.getFirstNonTerminals(t));
+          followingTerminals.get(nonTerminal).addAll(first.getFirstTerminals(t));
+          if (!first.getEpsilons().contains(t)) {
             done = true;
           }
         }
@@ -258,12 +261,6 @@ public class Grammar {
       NonTerminalMap<Set<Symbol>> followingNonTerminals,
       NonTerminalMap<Set<Symbol>> followFollowingNonTerminals,
       NonTerminalMap<Set<Symbol>> followingTerminals) {
-//    System.out.println("fnt");
-//    System.out.println(followingNonTerminals);
-//    System.out.println("ffnt");
-//    System.out.println(followFollowingNonTerminals);
-//    System.out.println("ft");
-//    System.out.println(followingTerminals);
 
     boolean changed = true;
     while (changed) {
@@ -284,8 +281,6 @@ public class Grammar {
         }
       }
     }
-//    System.out.println("fnt transitive closure");
-//    system.out.println(followingNonTerminals);
     for (Symbol x : g.nonTerminals.getSymbols()) {
       for (Symbol y : followingNonTerminals.get(x)) {
         followingTerminals.get(x).addAll(followingTerminals.get(y));
@@ -325,6 +320,30 @@ public class Grammar {
 
     public String toString() {
       return nonTerminals.toString() + "\n" + terminals.toString();
+    }
+  }
+
+  public class FirstSymbols {
+    private NonTerminalMap<Set<Symbol>> nonTerminals;
+    private NonTerminalMap<Set<Symbol>> terminals;
+    private Set<Symbol> epsilons;
+
+    public FirstSymbols() {
+      this.epsilons = epsilons(Grammar.this);
+      this.nonTerminals = firstNonTerminals(Grammar.this, epsilons);
+      this.terminals = firstTerminals(Grammar.this, epsilons, nonTerminals);
+    }
+
+    public Set<Symbol> getEpsilons() {
+      return epsilons;
+    }
+
+    public Set<Symbol> getFirstTerminals(Symbol nonTerminal) {
+      return terminals.get(nonTerminal);
+    }
+
+    public Set<Symbol> getFirstNonTerminals(Symbol nonTerminal) {
+      return nonTerminals.get(nonTerminal);
     }
   }
 }

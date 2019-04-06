@@ -30,7 +30,10 @@ public class RangeTokenizer implements Tokenizer {
     charTerminalMap[9] = chars.tab;
     charTerminalMap[10] = chars.newline;
     charTerminalMap[46] = chars.period;
+    charTerminalMap[42] = chars.times;
+    charTerminalMap[43] = chars.plus;
     charTerminalMap[44] = chars.comma;
+    charTerminalMap[61] = chars.eq;
   }
 
   public Token of(int c) {

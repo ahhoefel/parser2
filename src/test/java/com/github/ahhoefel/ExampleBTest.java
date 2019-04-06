@@ -14,7 +14,7 @@ public class ExampleBTest {
     Set<Symbol> epsilons = Grammar.epsilons(g);
     Grammar.NonTerminalMap<Set<Symbol>> firstNonTerminals = Grammar.firstNonTerminals(g, epsilons);
     Grammar.NonTerminalMap<Set<Symbol>> firstTerminals = Grammar.firstTerminals(g, epsilons, firstNonTerminals);
-    Grammar.FollowingSymbols following = Grammar.following(g);
+    Grammar.FollowingSymbols following = g.following();
 
     Assert.assertEquals(epsilons, Set.of());
 

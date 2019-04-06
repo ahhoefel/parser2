@@ -51,14 +51,13 @@ public class ExampleC {
 
   public static void main(String[] args) throws IOException {
     ExampleC c = new ExampleC();
-    LRParser parser = LRItem.makeItemGraph(c.grammar);
+    LRTable table = LRParser.getSLRTable(c.grammar);
     Reader r = new CharArrayReader("foc 123 d12".toCharArray());
 
     Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.terminals.getEof()), r, c.terminals.getEof());
 
-    LRTable table = parser.getTable(c.grammar);
     System.out.println(table);
-    Object tree = Parser.parseTokens(parser.getTable(c.grammar), tokens, c.grammar.getAugmentedStartRule().getSource());
+    Object tree = Parser.parseTokens(table, tokens, c.grammar.getAugmentedStartRule().getSource());
     System.out.println(tree);
   }
 }

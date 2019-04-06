@@ -1,6 +1,7 @@
 package com.github.ahhoefel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
@@ -33,6 +34,11 @@ public class Rule {
     return action;
   }
 
+  public Rule setAction(Function<Object[], Object> action) {
+    this.action = action;
+    return this;
+  }
+
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append(source.toString());
@@ -56,6 +62,25 @@ public class Rule {
         }
       }
       return new ParseTree(Rule.this, children);
+    }
+  }
+
+  public static class Builder {
+
+    private List<Rule> rules;
+
+    public Builder() {
+      rules = new ArrayList<>();
+    }
+
+    public Rule add(Symbol from, Symbol... to) {
+      Rule r = new Rule(from, Arrays.asList(to));
+      rules.add(r);
+      return r;
+    }
+
+    public List<Rule> build() {
+      return rules;
     }
   }
 }

@@ -4,173 +4,73 @@ import java.util.*;
 
 public class LRItem {
 
-  private Set<MarkedRule> rules;
-  private Map<Symbol, LRItem> next;
-  private Map<Symbol, Integer> nextIndex;
-  private int index;
+  Set<MarkedRule> rules;
+  Map<Symbol, LRItem> next;
+  Map<Symbol, Integer> nextIndex;
+  int index;
+  int lookAhead;
 
-  public LRItem(Set<MarkedRule> rules) {
-    this.rules = rules;
+  public LRItem(Set<MarkedRule> rule, Grammar g, Grammar.FirstSymbols firsts, int lookAhead) {
+    this.lookAhead = lookAhead;
+    this.rules = closure(rule, g, firsts);
     this.next = new HashMap<>();
     this.nextIndex = new HashMap<>();
   }
 
-  /*
-  public static Set<MarkedRule> closure(MarkedRule start, Rules rules) {
+  public static Set<MarkedRule> closure(MarkedRule start, Grammar grammar, Grammar.FirstSymbols first) {
     Set<MarkedRule> seed = new HashSet<>();
     seed.add(start);
-    return closure(seed, rules);
-  }
-  */
-
-  public static Set<MarkedRule> closure(MarkedRule start, Grammar grammar) {
-    Set<MarkedRule> seed = new HashSet<>();
-    seed.add(start);
-    return closure(seed, grammar);
+    return closure(seed, grammar, first);
   }
 
-  /*
-  public static Set<MarkedRule> closure(Set<MarkedRule> seed, Rules rules) {
+  public static Set<MarkedRule> closure(Set<MarkedRule> seed, Grammar grammar, Grammar.FirstSymbols first) {
     Set<MarkedRule> markedRules = new HashSet<>();
     List<MarkedRule> toVisit = new ArrayList<>();
     markedRules.addAll(seed);
-    toVisit.addAll(markedRules);
+    toVisit.addAll(seed);
     while (!toVisit.isEmpty()) {
       MarkedRule markedRule = toVisit.remove(toVisit.size() - 1);
       Optional<Symbol> symbol = markedRule.getSymbolAtIndex();
-      if (symbol.isPresent() && !symbol.get().isTerminal()) {
-        List<Rule> nextRules = rules.getRulesForNonTerminal(symbol.get().getNonTerminal());
-        for (Rule nextRule : nextRules) {
-          MarkedRule nextMarkedRule = new MarkedRule(nextRule, 0);
-          if (!markedRules.contains(nextMarkedRule)) {
-            markedRules.add(nextMarkedRule);
-            toVisit.add(nextMarkedRule);
-          }
-        }
+      if (!symbol.isPresent() || grammar.isTerminal(symbol.get())) {
+        continue;
       }
-    }
-    return markedRules;
-  }
-*/
-
-  public static Set<MarkedRule> closure(Set<MarkedRule> seed, Grammar grammar) {
-    Set<MarkedRule> markedRules = new HashSet<>();
-    List<MarkedRule> toVisit = new ArrayList<>();
-    markedRules.addAll(seed);
-    toVisit.addAll(markedRules);
-    while (!toVisit.isEmpty()) {
-      MarkedRule markedRule = toVisit.remove(toVisit.size() - 1);
-      Optional<Symbol> symbol = markedRule.getSymbolAtIndex();
-      if (symbol.isPresent() && !grammar.isTerminal(symbol.get())) {
-        List<Rule> nextRules = grammar.get(symbol.get());
-        for (Rule nextRule : nextRules) {
-          MarkedRule nextMarkedRule = new MarkedRule(nextRule, 0);
-          if (!markedRules.contains(nextMarkedRule)) {
-            markedRules.add(nextMarkedRule);
-            toVisit.add(nextMarkedRule);
+      Set<Symbol> lookAheads = firstBetaA(markedRule, grammar, first);
+      List<Rule> nextRules = grammar.get(symbol.get());
+      for (Rule nextRule : nextRules) {
+        for (Symbol lookAhead : lookAheads) {
+          MarkedRule nextMarkedRule = new MarkedRule(nextRule, 0, lookAhead);
+          if (markedRules.contains(nextMarkedRule)) {
+            continue;
           }
+          markedRules.add(nextMarkedRule);
+          toVisit.add(nextMarkedRule);
         }
       }
     }
     return markedRules;
   }
 
-  /*
-  public static LRParser makeItemGraph(Rules rules) {
-    Rule start = rules.getStart();
-    MarkedRule markedStart = new MarkedRule(start, 0);
-    LRItem startItem = new LRItem(closure(markedStart, rules));
-    Map<LRItem, Integer> itemMap = new HashMap<>();
-    List<LRItem> items = new ArrayList<>();
-    List<LRItem> queue = new ArrayList<>();
-    queue.add(startItem);
-    items.add(startItem);
-    while (!queue.isEmpty()) {
-      LRItem item = queue.remove(queue.size() - 1);
-      Map<Symbol, Set<MarkedRule>> nexts = new HashMap<>();
-      for (MarkedRule rule : item.rules) {
-        Optional<Symbol> optSymbol = rule.getSymbolAtIndex();
-        if (!optSymbol.isPresent()) {
-          continue;
-        }
-        Symbol symbol = optSymbol.get();
-        MarkedRule nextRule = new MarkedRule(rule.getRule(), rule.getIndex() + 1);
-        if (nexts.containsKey(symbol)) {
-          nexts.get(symbol).add(nextRule);
-        } else {
-          Set<MarkedRule> n = new HashSet();
-          n.add(nextRule);
-          nexts.put(symbol, n);
-        }
+  private static Set<Symbol> firstBetaA(MarkedRule markedRule, Grammar grammar, Grammar.FirstSymbols first) {
+    Set<Symbol> lookAheads = new HashSet<>();
+    List<Symbol> markedRuleSymbols = markedRule.getRule().getSymbols();
+    int i = markedRule.getIndex() + 1;
+    while (i < markedRuleSymbols.size()) {
+      Symbol betai = markedRuleSymbols.get(i);
+      if (grammar.isTerminal(betai)) {
+        lookAheads.add(betai);
+        break;
       }
-
-      for (Map.Entry<Symbol, Set<MarkedRule>> entry : nexts.entrySet()) {
-        LRItem nextItem = new LRItem(closure(entry.getValue(), rules));
-        int nextItemIndex = 0;
-        if (itemMap.containsKey(nextItem)) {
-          nextItemIndex = itemMap.get(nextItem);
-          nextItem = items.get(nextItemIndex);
-        } else {
-          nextItemIndex = items.size();
-          items.add(nextItem);
-          queue.add(nextItem);
-          itemMap.put(nextItem, nextItemIndex);
-        }
-        item.next.put(entry.getKey(), nextItem);
-        item.nextIndex.put(entry.getKey(), nextItemIndex);
-        nextItem.index = nextItemIndex;
+      lookAheads.addAll(first.getFirstTerminals(betai));
+      if (!first.getEpsilons().contains(betai)) {
+        break;
       }
+      i++;
     }
-    return new LRParser(startItem, items);
-  }
-*/
-
-  public static LRParser makeItemGraph(Grammar grammar) {
-    Rule start = grammar.getAugmentedStartRule();
-    MarkedRule markedStart = new MarkedRule(start, 0);
-    LRItem startItem = new LRItem(closure(markedStart, grammar));
-    Map<LRItem, Integer> itemMap = new HashMap<>();
-    List<LRItem> items = new ArrayList<>();
-    List<LRItem> queue = new ArrayList<>();
-    queue.add(startItem);
-    items.add(startItem);
-    while (!queue.isEmpty()) {
-      LRItem item = queue.remove(queue.size() - 1);
-      Map<Symbol, Set<MarkedRule>> nexts = new HashMap<>();
-      for (MarkedRule rule : item.rules) {
-        Optional<Symbol> optSymbol = rule.getSymbolAtIndex();
-        if (!optSymbol.isPresent()) {
-          continue;
-        }
-        Symbol symbol = optSymbol.get();
-        MarkedRule nextRule = new MarkedRule(rule.getRule(), rule.getIndex() + 1);
-        if (nexts.containsKey(symbol)) {
-          nexts.get(symbol).add(nextRule);
-        } else {
-          Set<MarkedRule> n = new HashSet();
-          n.add(nextRule);
-          nexts.put(symbol, n);
-        }
-      }
-
-      for (Map.Entry<Symbol, Set<MarkedRule>> entry : nexts.entrySet()) {
-        LRItem nextItem = new LRItem(closure(entry.getValue(), grammar));
-        int nextItemIndex = 0;
-        if (itemMap.containsKey(nextItem)) {
-          nextItemIndex = itemMap.get(nextItem);
-          nextItem = items.get(nextItemIndex);
-        } else {
-          nextItemIndex = items.size();
-          items.add(nextItem);
-          queue.add(nextItem);
-          itemMap.put(nextItem, nextItemIndex);
-        }
-        item.next.put(entry.getKey(), nextItem);
-        item.nextIndex.put(entry.getKey(), nextItemIndex);
-        nextItem.index = nextItemIndex;
-      }
+    if (i == markedRuleSymbols.size()) {
+      lookAheads.add(markedRule.getLookAhead());
     }
-    return new LRParser(startItem, items);
+    //System.out.println("firstBetaA" + markedRule + ": " + lookAheads);
+    return lookAheads;
   }
 
   public String toString() {
@@ -199,78 +99,51 @@ public class LRItem {
     return rules.hashCode();
   }
 
-  /*
-  public LRTable.State toState(Rules rules) {
-    Map<TerminalSymbol, Rule> reduce = new HashMap<>();
-    Map<TerminalSymbol, Integer> shift = new HashMap<>();
-    Map<NonTerminalSymbol, Integer> state = new HashMap<>();
-
-    for (MarkedRule rule : this.rules) {
-      if (rule.getIndex() == rule.getRule().getSymbols().size()) {
-        if (rule.getRule() == rules.getStart()) {
-          shift.put(rules.getEof(), -1);
-        } else {
-          for (TerminalSymbol terminal : rules.getFollow(rule.getRule().getSource())) {
-            if (reduce.containsKey(terminal)) {
-              throw new RuntimeException("Reduce error constructing LR(0) table.");
-            }
-            reduce.put(terminal, rule.getRule());
-          }
-        }
-      }
-    }
-
-    for (Map.Entry<Symbol, Integer> entry : nextIndex.entrySet()) {
-      if (entry.getKey().isTerminal()) {
-        TerminalSymbol terminal = entry.getKey().getTerminal();
-        if (shift.containsKey(terminal)) {
-          throw new RuntimeException("Shift error constructing LR(0) table.");
-        }
-        shift.put(terminal, entry.getValue());
-      } else {
-        NonTerminalSymbol nonTerminal = entry.getKey().getNonTerminal();
-        if (state.containsKey(nonTerminal)) {
-          throw new RuntimeException("State error constructing LR(0) table.");
-        }
-        state.put(nonTerminal, entry.getValue());
-      }
-    }
-
-    return new LRTable.State(reduce, shift, state);
-  }
-*/
-
   public LRTable.State toState(Grammar grammar, Grammar.FollowingSymbols followingSymbols) {
     Map<Symbol, Rule> reduce = new HashMap<>();
     Map<Symbol, Integer> shift = new HashMap<>();
     Map<Symbol, Integer> state = new HashMap<>();
 
     for (MarkedRule rule : this.rules) {
-      if (rule.getIndex() == rule.getRule().getSymbols().size()) {
-        if (rule.getRule() == grammar.getAugmentedStartRule()) {
-          shift.put(grammar.getTerminals().getEof(), -1);
-        } else {
-          for (Symbol terminal : followingSymbols.getTerminals(rule.getRule().getSource())) {
-            if (reduce.containsKey(terminal)) {
-              throw new RuntimeException("Reduce error constructing LR(0) table.");
-            }
-            reduce.put(terminal, rule.getRule());
-          }
-        }
+      if (rule.getIndex() != rule.getRule().getSymbols().size()) {
+        continue;
       }
+      if (rule.getRule() == grammar.getAugmentedStartRule()) {
+        shift.put(grammar.getTerminals().getEof(), -1);
+        continue;
+      }
+      if (reduce.containsKey(rule.getLookAhead())) {
+        throw new RuntimeException("Reduce error constructing LR table.");
+      }
+      reduce.put(rule.getLookAhead(), rule.getRule());
     }
 
     for (Map.Entry<Symbol, Integer> entry : nextIndex.entrySet()) {
       if (grammar.isTerminal(entry.getKey())) {
         Symbol terminal = entry.getKey();
         if (shift.containsKey(terminal)) {
-          throw new RuntimeException("Shift error constructing LR(0) table.");
+          throw new RuntimeException("Shift error constructing LR table.");
+        }
+        if (reduce.containsKey(terminal)) {
+          StringBuilder error = new StringBuilder();
+          error.append("Shift/Reduce error while constructing LR table:\n");
+          error.append(this);
+          error.append("\n");
+          error.append("Terminal: ");
+          error.append(terminal);
+          error.append("\n");
+          error.append(String.format("Shift to state %d and consume terminal\n", entry.getValue()));
+          error.append("Reduce " + reduce.get(terminal) + "\n");
+          error.append("Defaulting to shift\n");
+          System.out.println(error);
+          reduce.remove(terminal);
+          //throw new RuntimeException(error.toString());
         }
         shift.put(terminal, entry.getValue());
       } else {
         Symbol nonTerminal = entry.getKey();
         if (state.containsKey(nonTerminal)) {
-          throw new RuntimeException("State error constructing LR(0) table.");
+          throw new RuntimeException("State error constructing LR table.");
         }
         state.put(nonTerminal, entry.getValue());
       }
