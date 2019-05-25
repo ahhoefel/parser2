@@ -1,0 +1,32 @@
+package com.github.ahhoefel.ast;
+
+import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.util.IndentedString;
+
+public class ExpressionStatement implements Statement {
+
+  private final Expression expression;
+
+  public ExpressionStatement(Expression expression) {
+    this.expression = expression;
+  }
+
+  public Expression getExpression() {
+    return expression;
+  }
+
+  public void addToSymbolCatalog(SymbolCatalog symbolCatalog) {
+    expression.setSymbolCatalog(symbolCatalog);
+  }
+
+  @Override
+  public void toIndentedString(IndentedString out) {
+    expression.toIndentedString(out);
+    out.endLine();
+  }
+
+  @Override
+  public void addToRepresentation(Representation rep) {
+    expression.addToRepresentation(rep);
+  }
+}

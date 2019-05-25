@@ -1,0 +1,9 @@
+
+func main() {
+  var x int = 1
+  var y int = f(x)
+}
+
+func f(x int) int {
+  return x + 1
+}
