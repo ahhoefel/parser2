@@ -15,11 +15,11 @@ public class LexiconTest {
     Lexicon lex = new Lexicon();
     Reader r = new CharArrayReader("foc 123 d12".toCharArray());
     List<Token> list = lex.getTokens(r);
-    Assert.assertEquals(list.get(0), new Token(lex.identifierTerminal, "foc"));
-    Assert.assertEquals(list.get(1), new Token(lex.whitespaceTerminal, " "));
-    Assert.assertEquals(list.get(2), new Token(lex.numberTerminal, "123"));
-    Assert.assertEquals(list.get(3), new Token(lex.whitespaceTerminal, " "));
-    Assert.assertEquals(list.get(4), new Token(lex.identifierTerminal, "d12"));
+    Assert.assertEquals(list.get(0), new Token(lex.identifier, "foc"));
+    Assert.assertEquals(list.get(1), new Token(lex.whitespace, " "));
+    Assert.assertEquals(list.get(2), new Token(lex.number, "123"));
+    Assert.assertEquals(list.get(3), new Token(lex.whitespace, " "));
+    Assert.assertEquals(list.get(4), new Token(lex.identifier, "d12"));
     Assert.assertEquals(list.size(), 5);
   }
 }

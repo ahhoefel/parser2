@@ -23,6 +23,8 @@ public class RangeTokenizer implements Tokenizer {
     for (int i = 97; i < 123; i++) {
       charTerminalMap[i] = chars.letter;
     }
+    charTerminalMap[123] = chars.lbrace;
+    charTerminalMap[125] = chars.rbrace;
     charTerminalMap[40] = chars.lparen;
     charTerminalMap[41] = chars.rparen;
     charTerminalMap[45] = chars.hypen;

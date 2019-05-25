@@ -4,7 +4,6 @@ import com.github.ahhoefel.*;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Lexicon {
@@ -12,9 +11,9 @@ public class Lexicon {
   private Symbol start;
   private Symbol word;
 
-  private Identifier identifier;
-  private Whitespace whitespace;
-  private Number number;
+  private Identifier identifierGrammar;
+  private Whitespace whitespaceGrammar;
+  private Number numberGrammar;
 
   private SymbolTable.TerminalTable terminals;
   private SymbolTable.NonTerminalTable nonTerminals;
@@ -23,16 +22,26 @@ public class Lexicon {
   private LRTable table;
 
   private SymbolTable.TerminalTable resultSymbols;
-  public Symbol identifierTerminal;
-  public Symbol whitespaceTerminal;
-  public Symbol numberTerminal;
-  public Symbol periodTerminal;
-  public Symbol lParenTerminal;
-  public Symbol rParenTerminal;
-  public Symbol commaTerminal;
-  public Symbol equalsTerminal;
-  public Symbol plusTerminal;
-  public Symbol timesTerminal;
+  public Symbol identifier;
+  public Symbol whitespace;
+  public Symbol number;
+  public Symbol period;
+  public Symbol lParen;
+  public Symbol rParen;
+  public Symbol lBrace;
+  public Symbol rBrace;
+  public Symbol comma;
+  public Symbol equals;
+  public Symbol plus;
+  public Symbol times;
+
+  public Symbol forKeyword;
+  public Symbol ifKeyword;
+  public Symbol funcKeyword;
+  public Symbol varKeyword;
+  public Symbol intKeyword;
+  public Symbol boolKeyword;
+  public Symbol stringKeyword;
 
   public Lexicon() {
     terminals = new SymbolTable.TerminalTable();
@@ -40,39 +49,55 @@ public class Lexicon {
     chars = new CharRange(terminals);
 
     resultSymbols = new SymbolTable.TerminalTable();
-    identifierTerminal = resultSymbols.newSymbol("identifier");
-    whitespaceTerminal = resultSymbols.newSymbol("whitespace");
-    numberTerminal = resultSymbols.newSymbol("number");
-    periodTerminal = resultSymbols.newSymbol("period");
-    lParenTerminal = resultSymbols.newSymbol("lparen");
-    rParenTerminal = resultSymbols.newSymbol("rparen");
-    commaTerminal = resultSymbols.newSymbol("comma");
-    equalsTerminal = resultSymbols.newSymbol("equals");
-    plusTerminal = resultSymbols.newSymbol("plus");
-    timesTerminal = resultSymbols.newSymbol("times");
+    identifier = resultSymbols.newSymbol("identifierGrammar");
+    whitespace = resultSymbols.newSymbol("whitespaceGrammar");
+    number = resultSymbols.newSymbol("numberGrammar");
+    period = resultSymbols.newSymbol("period");
+    lParen = resultSymbols.newSymbol("lparen");
+    rParen = resultSymbols.newSymbol("rparen");
+    lBrace = resultSymbols.newSymbol("lbrace");
+    rBrace = resultSymbols.newSymbol("rbrace");
+    comma = resultSymbols.newSymbol("comma");
+    equals = resultSymbols.newSymbol("equals");
+    plus = resultSymbols.newSymbol("plus");
+    times = resultSymbols.newSymbol("times");
 
-    List<Rule> rules = new ArrayList<>();
-    this.identifier = new Identifier(nonTerminals, chars, rules);
-    this.whitespace = new Whitespace(nonTerminals, chars, rules);
-    this.number = new Number(nonTerminals, chars, rules);
+    forKeyword = resultSymbols.newSymbol("for");
+    ifKeyword = resultSymbols.newSymbol("if");
+    funcKeyword = resultSymbols.newSymbol("func");
+    varKeyword = resultSymbols.newSymbol("var");
+    intKeyword = resultSymbols.newSymbol("int");
+    boolKeyword = resultSymbols.newSymbol("bool");
+    stringKeyword = resultSymbols.newSymbol("string");
+    List<Symbol> keywords = List.of(forKeyword, ifKeyword, funcKeyword, varKeyword, intKeyword, boolKeyword, stringKeyword);
+
+    Rule.Builder rules = new Rule.Builder();
+    ShiftReduceResolver resolver = new ShiftReduceResolver();
+    this.identifierGrammar = new Identifier(nonTerminals, chars, rules, resolver);
+    this.whitespaceGrammar = new Whitespace(nonTerminals, chars, rules, resolver);
+    this.numberGrammar = new Number(nonTerminals, chars, rules, resolver);
 
     start = nonTerminals.getStart();
     word = nonTerminals.newSymbol("word");
-    rules.add(new Rule(start, List.of(word, start), PrependAction.SINGLETON));
-    rules.add(new Rule(start, List.of(word), PrependAction.SINGLETON));
-    rules.add(new Rule(word, List.of(identifier.identifier), new TokenAction(identifierTerminal)));
-    rules.add(new Rule(word, List.of(whitespace.whitespace), new TokenAction(whitespaceTerminal)));
-    rules.add(new Rule(word, List.of(number.number), new TokenAction(numberTerminal)));
-    rules.add(new Rule(word, List.of(chars.period), new TokenAction(periodTerminal)));
-    rules.add(new Rule(word, List.of(chars.lparen), new TokenAction(lParenTerminal)));
-    rules.add(new Rule(word, List.of(chars.rparen), new TokenAction(rParenTerminal)));
-    rules.add(new Rule(word, List.of(chars.comma), new TokenAction(commaTerminal)));
-    rules.add(new Rule(word, List.of(chars.eq), new TokenAction(equalsTerminal)));
-    rules.add(new Rule(word, List.of(chars.times), new TokenAction(timesTerminal)));
-    rules.add(new Rule(word, List.of(chars.plus), new TokenAction(plusTerminal)));
+    rules.add(start, word, start).setAction(PrependAction.SINGLETON);
+    rules.add(start, word).setAction(PrependAction.SINGLETON);
+    rules.add(word, identifierGrammar.identifier).setAction(new TokenAction(identifier, keywords));
+    rules.add(word, whitespaceGrammar.whitespace).setAction(x -> null);
+    Rule wordIsNumber = rules.add(word, numberGrammar.number).setAction(new TokenAction(number));
+    rules.add(word, chars.period).setAction(new TokenAction(period));
+    rules.add(word, chars.lparen).setAction(new TokenAction(lParen));
+    rules.add(word, chars.rparen).setAction(new TokenAction(rParen));
+    rules.add(word, chars.lbrace).setAction(new TokenAction(lBrace));
+    rules.add(word, chars.rbrace).setAction(new TokenAction(rBrace));
+    rules.add(word, chars.comma).setAction(new TokenAction(comma));
+    rules.add(word, chars.eq).setAction(new TokenAction(equals));
+    rules.add(word, chars.times).setAction(new TokenAction(times));
+    rules.add(word, chars.plus).setAction(new TokenAction(plus));
 
-    grammar = new Grammar(terminals, nonTerminals, rules);
-    table = LRParser.getSLRTable(grammar);
+    resolver.addShiftPreference(wordIsNumber, chars.number);
+
+    grammar = new Grammar(terminals, nonTerminals, rules.build());
+    table = LRParser.getCannonicalLRTable(grammar, resolver);
   }
 
   public List<Token> getTokens(Reader r) throws IOException {

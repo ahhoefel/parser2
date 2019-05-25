@@ -8,13 +8,15 @@ public class PrependAction implements Function<Object[], Object> {
 
   @Override
   public Object apply(Object[] objects) {
+    List<Object> list;
     if (objects.length == 1) {
-      ArrayList<Object> list = new ArrayList();
-      list.add(objects[0]);
-      return list;
+      list = new ArrayList();
+    } else {
+      list = (List<Object>) objects[1];
     }
-    List<Object> list = (List<Object>) objects[1];
-    list.add(0, objects[0]);
+    if (objects[0] != null) {
+      list.add(0, objects[0]);
+    }
     return list;
   }
 

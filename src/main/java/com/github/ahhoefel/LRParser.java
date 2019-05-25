@@ -23,21 +23,23 @@ public class LRParser {
   public static LRTable getSLRTable(Grammar g) {
     Grammar.FirstSymbols first = g.first();
     List<LRItem> items = getLRItems(g, first, 0);
-    Grammar.FollowingSymbols following = g.following(first);
     List<LRTable.State> states = new ArrayList<>();
     for (LRItem item : items) {
-      states.add(item.toState(g, following));
+      states.add(item.toState(g, new ShiftReduceResolver()));
     }
     return new LRTable(states);
   }
 
   public static LRTable getCannonicalLRTable(Grammar g) {
+    return getCannonicalLRTable(g, new ShiftReduceResolver());
+  }
+
+  public static LRTable getCannonicalLRTable(Grammar g, ShiftReduceResolver r) {
     Grammar.FirstSymbols first = g.first();
     List<LRItem> items = getLRItems(g, first, 1);
-    Grammar.FollowingSymbols following = g.following(first);
     List<LRTable.State> states = new ArrayList<>();
     for (LRItem item : items) {
-      states.add(item.toState(g, following));
+      states.add(item.toState(g, r));
     }
     return new LRTable(states);
   }

@@ -43,7 +43,7 @@ public class MarkedRule {
 
   @Override
   public int hashCode() {
-    return 31 * rule.hashCode() + index + 31 * 31 * lookAhead.hashCode();
+    return 31 * rule.hashCode() + index + 31 * 31 * (lookAhead == null ? 0 : lookAhead.hashCode());
   }
 
   public String toString() {

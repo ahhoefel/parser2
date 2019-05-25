@@ -3,6 +3,7 @@ package com.github.ahhoefel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 
 public class Rule {
@@ -37,6 +38,20 @@ public class Rule {
   public Rule setAction(Function<Object[], Object> action) {
     this.action = action;
     return this;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Rule)) {
+      return false;
+    }
+    Rule other = (Rule) o;
+    return Objects.equals(source, other.source) && Objects.equals(symbols, other.symbols);
+  }
+
+  @Override
+  public int hashCode() {
+    return source.hashCode() + 31 * symbols.hashCode();
   }
 
   public String toString() {

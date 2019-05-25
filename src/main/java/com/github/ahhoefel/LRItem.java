@@ -99,9 +99,9 @@ public class LRItem {
     return rules.hashCode();
   }
 
-  public LRTable.State toState(Grammar grammar, Grammar.FollowingSymbols followingSymbols) {
-    Map<Symbol, Rule> reduce = new HashMap<>();
-    Map<Symbol, Integer> shift = new HashMap<>();
+  public LRTable.State toState(Grammar grammar, ShiftReduceResolver resolver) {
+    Map<Symbol, List<Rule>> reduces = new HashMap<>();
+    Map<Symbol, List<Integer>> shifts = new HashMap<>();
     Map<Symbol, Integer> state = new HashMap<>();
 
     for (MarkedRule rule : this.rules) {
@@ -109,37 +109,19 @@ public class LRItem {
         continue;
       }
       if (rule.getRule() == grammar.getAugmentedStartRule()) {
-        shift.put(grammar.getTerminals().getEof(), -1);
+        shifts.putIfAbsent(grammar.getTerminals().getEof(), new ArrayList<>());
+        shifts.get(grammar.getTerminals().getEof()).add(-1);
         continue;
       }
-      if (reduce.containsKey(rule.getLookAhead())) {
-        throw new RuntimeException("Reduce error constructing LR table.");
-      }
-      reduce.put(rule.getLookAhead(), rule.getRule());
+      reduces.putIfAbsent(rule.getLookAhead(), new ArrayList<>());
+      reduces.get(rule.getLookAhead()).add(rule.getRule());
     }
 
     for (Map.Entry<Symbol, Integer> entry : nextIndex.entrySet()) {
       if (grammar.isTerminal(entry.getKey())) {
         Symbol terminal = entry.getKey();
-        if (shift.containsKey(terminal)) {
-          throw new RuntimeException("Shift error constructing LR table.");
-        }
-        if (reduce.containsKey(terminal)) {
-          StringBuilder error = new StringBuilder();
-          error.append("Shift/Reduce error while constructing LR table:\n");
-          error.append(this);
-          error.append("\n");
-          error.append("Terminal: ");
-          error.append(terminal);
-          error.append("\n");
-          error.append(String.format("Shift to state %d and consume terminal\n", entry.getValue()));
-          error.append("Reduce " + reduce.get(terminal) + "\n");
-          error.append("Defaulting to shift\n");
-          System.out.println(error);
-          reduce.remove(terminal);
-          //throw new RuntimeException(error.toString());
-        }
-        shift.put(terminal, entry.getValue());
+        shifts.putIfAbsent(terminal, new ArrayList<>());
+        shifts.get(terminal).add(entry.getValue());
       } else {
         Symbol nonTerminal = entry.getKey();
         if (state.containsKey(nonTerminal)) {
@@ -149,6 +131,54 @@ public class LRItem {
       }
     }
 
+    Map<Symbol, Rule> reduce = new HashMap<>();
+    for (Map.Entry<Symbol, List<Rule>> entry : reduces.entrySet()) {
+      if (entry.getValue().size() > 1) {
+        throw new RuntimeException("Reduce error constructing LR table.");
+      }
+      reduce.put(entry.getKey(), entry.getValue().get(0));
+    }
+
+    Map<Symbol, Integer> shift = new HashMap<>();
+    for (Map.Entry<Symbol, List<Integer>> entry : shifts.entrySet()) {
+      if (entry.getValue().size() > 1) {
+        throw new RuntimeException("Shift error constructing LR table.");
+      }
+      shift.put(entry.getKey(), entry.getValue().get(0));
+    }
+
+    for (Symbol terminal : grammar.getTerminals().getSymbols()) {
+      if (!(reduce.containsKey(terminal) && shift.containsKey(terminal))) {
+        continue; // no shift reduce conflict.
+      }
+      // Resolve shift reduce conflict.
+      Rule reduceRule = reduce.get(terminal);
+      Optional<ShiftReduceResolver.Preference> pref = resolver.getPreference(reduceRule, terminal);
+      if (!pref.isPresent()) {
+        System.out.println(resolver);
+        throw new RuntimeException(shiftReduceErrorString(terminal, reduce.get(terminal)));
+      }
+      ShiftReduceResolver.Preference preference = pref.get();
+      switch (pref.get()) {
+        case SHIFT:
+          reduce.remove(terminal);
+          break;
+        case REDUCE:
+          shift.remove(terminal);
+          break;
+      }
+    }
+
     return new LRTable.State(reduce, shift, state);
+  }
+
+  private String shiftReduceErrorString(Symbol terminal, Rule reduce) {
+    StringBuilder error = new StringBuilder();
+    error.append("Shift/Reduce error while constructing LR table:\n");
+    error.append(this);
+    error.append("\n");
+    error.append(String.format("Shift and consume terminal %s\n", terminal));
+    error.append("Reduce " + reduce + "\n");
+    return error.toString();
   }
 }

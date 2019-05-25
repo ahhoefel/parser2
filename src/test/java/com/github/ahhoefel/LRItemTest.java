@@ -27,11 +27,13 @@ public class LRItemTest {
     Rule r4 = new Rule(b, List.of(z));
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
     Grammar.FirstSymbols first = grammar.first();
-    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0, null), grammar, first);
+    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0, terminals.getEof()), grammar, first);
     Assert.assertEquals(closure, Set.of(
-        new MarkedRule(r0, 0, null),
-        new MarkedRule(r1, 0, null),
-        new MarkedRule(r2, 0, null)
+        new MarkedRule(r0, 0, terminals.getEof()),
+        new MarkedRule(r1, 0, y),
+        new MarkedRule(r1, 0, z),
+        new MarkedRule(r2, 0, y),
+        new MarkedRule(r2, 0, z)
     ));
   }
 
@@ -175,7 +177,7 @@ public class LRItemTest {
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
     Rules rules = new Rules(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
     LRTable table = LRParser.getSLRTable(grammar);
-    Assert.assertEquals(12, table.state.size());
+    Assert.assertEquals(22, table.state.size());
 
     System.out.println(table);
     List<Symbol> input = List.of(n, plus, n, eof);

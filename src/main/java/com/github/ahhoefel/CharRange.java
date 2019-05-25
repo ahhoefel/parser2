@@ -9,6 +9,8 @@ public class CharRange {
   public final Symbol tab;
   public final Symbol lparen;
   public final Symbol rparen;
+  public final Symbol lbrace;
+  public final Symbol rbrace;
   public final Symbol newline;
   public final Symbol period;
   public final Symbol comma;
@@ -25,6 +27,8 @@ public class CharRange {
     tab = symbols.newSymbol("tab");
     lparen = symbols.newSymbol("lparen");
     rparen = symbols.newSymbol("rparen");
+    lbrace = symbols.newSymbol("lbrace");
+    rbrace = symbols.newSymbol("rbrace");
     newline = symbols.newSymbol("newline");
     period = symbols.newSymbol("period");
     comma = symbols.newSymbol("comma");

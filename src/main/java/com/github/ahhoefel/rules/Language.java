@@ -1,12 +1,10 @@
 package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.*;
-import com.github.ahhoefel.ir.Expression;
-import com.github.ahhoefel.ir.LiteralExpression;
-import com.github.ahhoefel.ir.ProductExpression;
-import com.github.ahhoefel.ir.SumExpression;
+import com.github.ahhoefel.ast.Declaration;
+import com.github.ahhoefel.ast.FunctionDeclaration;
+import com.github.ahhoefel.ast.RaeFile;
 
-import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
@@ -19,51 +17,50 @@ public class Language {
   private Grammar grammar;
   private LRTable table;
 
-  private Symbol expression;
-  private Symbol functionInvocation;
-  private Symbol argList;
-  private Symbol argument;
+  private FunctionRules function;
+  private ExpressionRules expression;
+  private StatementRules statement;
+  private TypeRules type;
+
+  private Symbol declarationList;
+  private Symbol declaration;
 
   public Language() {
     lex = new Lexicon();
     terminals = lex.getTerminals();
     nonTerminals = new SymbolTable.NonTerminalTable();
+    ShiftReduceResolver resolver = new ShiftReduceResolver();
 
-    expression = nonTerminals.newSymbol("expression");
-    functionInvocation = nonTerminals.newSymbol("functionInvocation");
-    argList = nonTerminals.newSymbol("argList");
-    argument = nonTerminals.newSymbol("argument");
+    declarationList = nonTerminals.newSymbol("declarationList");
+    declaration = nonTerminals.newSymbol("declaration");
 
     Rule.Builder rules = new Rule.Builder();
-    rules.add(nonTerminals.getStart(), expression).setAction(e -> e[0]);
-    rules.add(expression, lex.identifierTerminal);
-    rules.add(expression, lex.numberTerminal).setAction(e -> new LiteralExpression(e[0]));
-    rules.add(expression, expression, lex.periodTerminal, lex.identifierTerminal);
-    rules.add(expression, expression, lex.periodTerminal, functionInvocation);
-    rules.add(expression, expression, lex.plusTerminal, expression)
-        .setAction(e -> new SumExpression((Expression) e[0], (Expression) e[2]));
-    rules.add(expression, expression, lex.timesTerminal, expression)
-        .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
-    rules.add(functionInvocation, lex.identifierTerminal, lex.lParenTerminal, lex.rParenTerminal);
-    rules.add(functionInvocation, lex.identifierTerminal, lex.lParenTerminal, argList, lex.rParenTerminal);
-    rules.add(argList, argument);
-    rules.add(argList, argList, lex.commaTerminal, argument);
-    rules.add(argument, expression);
+    type = new TypeRules(rules, nonTerminals, lex);
+    expression = new ExpressionRules(rules, nonTerminals, lex, resolver);
+    statement = new StatementRules(rules, lex, nonTerminals, expression.expression);
+    function = new FunctionRules(rules, lex, nonTerminals, statement.statementList, type.type);
+
+    rules.add(nonTerminals.getStart(), declarationList)
+        .setAction(e -> e[0]);
+
+    rules.add(declarationList, declarationList, declaration).setAction(e -> ((RaeFile) e[0]).add((Declaration) e[1]));
+    rules.add(declarationList).setAction(e -> new RaeFile());
+    rules.add(declaration, function.declaration).setAction(e -> new Declaration((FunctionDeclaration) e[0]));
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
-    table = LRParser.getSLRTable(grammar);
+    table = LRParser.getCannonicalLRTable(grammar, resolver);
   }
 
-  public Expression parse(Reader r) throws IOException {
+  public RaeFile parse(Reader r) throws IOException {
     List<Token> tokens = lex.getTokens(r);
     tokens.add(new Token(terminals.getEof(), "eof"));
-    Expression t = (Expression) Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource());
-    return t;
+    return (RaeFile) Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource());
   }
 
   public static void main(String[] args) throws IOException {
     Language lang = new Language();
-    Reader r = new CharArrayReader("foo.bar(xx.yy,zz)".toCharArray());
-    System.out.println(lang.parse(r));
+    //Reader r = new CharArrayReader("foo.bar(xx.yy,zz)".toCharArray());
+    //Interpreter.run(lang.parse(r));
+    System.out.println(lang.table);
   }
 }

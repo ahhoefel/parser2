@@ -7,8 +7,6 @@ import com.github.ahhoefel.rules.Whitespace;
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ExampleC {
 
@@ -31,22 +29,21 @@ public class ExampleC {
     nonTerminals = new SymbolTable.NonTerminalTable();
     ch = new CharRange(terminals);
     statement = nonTerminals.newSymbol("statement");
-    List<Rule> rules = new ArrayList<>();
-    number = new Number(nonTerminals, ch, rules);
-    identifier = new Identifier(nonTerminals, ch, rules);
-    whitespace = new Whitespace(nonTerminals, ch, rules);
+    Rule.Builder rules = new Rule.Builder();
+    ShiftReduceResolver resolver = new ShiftReduceResolver();
+    number = new Number(nonTerminals, ch, rules, resolver);
+    identifier = new Identifier(nonTerminals, ch, rules, resolver);
+    whitespace = new Whitespace(nonTerminals, ch, rules, resolver);
 
     start = nonTerminals.getStart();
-    statements = new Rule(start, List.<Symbol>of(statement, start));
-    noStatements = new Rule(start, List.<Symbol>of());
-    rules.add(statements);
-    rules.add(noStatements);
+    statements = rules.add(start, statement, start);
+    noStatements = rules.add(start);
 
-    rules.add(new Rule(statement, List.<Symbol>of(number.number)));
-    rules.add(new Rule(statement, List.<Symbol>of(identifier.identifier)));
-    rules.add(new Rule(statement, List.<Symbol>of(whitespace.whitespace)));
+    rules.add(statement, number.number);
+    rules.add(statement, identifier.identifier);
+    rules.add(statement, whitespace.whitespace);
 
-    grammar = new Grammar(terminals, nonTerminals, rules);
+    grammar = new Grammar(terminals, nonTerminals, rules.build());
   }
 
   public static void main(String[] args) throws IOException {

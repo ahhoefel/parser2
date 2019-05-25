@@ -2,26 +2,30 @@ package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.*;
 
-import java.util.List;
-
 public class Identifier {
   public Symbol identifier;
   public Symbol identifierTail;
   public Symbol identifierHeadChar;
   public Symbol identifierTailChar;
 
-  public Identifier(SymbolTable symbols, CharRange chars, List<Rule> rules) {
+  public Identifier(SymbolTable symbols, CharRange chars, Rule.Builder rules, ShiftReduceResolver resolver) {
     identifier = symbols.newSymbol("identifier");
     identifierTail = symbols.newSymbol("identifierTail");
     identifierHeadChar = symbols.newSymbol("identifierHeadChar");
     identifierTailChar = symbols.newSymbol("identifierTailChar");
 
     ConcatAction concat = ConcatAction.SINGLETON;
-    rules.add(new Rule(identifier, List.of(identifierHeadChar, identifierTail), concat));
-    rules.add(new Rule(identifierTail, List.of(identifierTailChar, identifierTail), concat));
-    rules.add(new Rule(identifierTail, List.of(identifierTailChar), concat));
-    rules.add(new Rule(identifierHeadChar, List.of(chars.letter), concat));
-    rules.add(new Rule(identifierTailChar, List.of(chars.letter), concat));
-    rules.add(new Rule(identifierTailChar, List.of(chars.number), concat));
+    Rule singleLetterIdentifier = rules.add(identifier, identifierHeadChar).setAction(concat);
+    rules.add(identifier, identifierHeadChar, identifierTail).setAction(concat);
+    rules.add(identifierTail, identifierTailChar, identifierTail).setAction(concat);
+    Rule identifierTailToChar = rules.add(identifierTail, identifierTailChar).setAction(concat);
+    rules.add(identifierHeadChar, chars.letter).setAction(concat);
+    rules.add(identifierTailChar, chars.letter).setAction(concat);
+    rules.add(identifierTailChar, chars.number).setAction(concat);
+
+    resolver.addShiftPreference(identifierTailToChar, chars.letter);
+    resolver.addShiftPreference(identifierTailToChar, chars.number);
+    resolver.addShiftPreference(singleLetterIdentifier, chars.letter);
+    resolver.addShiftPreference(singleLetterIdentifier, chars.number);
   }
 }
