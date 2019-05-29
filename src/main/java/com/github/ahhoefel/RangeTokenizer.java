@@ -25,16 +25,17 @@ public class RangeTokenizer implements Tokenizer {
     }
     charTerminalMap[123] = chars.lbrace;
     charTerminalMap[125] = chars.rbrace;
-    charTerminalMap[40] = chars.lparen;
-    charTerminalMap[41] = chars.rparen;
-    charTerminalMap[45] = chars.hypen;
     charTerminalMap[32] = chars.space;
     charTerminalMap[9] = chars.tab;
     charTerminalMap[10] = chars.newline;
-    charTerminalMap[46] = chars.period;
+    charTerminalMap[40] = chars.lparen;
+    charTerminalMap[41] = chars.rparen;
     charTerminalMap[42] = chars.times;
     charTerminalMap[43] = chars.plus;
     charTerminalMap[44] = chars.comma;
+    charTerminalMap[45] = chars.hypen;
+    charTerminalMap[46] = chars.period;
+    charTerminalMap[47] = chars.forwardSlash;
     charTerminalMap[61] = chars.eq;
   }
 

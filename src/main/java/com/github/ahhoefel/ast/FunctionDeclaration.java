@@ -4,29 +4,51 @@ import com.github.ahhoefel.Token;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.ir.operation.CommentOp;
 import com.github.ahhoefel.ir.operation.DestinationOp;
+import com.github.ahhoefel.ir.operation.GotoRegisterOp;
 import com.github.ahhoefel.ir.operation.PopOp;
 import com.github.ahhoefel.util.IndentedString;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-public class FunctionDeclaration {
+/**
+ * Calling conventions.
+ * <p>
+ * FunctionInvocation:
+ * - store all local variables to the stack.
+ * - put return pointer on the stack
+ * - put all parameters on the stack.
+ * <p>
+ * FunctionDeclaration:
+ * - pop all parameters into registers
+ * - execute body
+ * Return statement:
+ * - pop return pointer
+ * - push return values
+ * <p>
+ * FunctionInvocation at return pointer:
+ * - pop return values into registers
+ * -
+ */
+public class FunctionDeclaration implements Declaration {
 
   private String name;
-  private List<Parameter> parameterList;
+  private List<VariableDeclaration> parameters;
   private Block statements;
   private Label label;
   private SymbolCatalog symbols;
+  private Optional<Type> returnType;
+  private Register returnLabelRegister;
 
-  public FunctionDeclaration(Token name, List<Parameter> parameterList, Optional<Type> returnType, Block statements) {
+  public FunctionDeclaration(Token name, List<VariableDeclaration> parameters, Optional<Type> returnType, Block statements) {
     this.name = name.getValue();
-    this.parameterList = parameterList;
+    this.parameters = parameters;
     this.statements = statements;
     this.label = new Label();
-
+    this.returnType = returnType;
+    this.returnLabelRegister = new Register();
   }
 
   public String getName() {
@@ -37,28 +59,36 @@ public class FunctionDeclaration {
     return label;
   }
 
+  public void setSymbolCatalog(SymbolCatalog parent) {
+    parent.addFunction(this);
+    this.symbols = new SymbolCatalog(name, parent, true);
+    for (VariableDeclaration param : parameters) {
+      symbols.addVariable(param);
+    }
+    this.statements.setSymbolCatalog(symbols);
+  }
+
   public void addToRepresentation(Representation rep) {
-    Map<String, Register> variables = new HashMap<>();
-    for (int i = 0; i < parameterList.size(); i++) {
-      Parameter param = parameterList.get(i);
-      Register reg = new Register();
-      variables.put(param.name, reg);
-      if (i == 0) {
-        Label label = symbols.getFunction(name).getLabel();
-        rep.add(new DestinationOp(label));
-      }
-      rep.add(new PopOp(reg));
+    rep.add(new CommentOp("func " + name));
+    rep.add(new DestinationOp(label));
+    for (VariableDeclaration param : parameters) {
+      rep.add(new PopOp(param.getRegister()));
     }
     statements.addToRepresentation(rep);
+    if (!returnType.isPresent()) {
+      rep.add(new PopOp(returnLabelRegister));
+      rep.add(new GotoRegisterOp(returnLabelRegister));
+    }
+    rep.add(new CommentOp("end func " + name));
   }
 
   public void toIndentedString(IndentedString out) {
     out.add("func ");
     out.add(name);
     out.add("(");
-    for (int i = 0; i < parameterList.size(); i++) {
-      parameterList.get(i).toIndentedString(out);
-      if (i != parameterList.size() - 1) {
+    for (int i = 0; i < parameters.size(); i++) {
+      out.add(parameters.get(i).toString());
+      if (i != parameters.size() - 1) {
         out.add(", ");
       }
     }
@@ -66,5 +96,11 @@ public class FunctionDeclaration {
     out.endLine();
     statements.toIndentedString(out.indent());
     out.addLine("}");
+  }
+
+  @Override
+  public RaeFile addToFile(RaeFile file) {
+    file.addFunction(this);
+    return file;
   }
 }

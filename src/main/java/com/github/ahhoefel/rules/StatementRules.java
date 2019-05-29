@@ -10,7 +10,7 @@ public class StatementRules {
 
   public Symbol statementList;
 
-  public StatementRules(Rule.Builder rules, Lexicon lex, SymbolTable.NonTerminalTable nonTerminals, Symbol expression) {
+  public StatementRules(Rule.Builder rules, Lexicon lex, SymbolTable.NonTerminalTable nonTerminals, Symbol expression, Symbol type) {
 
     statementList = nonTerminals.newSymbol("statementList");
     Symbol statement = nonTerminals.newSymbol("statement");
@@ -41,9 +41,12 @@ public class StatementRules {
     // Assignment statement
     rules.add(statement, lvalue, lex.equals, expression)
         .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2]));
-    rules.add(lvalue, lex.varKeyword, lex.identifier, lex.identifier).setAction(e -> LValue.withDeclaration((Token) e[1], (Token) e[2]));
+    rules.add(lvalue, lex.varKeyword, lex.identifier, type).setAction(e -> LValue.withDeclaration((Token) e[1], (Type) e[2]));
     rules.add(lvalue, lex.identifier).setAction(e -> new LValue((Token) e[0]));
 
+    // Return statement
+    rules.add(statement, lex.returnKeyword, expression)
+        .setAction(e -> new ReturnStatement((Expression) e[1]));
     rules.add(statement, expression)
         .setAction(e -> new ExpressionStatement((Expression) e[0]));
   }

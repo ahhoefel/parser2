@@ -2,7 +2,6 @@ package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.*;
 import com.github.ahhoefel.ast.Declaration;
-import com.github.ahhoefel.ast.FunctionDeclaration;
 import com.github.ahhoefel.ast.RaeFile;
 
 import java.io.IOException;
@@ -21,6 +20,7 @@ public class Language {
   private ExpressionRules expression;
   private StatementRules statement;
   private TypeRules type;
+  private ImportRules imp0rt;
 
   private Symbol declarationList;
   private Symbol declaration;
@@ -37,15 +37,17 @@ public class Language {
     Rule.Builder rules = new Rule.Builder();
     type = new TypeRules(rules, nonTerminals, lex);
     expression = new ExpressionRules(rules, nonTerminals, lex, resolver);
-    statement = new StatementRules(rules, lex, nonTerminals, expression.expression);
+    statement = new StatementRules(rules, lex, nonTerminals, expression.expression, type.type);
     function = new FunctionRules(rules, lex, nonTerminals, statement.statementList, type.type);
+    imp0rt = new ImportRules(rules, lex, nonTerminals);
 
     rules.add(nonTerminals.getStart(), declarationList)
         .setAction(e -> e[0]);
 
-    rules.add(declarationList, declarationList, declaration).setAction(e -> ((RaeFile) e[0]).add((Declaration) e[1]));
+    rules.add(declarationList, declarationList, declaration).setAction(e -> ((Declaration) e[1]).addToFile((RaeFile) e[0]));
     rules.add(declarationList).setAction(e -> new RaeFile());
-    rules.add(declaration, function.declaration).setAction(e -> new Declaration((FunctionDeclaration) e[0]));
+    rules.add(declaration, function.declaration).setAction(e -> e[0]);
+    rules.add(declaration, imp0rt.imp0rt).setAction(e -> e[0]);
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
     table = LRParser.getCannonicalLRTable(grammar, resolver);

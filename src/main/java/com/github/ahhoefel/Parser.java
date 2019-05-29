@@ -69,7 +69,7 @@ public class Parser<T> {
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
       LRTable.State state = table.state.get(symbolState.stateIndex);
-      System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
+      // System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
       if (state.shift.containsKey(nextSymbol)) {
         if (state.shift.get(nextSymbol) == -1) {
           break;

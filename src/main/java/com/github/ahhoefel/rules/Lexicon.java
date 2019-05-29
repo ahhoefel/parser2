@@ -34,6 +34,7 @@ public class Lexicon {
   public Symbol equals;
   public Symbol plus;
   public Symbol times;
+  public Symbol forwardSlash;
 
   public Symbol forKeyword;
   public Symbol ifKeyword;
@@ -42,6 +43,8 @@ public class Lexicon {
   public Symbol intKeyword;
   public Symbol boolKeyword;
   public Symbol stringKeyword;
+  public Symbol returnKeyword;
+  public Symbol importKeyword;
 
   public Lexicon() {
     terminals = new SymbolTable.TerminalTable();
@@ -61,6 +64,7 @@ public class Lexicon {
     equals = resultSymbols.newSymbol("equals");
     plus = resultSymbols.newSymbol("plus");
     times = resultSymbols.newSymbol("times");
+    forwardSlash = resultSymbols.newSymbol("forwardSlash");
 
     forKeyword = resultSymbols.newSymbol("for");
     ifKeyword = resultSymbols.newSymbol("if");
@@ -69,7 +73,9 @@ public class Lexicon {
     intKeyword = resultSymbols.newSymbol("int");
     boolKeyword = resultSymbols.newSymbol("bool");
     stringKeyword = resultSymbols.newSymbol("string");
-    List<Symbol> keywords = List.of(forKeyword, ifKeyword, funcKeyword, varKeyword, intKeyword, boolKeyword, stringKeyword);
+    returnKeyword = resultSymbols.newSymbol("return");
+    importKeyword = resultSymbols.newSymbol("import");
+    List<Symbol> keywords = List.of(forKeyword, ifKeyword, funcKeyword, varKeyword, intKeyword, boolKeyword, stringKeyword, returnKeyword, importKeyword);
 
     Rule.Builder rules = new Rule.Builder();
     ShiftReduceResolver resolver = new ShiftReduceResolver();
@@ -93,6 +99,7 @@ public class Lexicon {
     rules.add(word, chars.eq).setAction(new TokenAction(equals));
     rules.add(word, chars.times).setAction(new TokenAction(times));
     rules.add(word, chars.plus).setAction(new TokenAction(plus));
+    rules.add(word, chars.forwardSlash).setAction(new TokenAction(forwardSlash));
 
     resolver.addShiftPreference(wordIsNumber, chars.number);
 

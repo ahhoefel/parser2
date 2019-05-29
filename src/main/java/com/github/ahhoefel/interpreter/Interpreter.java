@@ -41,10 +41,15 @@ public class Interpreter {
     System.out.println(file.representation());
 
     System.out.println("Starting execution.");
-    while (context.getIndex() < rep.size()) {
+    while (!context.isStopped()) {
+      if (context.getIndex() >= rep.size()) {
+        System.out.println("Ran off the end of the code.");
+        break;
+      }
       Operation op = rep.getOperation(context.getIndex());
-      System.out.println(String.format("%d: %s", context.getIndex(), op));
+      System.out.print(String.format("%d: %s # ", context.getIndex(), op));
       op.run(context);
+      System.out.println();
       context.incrementIndex();
     }
   }

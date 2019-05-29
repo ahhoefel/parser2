@@ -36,9 +36,6 @@ public class VariableExpression implements Expression {
   @Override
   public void addToRepresentation(Representation rep) {
     VariableDeclaration variable = symbols.getVariable(identifier);
-    if (variable == null) {
-      throw new RuntimeException(String.format("Variable %s not declared", identifier));
-    }
     rep.add(new SetOp(variable.getRegister(), register));
   }
 

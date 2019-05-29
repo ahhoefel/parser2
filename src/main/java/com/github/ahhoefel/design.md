@@ -35,3 +35,58 @@ Language ideas.
 - Concatenating strings must be fast and easy. Mutable strings are supported through arrays.
 - go style duck typed interfaces.
 
+
+Scoping
+
+func foo(x int) {
+  var y int
+  func bar (z int) int {
+     var y int // allowed because y is not in scope.
+     func yolo() { } // new function in bar scope
+     foo(z) // allowed because foo is in scope.
+     biz() // allowed? is biz declared statically within foo?
+  }
+  func biz () {
+     func yolo() { } // new function in biz scope. Doesn't conflict with yolo from bar.
+     func bar() { // not allowed. Can't redeclare bar in foo.
+     }
+     func yolo() {
+
+     }
+  }
+  func pho() {} // not allowed. Can't redeclare in the file scope.
+  if x {
+    var y // not allowed. Can't redefine a variable in the same scope.
+    var w
+  }
+  if x {
+    var w // allowed because the previous declaration is an inner scope.
+  }
+  w = 1 // not allowed. because w is not longer in scope.
+}
+
+func pho() {
+  bar() // not allowed because bar is not in scope.
+}
+
+scope file
+  func foo
+  func pho
+  scope foo
+    func bar
+    func biz
+    var y
+    scope bar
+      func yolo
+    scope biz
+      func yolo
+    scope if
+      var w
+    scope if
+      var w
+
+  pho
+
+Unique names
+
+

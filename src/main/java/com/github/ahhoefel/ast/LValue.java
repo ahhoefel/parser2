@@ -37,10 +37,10 @@ public class LValue {
     return symbols.getVariable(identifier).getRegister();
   }
 
-  public static LValue withDeclaration(Token identifer, Token type) {
+  public static LValue withDeclaration(Token identifer, Type type) {
     LValue v = new LValue(identifer);
     v.declaration = true;
-    v.type = Type.getType(type.getValue());
+    v.type = type;
     return v;
   }
 

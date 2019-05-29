@@ -22,9 +22,12 @@ public class Representation {
 
   public String toString() {
     StringBuilder builder = new StringBuilder();
+    int i = 0;
     for (Operation op : operations) {
+      builder.append(i).append(": ");
       builder.append(op);
       builder.append('\n');
+      i++;
     }
     return builder.toString();
   }

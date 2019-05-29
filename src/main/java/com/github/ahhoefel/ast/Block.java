@@ -13,7 +13,6 @@ public class Block {
 
   public Block() {
     this.statements = new ArrayList<>();
-    this.symbols = new SymbolCatalog();
   }
 
   public Statement get(int i) {
@@ -26,7 +25,13 @@ public class Block {
 
   public void add(Statement statement) {
     this.statements.add(statement);
-    statement.addToSymbolCatalog(symbols);
+  }
+
+  public void setSymbolCatalog(SymbolCatalog symbols) {
+    this.symbols = symbols;
+    for (Statement statement : statements) {
+      statement.addToSymbolCatalog(symbols);
+    }
   }
 
   public void addToRepresentation(Representation rep) {

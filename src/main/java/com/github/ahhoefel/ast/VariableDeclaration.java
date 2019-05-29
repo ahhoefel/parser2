@@ -8,6 +8,12 @@ public class VariableDeclaration {
   private Type type;
   private Register register;
 
+  public VariableDeclaration(String name, Type type) {
+    this.name = name;
+    this.type = type;
+    this.register = new Register();
+  }
+
   public VariableDeclaration(LValue value) {
     if (!value.isDeclaration()) {
       throw new RuntimeException("Variable declarations can only be made from LValues that are declarations.");

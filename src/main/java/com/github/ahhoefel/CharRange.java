@@ -17,6 +17,7 @@ public class CharRange {
   public final Symbol eq;
   public final Symbol plus;
   public final Symbol times;
+  public final Symbol forwardSlash;
   public final Symbol unknown;
 
   public CharRange(SymbolTable symbols) {
@@ -35,6 +36,7 @@ public class CharRange {
     eq = symbols.newSymbol("equals");
     plus = symbols.newSymbol("plus");
     times = symbols.newSymbol("times");
+    forwardSlash = symbols.newSymbol("forwardSlash");
     unknown = symbols.newSymbol("unknown");
   }
 }
