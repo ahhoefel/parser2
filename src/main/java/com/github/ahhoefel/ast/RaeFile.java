@@ -15,15 +15,15 @@ import java.util.List;
 public class RaeFile {
 
   private SymbolCatalog symbols;
-  private List<Import> imports;
+  private ImportCatalog imports;
   private List<FunctionDeclaration> functions;
   private Register endLabelRegister;
   private Label endLabel;
 
   public RaeFile() {
-    imports = new ArrayList<>();
+    imports = new ImportCatalog();
     functions = new ArrayList<>();
-    symbols = new SymbolCatalog("file", false);
+    symbols = new SymbolCatalog("file", imports, false);
     endLabelRegister = new Register();
     endLabel = new Label();
   }
@@ -66,9 +66,7 @@ public class RaeFile {
   }
 
   public void toIndentedString(IndentedString s) {
-    for (Import i : imports) {
-      i.toIndentedString(s);
-    }
+    imports.toIndentedString(s);
     s.endLine();
     for (FunctionDeclaration f : functions) {
       f.toIndentedString(s);
@@ -76,7 +74,11 @@ public class RaeFile {
     }
   }
 
-  public List<Import> getImports() {
+  public ImportCatalog getImports() {
     return imports;
+  }
+
+  public void linkImports(FileTree.TargetMap map) {
+    imports.linkImports(map);
   }
 }

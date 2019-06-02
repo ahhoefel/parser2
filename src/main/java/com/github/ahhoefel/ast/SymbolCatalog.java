@@ -5,23 +5,25 @@ import java.util.*;
 public class SymbolCatalog {
 
   private Optional<SymbolCatalog> parent;
+  private ImportCatalog imports;
   private Map<String, FunctionDeclaration> functions;
   private Map<String, VariableDeclaration> variables;
   private List<VariableDeclaration> orderedVariables;
   private String scopeName;
   private boolean functionDeclaration;
 
-  public SymbolCatalog(String scopeName, boolean functionDeclaration) {
+  public SymbolCatalog(String scopeName, ImportCatalog imports, boolean functionDeclaration) {
     this.scopeName = scopeName;
     this.functionDeclaration = functionDeclaration;
     functions = new HashMap<>();
     variables = new HashMap<>();
     parent = Optional.empty();
+    this.imports = imports;
     orderedVariables = new ArrayList<>();
   }
 
   public SymbolCatalog(String scopeName, SymbolCatalog parent, boolean functionDeclaration) {
-    this(scopeName, functionDeclaration);
+    this(scopeName, parent.imports, functionDeclaration);
     this.parent = Optional.ofNullable(parent);
   }
 
@@ -95,6 +97,10 @@ public class SymbolCatalog {
     }
 
     return null;
+  }
+
+  public SymbolCatalog getImport(String shortName) {
+    return this.imports.get(shortName).getSymbols();
   }
 
   public void toStringBuilder(StringBuilder builder) {

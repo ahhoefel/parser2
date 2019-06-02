@@ -1,0 +1,6 @@
+import foo
+
+func main() {
+  var x int = 2
+  var y int = foo.bar(x)
+}

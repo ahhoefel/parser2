@@ -39,4 +39,9 @@ public class VariableExpression implements Expression {
     rep.add(new SetOp(variable.getRegister(), register));
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
+
 }

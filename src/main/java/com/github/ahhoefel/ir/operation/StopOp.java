@@ -10,6 +10,10 @@ public class StopOp implements Operation {
     this.message = message;
   }
 
+  public String toString() {
+    return String.format("STOP %s", message);
+  }
+
   @Override
   public void run(Context context) {
     context.stop(message);

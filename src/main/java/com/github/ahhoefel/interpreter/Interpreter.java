@@ -1,6 +1,8 @@
 package com.github.ahhoefel.interpreter;
 
+import com.github.ahhoefel.ast.FileTree;
 import com.github.ahhoefel.ast.RaeFile;
+import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.rules.Language;
@@ -11,8 +13,9 @@ import java.io.IOException;
 public class Interpreter {
 
   public static void main(String[] args) throws IOException {
-    readFile(args[0]);
+    runTarget(args[0]);
   }
+
 /*
   public static void interactiveTerminal() throws IOException {
     Language lang = new Language();
@@ -34,13 +37,16 @@ public class Interpreter {
     System.out.println("Reading from \"" + fileName + "\"");
     Language lang = new Language();
     FileReader reader = new FileReader(fileName);
-    Context context = new Context();
     RaeFile file = lang.parse(reader);
     Representation rep = file.representation();
     System.out.print(file);
     System.out.println(file.representation());
+    runRepresentation(rep);
+  }
 
+  private static void runRepresentation(Representation rep) {
     System.out.println("Starting execution.");
+    Context context = new Context();
     while (!context.isStopped()) {
       if (context.getIndex() >= rep.size()) {
         System.out.println("Ran off the end of the code.");
@@ -52,5 +58,13 @@ public class Interpreter {
       System.out.println();
       context.incrementIndex();
     }
+    System.out.println(context.getStopMessage().get());
+  }
+
+  public static void runTarget(String targetString) throws IOException {
+    Target target = new Target(targetString);
+    FileTree tree = FileTree.fromTarget(target);
+    Representation rep = tree.representation(target);
+    runRepresentation(rep);
   }
 }

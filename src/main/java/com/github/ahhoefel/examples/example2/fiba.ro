@@ -1,0 +1,25 @@
+
+import b fibb
+
+func fib(n int) int {
+ var x int = 1
+ var y int = 1
+ if n + (-1) {
+   x = b.fib(n + (-1))
+   if n + (-2) {
+     y = b.fib(n + (-2))
+   }
+ }
+ return x + y
+}
+
+func count(n int) int {
+ if n {
+   return 2 + b.count(n + (-1))
+ }
+ return 2
+}
+
+func main() {
+  var z int = count(8)
+}

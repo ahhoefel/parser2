@@ -6,6 +6,7 @@ public class Import implements Declaration {
 
   private String shortName;
   private String path;
+  private SymbolCatalog symbols;
 
   public Import(String shortName, String path) {
     this.shortName = shortName;
@@ -13,7 +14,8 @@ public class Import implements Declaration {
   }
 
   public Import(String path) {
-    shortName = path.substring(path.lastIndexOf('/'));
+    int index = path.lastIndexOf('/');
+    shortName = index == -1 ? path : path.substring(index);
     this.path = path;
   }
 
@@ -29,5 +31,22 @@ public class Import implements Declaration {
 
   public Target getTarget(String base) {
     return new Target(base, path);
+  }
+
+  public String getShortName() {
+    return shortName;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public void link(FileTree.TargetMap map) {
+    RaeFile f = map.get(path);
+    symbols = f.getSymbols();
+  }
+
+  public SymbolCatalog getSymbols() {
+    return symbols;
   }
 }

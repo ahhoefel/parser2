@@ -19,19 +19,25 @@ public class ExpressionRules {
     argList = nonTerminals.newSymbol("argList");
     argument = nonTerminals.newSymbol("argument");
 
-    rules.add(expression, lex.identifier)
+    Rule identifierRule = rules.add(expression, lex.identifier)
         .setAction(e -> new VariableExpression((Token) e[0]));
     rules.add(expression, lex.number).setAction(e -> new LiteralExpression((Token) e[0]));
     rules.add(expression, functionInvocation).setAction(e -> e[0]);
-    rules.add(expression, expression, lex.period, lex.identifier)
+    Rule memberAccessRule = rules.add(expression, expression, lex.period, lex.identifier)
         .setAction(e -> new MemberAccessExpression((Expression) e[0], (Token) e[2]));
     rules.add(expression, expression, lex.period, functionInvocation)
-        .setAction(e -> new MethodInvocationExpression((Expression) e[0], (FunctionInvocationExpression) e[2]));
+        .setAction(e -> {
+          FunctionInvocationExpression fn = (FunctionInvocationExpression) e[2];
+          fn.setImplicitArg((Expression) e[0]);
+          return fn;
+        });
     Rule plus = rules.add(expression, expression, lex.plus, expression)
         .setAction(e -> new SumExpression((Expression) e[0], (Expression) e[2]));
     Rule times = rules.add(expression, expression, lex.times, expression)
         .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
-    rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen)
+    Rule paren = rules.add(expression, lex.lParen, expression, lex.rParen)
+        .setAction(e -> e[1]);
+    Rule fn = rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen)
         .setAction(e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>()));
     rules.add(functionInvocation, lex.identifier, lex.lParen, argList, lex.rParen)
         .setAction(e -> new FunctionInvocationExpression((Token) e[0], (List<Expression>) e[2]));
@@ -55,6 +61,8 @@ public class ExpressionRules {
     resolver.addShiftPreference(plus, lex.period);
     resolver.addReducePreference(plus, lex.plus);
     resolver.addShiftPreference(plus, lex.times);
+    resolver.addShiftPreference(identifierRule, lex.lParen);
+    resolver.addShiftPreference(memberAccessRule, lex.lParen);
 
   }
 }

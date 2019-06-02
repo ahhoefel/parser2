@@ -9,9 +9,11 @@ import com.github.ahhoefel.util.IndentedString;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 public class FunctionInvocationExpression implements Expression {
 
+  private Optional<Expression> implicitArg;
   private List<Expression> args;
   private String identifier;
   private Register register;
@@ -25,6 +27,11 @@ public class FunctionInvocationExpression implements Expression {
     this.register = new Register();
     this.returnLabelRegister = new Register();
     this.returnLabel = new Label();
+    this.implicitArg = Optional.empty();
+  }
+
+  public void setImplicitArg(Expression implicitArg) {
+    this.implicitArg = Optional.of(implicitArg);
   }
 
   @Override
@@ -55,6 +62,16 @@ public class FunctionInvocationExpression implements Expression {
 
   @Override
   public void addToRepresentation(Representation rep) {
+    SymbolCatalog catalog = symbols;
+    if (implicitArg.isPresent()) {
+      if (!(implicitArg.get() instanceof VariableExpression)) {
+        throw new RuntimeException("Calling functions on expression not implemented.");
+      }
+      // Treating the variable expression as a package.
+      VariableExpression pkg = (VariableExpression) implicitArg.get();
+      catalog = symbols.getImport(pkg.getIdentifier());
+    }
+
     for (Expression arg : args) {
       arg.addToRepresentation(rep);
     }
@@ -71,7 +88,7 @@ public class FunctionInvocationExpression implements Expression {
     for (Expression arg : args) {
       rep.add(new PushOp(arg.getRegister()));
     }
-    FunctionDeclaration fn = symbols.getFunction(identifier);
+    FunctionDeclaration fn = catalog.getFunction(identifier);
     rep.add(new CommentOp("Jumping to function " + identifier));
     rep.add(new GotoOp(fn.getLabel()));
     rep.add(new DestinationOp(returnLabel));

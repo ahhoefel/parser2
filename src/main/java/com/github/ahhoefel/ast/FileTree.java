@@ -9,16 +9,26 @@ import com.github.ahhoefel.rules.Language;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class FileTree {
 
-  public Map<Target, RaeFile> files;
+  public String base;
+  public Map<String, RaeFile> files;
+
+  public FileTree(String base) {
+    this.base = base;
+    files = new HashMap<>();
+  }
 
   public Representation representation(Target target) {
     Representation rep = new Representation();
-    RaeFile main = files.get(target);
+    RaeFile main = files.get(target.getSuffix());
+    if (main == null) {
+      throw new RuntimeException("Target not in tree: " + target);
+    }
     FunctionDeclaration mainFn = main.getSymbols().getFunction("main");
     mainFn.getLabel();
     Label stopLabel = new Label();
@@ -35,23 +45,40 @@ public class FileTree {
   }
 
   public static FileTree fromTarget(Target target) throws IOException {
-    FileTree tree = new FileTree();
+    String base = target.getBase();
+    FileTree tree = new FileTree(base);
     Language lang = new Language();
-    List<Target> targets = new ArrayList();
-    while (!targets.isEmpty()) {
-      Target t = targets.remove(targets.size() - 1);
+    List<String> paths = new ArrayList();
+    paths.add(target.getSuffix());
+    while (!paths.isEmpty()) {
+      String p = paths.remove(paths.size() - 1);
+      Target t = new Target(base, p);
       System.out.println("Reading target " + t);
       FileReader reader = new FileReader(t.getFilePath());
       RaeFile file = lang.parse(reader);
-      tree.files.put(t, file);
-      for (Import im : file.getImports()) {
-        Target next = im.getTarget(target.getBase());
+      tree.files.put(p, file);
+      for (Import im : file.getImports().toList()) {
+        String next = im.getPath();
         if (!tree.files.containsKey(next)) {
-          targets.add(next);
-          tree.files.put(t, null);
+          paths.add(next);
+          tree.files.put(next, null);
         }
       }
     }
+
+    for (RaeFile file : tree.files.values()) {
+      file.linkImports(tree.getTargetMap());
+    }
     return tree;
+  }
+
+  private TargetMap getTargetMap() {
+    return new TargetMap();
+  }
+
+  public class TargetMap {
+    public RaeFile get(String p) {
+      return files.get(p);
+    }
   }
 }

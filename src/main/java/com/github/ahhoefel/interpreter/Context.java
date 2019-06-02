@@ -62,4 +62,8 @@ public class Context {
   public void stop(String message) {
     stopMessage = Optional.of(message);
   }
+
+  public Optional<String> getStopMessage() {
+    return stopMessage;
+  }
 }
