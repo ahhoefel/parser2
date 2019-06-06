@@ -1,7 +1,7 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.*;
 import com.github.ahhoefel.ast.*;
+import com.github.ahhoefel.parser.*;
 
 public class StatementRules {
 

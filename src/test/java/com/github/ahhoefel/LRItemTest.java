@@ -1,5 +1,6 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -184,51 +185,4 @@ public class LRItemTest {
     Object tree = Parser.parseTerminals(table, input.iterator(), grammar.getAugmentedStartRule().getSource());
     System.out.println(tree);
   }
-/*
-  @Test
-  public void testMakeItemGraph2() {
-    NonTerminalSymbol s = new NonTerminalSymbol("S");
-    NonTerminalSymbol a = new NonTerminalSymbol("A");
-    NonTerminalSymbol b = new NonTerminalSymbol("B");
-    TerminalSymbol<String> x = new TerminalSymbol<>("x");
-    TerminalSymbol<String> y = new TerminalSymbol<>("y");
-    TerminalSymbol<String> z = new TerminalSymbol<>("z");
-    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
-    Rule r1 = new Rule(s, List.of(a, b));
-    Rule r2 = new Rule(a, List.of(x, a, b));
-    Rule r3 = new Rule(a, List.of());
-    Rule r4 = new Rule(b, List.of(y));
-    Rule r5 = new Rule(b, List.of(z));
-    Rules rules = new Rules(List.of(r1, r2, r3, r4, r5), eof);
-    LRParser parser = LRItem.makeItemGraph(rules);
-    Assert.assertEquals(9, parser.items.size());
-  }
-
-  @Test
-  public void testParser() {
-    NonTerminalSymbol start = new NonTerminalSymbol("start");
-    NonTerminalSymbol s = new NonTerminalSymbol("S");
-    NonTerminalSymbol a = new NonTerminalSymbol("A");
-    NonTerminalSymbol b = new NonTerminalSymbol("B");
-    TerminalSymbol<String> x = new TerminalSymbol<>("x");
-    TerminalSymbol<String> y = new TerminalSymbol<>("y");
-    TerminalSymbol<String> z = new TerminalSymbol<>("z");
-    TerminalSymbol<String> eof = new TerminalSymbol<>("eof");
-    Rule r0 = new Rule(start, List.of(s));
-    Rule r1 = new Rule(s, List.of(a, b));
-    Rule r2 = new Rule(a, List.of(x, a, b));
-    Rule r3 = new Rule(a, List.of());
-    Rule r4 = new Rule(b, List.of(y));
-    Rule r5 = new Rule(b, List.of(z));
-    List<Rule> rs = List.of(r0, r1, r2, r3, r4, r5);
-    Rules rules = new Rules(rs, eof);
-    LRParser parser = LRItem.makeItemGraph(rules);
-    LRTable table = parser.getTable(rules);
-    //System.out.println(parser);
-    // System.out.println(table);
-    //List<String> input = List.of("x", "x", "y", "z");
-    // ParseTree<String> tree = Parser.parseTerminals(table, input.iterator(), start);
-    // System.out.println(tree);
-  }
-  */
 }

@@ -1,7 +1,7 @@
 package com.github.ahhoefel.ast;
 
-import com.github.ahhoefel.Token;
 import com.github.ahhoefel.ir.Register;
+import com.github.ahhoefel.parser.Token;
 
 public class LValue {
   private String identifier;

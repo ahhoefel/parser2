@@ -1,5 +1,7 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.Grammar;
+import com.github.ahhoefel.parser.Symbol;
 import org.junit.Assert;
 import org.junit.Test;
 

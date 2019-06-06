@@ -1,5 +1,10 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.Grammar;
+import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.Symbol;
+import com.github.ahhoefel.parser.SymbolTable;
+
 import java.util.List;
 
 public class ExampleB {

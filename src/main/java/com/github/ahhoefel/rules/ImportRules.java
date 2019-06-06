@@ -1,10 +1,10 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.Rule;
-import com.github.ahhoefel.Symbol;
-import com.github.ahhoefel.SymbolTable;
-import com.github.ahhoefel.Token;
 import com.github.ahhoefel.ast.Import;
+import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.Symbol;
+import com.github.ahhoefel.parser.SymbolTable;
+import com.github.ahhoefel.parser.Token;
 
 public class ImportRules {
 

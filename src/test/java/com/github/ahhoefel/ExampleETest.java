@@ -1,5 +1,6 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.LRParser;
 import org.junit.Test;
 
 public class ExampleETest {

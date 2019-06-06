@@ -1,4 +1,4 @@
-package com.github.ahhoefel;
+package com.github.ahhoefel.parser;
 
 import java.util.HashMap;
 import java.util.Map;

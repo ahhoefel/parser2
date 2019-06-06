@@ -1,4 +1,4 @@
-package com.github.ahhoefel;
+package com.github.ahhoefel.parser;
 
 public class CharRange {
 

@@ -1,8 +1,8 @@
 package com.github.ahhoefel.ast;
 
-import com.github.ahhoefel.Token;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;

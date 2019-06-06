@@ -1,6 +1,6 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.Token;
+import com.github.ahhoefel.parser.Token;
 import org.junit.Assert;
 import org.junit.Test;
 

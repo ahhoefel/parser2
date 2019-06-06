@@ -1,8 +1,8 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.*;
 import com.github.ahhoefel.ast.Declaration;
 import com.github.ahhoefel.ast.RaeFile;
+import com.github.ahhoefel.parser.*;
 
 import java.io.IOException;
 import java.io.Reader;

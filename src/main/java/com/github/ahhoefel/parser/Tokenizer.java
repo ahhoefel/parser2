@@ -1,19 +1,11 @@
-package com.github.ahhoefel;
+package com.github.ahhoefel.parser;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Iterator;
 
 public interface Tokenizer {
   Token of(int c);
-
-  static TokenIterator fromFile(String filename, Tokenizer t, TerminalSymbol eof) throws Exception {
-    FileReader fr = new FileReader(filename);
-    BufferedReader br = new BufferedReader(fr);
-    return new TokenIterator(t, br, eof);
-  }
 
   class TokenIterator implements Iterator<Token> {
     private ReaderIterator iter;

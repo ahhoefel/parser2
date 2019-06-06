@@ -1,5 +1,9 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.Rules;
+import com.github.ahhoefel.parser.Symbol;
+import com.github.ahhoefel.parser.SymbolTable;
 import org.junit.Assert;
 import org.junit.Test;
 

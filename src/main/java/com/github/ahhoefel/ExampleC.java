@@ -1,5 +1,6 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.parser.*;
 import com.github.ahhoefel.rules.Identifier;
 import com.github.ahhoefel.rules.Number;
 import com.github.ahhoefel.rules.Whitespace;

@@ -110,3 +110,5 @@ fn postOrder(List roots, Node n) {
   }
   roots.add(n);
 }
+
+- strucs
