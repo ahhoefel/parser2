@@ -1,16 +1,13 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.Rule;
-import com.github.ahhoefel.Symbol;
-import com.github.ahhoefel.SymbolTable;
-import com.github.ahhoefel.Token;
+import com.github.ahhoefel.*;
 import com.github.ahhoefel.ast.*;
 
 public class StatementRules {
 
   public Symbol statementList;
 
-  public StatementRules(Rule.Builder rules, Lexicon lex, SymbolTable.NonTerminalTable nonTerminals, Symbol expression, Symbol type) {
+  public StatementRules(Rule.Builder rules, Lexicon lex, ShiftReduceResolver resolver, SymbolTable.NonTerminalTable nonTerminals, Symbol expression, Symbol type) {
 
     statementList = nonTerminals.newSymbol("statementList");
     Symbol statement = nonTerminals.newSymbol("statement");
@@ -39,17 +36,21 @@ public class StatementRules {
         .setAction(e -> new ForStatement((Expression) e[1], (Block) e[3]));
 
     // Assignment statement
-    rules.add(statement, lvalue, lex.equals, expression)
+    Rule statementToAssignment = rules.add(statement, lvalue, lex.equals, expression)
         .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2]));
     rules.add(lvalue, lex.varKeyword, lex.identifier, type).setAction(e -> LValue.withDeclaration((Token) e[1], (Type) e[2]));
     rules.add(lvalue, lex.identifier).setAction(e -> new LValue((Token) e[0]));
 
     // Return statement
-    rules.add(statement, lex.returnKeyword, expression)
+    Rule statementToReturn = rules.add(statement, lex.returnKeyword, expression)
         .setAction(e -> new ReturnStatement((Expression) e[1]));
-    rules.add(statement, expression)
+
+    // Expression statement
+    Rule statementToExpression = rules.add(statement, expression)
         .setAction(e -> new ExpressionStatement((Expression) e[0]));
+
+    resolver.addShiftPreference(statementToExpression, lex.hyphen);
+    resolver.addShiftPreference(statementToReturn, lex.hyphen);
+    resolver.addShiftPreference(statementToAssignment, lex.hyphen);
   }
-
-
 }

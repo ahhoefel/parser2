@@ -2,21 +2,22 @@ package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.ir.operation.AddOp;
+import com.github.ahhoefel.ir.operation.LiteralOp;
+import com.github.ahhoefel.ir.operation.SubtractOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 
-public class SumExpression implements Expression {
+public class UnaryMinusExpression implements Expression {
 
   private Expression a;
-  private Expression b;
   private Register register;
+  private Register zeroRegister;
 
-  public SumExpression(Expression a, Expression b) {
+  public UnaryMinusExpression(Expression a) {
     this.a = a;
-    this.b = b;
     this.register = new Register();
+    this.zeroRegister = new Register();
   }
 
   @Override
@@ -26,23 +27,20 @@ public class SumExpression implements Expression {
 
   @Override
   public void toIndentedString(IndentedString out) {
+    out.add("-");
     a.toIndentedString(out);
-    out.add(" + ");
-    b.toIndentedString(out);
   }
 
   @Override
   public void setSymbolCatalog(SymbolCatalog symbols) {
     a.setSymbolCatalog(symbols);
-    b.setSymbolCatalog(symbols);
   }
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     a.addToRepresentation(rep, liveRegisters);
-    b.addToRepresentation(rep, liveRegisters);
-    rep.add(new AddOp(a.getRegister(), b.getRegister(), register));
-    liveRegisters.remove(liveRegisters.size() - 1);
+    rep.add(new LiteralOp(0, zeroRegister));
+    rep.add(new SubtractOp(zeroRegister, a.getRegister(), register));
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);
   }

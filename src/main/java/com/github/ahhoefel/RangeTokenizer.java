@@ -36,7 +36,12 @@ public class RangeTokenizer implements Tokenizer {
     charTerminalMap[45] = chars.hypen;
     charTerminalMap[46] = chars.period;
     charTerminalMap[47] = chars.forwardSlash;
+    charTerminalMap[60] = chars.lessThan;
     charTerminalMap[61] = chars.eq;
+    charTerminalMap[62] = chars.greaterThan;
+    charTerminalMap[33] = chars.bang;
+    charTerminalMap[38] = chars.ampersand;
+    charTerminalMap[124] = chars.pipe;
   }
 
   public Token of(int c) {

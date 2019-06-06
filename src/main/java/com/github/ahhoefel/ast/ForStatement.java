@@ -7,6 +7,8 @@ import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoOp;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.ArrayList;
+
 public class ForStatement implements Statement {
 
   private final Block block;
@@ -42,7 +44,7 @@ public class ForStatement implements Statement {
     rep.add(new DestinationOp(blockLabel));
     block.addToRepresentation(rep);
     rep.add(new DestinationOp(conditionLabel));
-    condition.addToRepresentation(rep);
+    condition.addToRepresentation(rep, new ArrayList<>());
     rep.add(new ConditionalGotoOp(condition.getRegister(), blockLabel));
   }
 }

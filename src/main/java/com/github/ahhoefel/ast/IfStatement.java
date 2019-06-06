@@ -9,6 +9,8 @@ import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.NegateOp;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.ArrayList;
+
 public class IfStatement implements Statement {
 
   private final Block block;
@@ -41,7 +43,7 @@ public class IfStatement implements Statement {
   @Override
   public void addToRepresentation(Representation rep) {
     rep.add(new CommentOp("if condition"));
-    condition.addToRepresentation(rep);
+    condition.addToRepresentation(rep, new ArrayList<>());
     rep.add(new NegateOp(condition.getRegister(), negation));
     rep.add(new ConditionalGotoOp(negation, this.destination));
     rep.add(new CommentOp("if block"));

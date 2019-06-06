@@ -31,6 +31,10 @@ public class VariableDeclaration {
     return register;
   }
 
+  public Type getType() {
+    return type;
+  }
+
   public String toString() {
     return String.format("var %s %s: %s", name, type, register);
   }

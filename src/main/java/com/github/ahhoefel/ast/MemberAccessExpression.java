@@ -5,6 +5,8 @@ import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.List;
+
 public class MemberAccessExpression implements Expression {
 
   private final Token member;
@@ -37,8 +39,10 @@ public class MemberAccessExpression implements Expression {
   }
 
   @Override
-  public void addToRepresentation(Representation rep) {
-    expression.addToRepresentation(rep);
+  public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
+    expression.addToRepresentation(rep, liveRegisters);
+    liveRegisters.remove(liveRegisters.size() - 1);
+    liveRegisters.add(register);
     throw new RuntimeException("not implemented");
   }
 }

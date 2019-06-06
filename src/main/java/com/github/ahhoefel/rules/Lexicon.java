@@ -35,6 +35,15 @@ public class Lexicon {
   public Symbol plus;
   public Symbol times;
   public Symbol forwardSlash;
+  public Symbol hyphen;
+  public Symbol bang;
+  public Symbol doubleAmpersand;
+  public Symbol doublePipe;
+  public Symbol greaterThan;
+  public Symbol greaterThanOrEqual;
+  public Symbol lessThan;
+  public Symbol lessThanOrEqual;
+  public Symbol doubleEquals;
 
   public Symbol forKeyword;
   public Symbol ifKeyword;
@@ -64,7 +73,16 @@ public class Lexicon {
     equals = resultSymbols.newSymbol("equals");
     plus = resultSymbols.newSymbol("plus");
     times = resultSymbols.newSymbol("times");
+    hyphen = resultSymbols.newSymbol("hyphen");
     forwardSlash = resultSymbols.newSymbol("forwardSlash");
+    bang = resultSymbols.newSymbol("bang");
+    doubleAmpersand = resultSymbols.newSymbol("doubleAmpersand");
+    doublePipe = resultSymbols.newSymbol("doublePipe");
+    greaterThan = resultSymbols.newSymbol("greaterThan");
+    greaterThanOrEqual = resultSymbols.newSymbol("greaterThanOrEqual");
+    lessThan = resultSymbols.newSymbol("lessThan");
+    lessThanOrEqual = resultSymbols.newSymbol("lessThanOrEqual");
+    doubleEquals = resultSymbols.newSymbol("doubleEquals");
 
     forKeyword = resultSymbols.newSymbol("for");
     ifKeyword = resultSymbols.newSymbol("if");
@@ -96,12 +114,25 @@ public class Lexicon {
     rules.add(word, chars.lbrace).setAction(new TokenAction(lBrace));
     rules.add(word, chars.rbrace).setAction(new TokenAction(rBrace));
     rules.add(word, chars.comma).setAction(new TokenAction(comma));
-    rules.add(word, chars.eq).setAction(new TokenAction(equals));
+    Rule wordIsSingleEqual = rules.add(word, chars.eq).setAction(new TokenAction(equals));
     rules.add(word, chars.times).setAction(new TokenAction(times));
     rules.add(word, chars.plus).setAction(new TokenAction(plus));
+    Rule wordIsHyphen = rules.add(word, chars.hypen).setAction(new TokenAction(hyphen));
     rules.add(word, chars.forwardSlash).setAction(new TokenAction(forwardSlash));
+    rules.add(word, chars.bang).setAction(new TokenAction(bang));
+    rules.add(word, chars.ampersand, chars.ampersand).setAction(new TokenAction(doubleAmpersand));
+    rules.add(word, chars.pipe, chars.pipe).setAction(new TokenAction(doublePipe));
+    Rule wordIsGreaterThan = rules.add(word, chars.greaterThan).setAction(new TokenAction(greaterThan));
+    rules.add(word, chars.greaterThan, chars.eq).setAction(new TokenAction(greaterThan));
+    Rule wordIsLessThan = rules.add(word, chars.lessThan).setAction(new TokenAction(lessThan));
+    rules.add(word, chars.lessThan, chars.eq).setAction(new TokenAction(lessThanOrEqual));
+    rules.add(word, chars.eq, chars.eq).setAction(new TokenAction(doubleEquals));
 
     resolver.addShiftPreference(wordIsNumber, chars.number);
+    resolver.addShiftPreference(wordIsHyphen, chars.number);
+    resolver.addShiftPreference(wordIsGreaterThan, chars.eq);
+    resolver.addShiftPreference(wordIsLessThan, chars.eq);
+    resolver.addShiftPreference(wordIsSingleEqual, chars.eq);
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
     table = LRParser.getCannonicalLRTable(grammar, resolver);

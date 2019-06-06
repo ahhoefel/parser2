@@ -37,7 +37,7 @@ public class Language {
     Rule.Builder rules = new Rule.Builder();
     type = new TypeRules(rules, nonTerminals, lex);
     expression = new ExpressionRules(rules, nonTerminals, lex, resolver);
-    statement = new StatementRules(rules, lex, nonTerminals, expression.expression, type.type);
+    statement = new StatementRules(rules, lex, resolver, nonTerminals, expression.expression, type.type);
     function = new FunctionRules(rules, lex, nonTerminals, statement.statementList, type.type);
     imp0rt = new ImportRules(rules, lex, nonTerminals);
 

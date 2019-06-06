@@ -90,3 +90,23 @@ scope file
 Unique names
 
 
+Live registers
+   1
+ /   \ \
+2     3  4
+     /
+
+Perform a post order traversal.
+At each point, list the roots of all the completed subtree.
+
+fn postOrder(List roots, Node n) {
+  for (Node child : n.children) {
+    postOrder(roots, child)
+  }
+
+  visit(n)
+  for (Node child : n.children) {
+    roots.remove(child)
+  }
+  roots.add(n);
+}

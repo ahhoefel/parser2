@@ -61,7 +61,7 @@ public class FunctionInvocationExpression implements Expression {
   }
 
   @Override
-  public void addToRepresentation(Representation rep) {
+  public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     SymbolCatalog catalog = symbols;
     if (implicitArg.isPresent()) {
       if (!(implicitArg.get() instanceof VariableExpression)) {
@@ -71,34 +71,60 @@ public class FunctionInvocationExpression implements Expression {
       VariableExpression pkg = (VariableExpression) implicitArg.get();
       catalog = symbols.getImport(pkg.getIdentifier());
     }
+    FunctionDeclaration fn = catalog.getFunction(identifier);
 
     for (Expression arg : args) {
-      arg.addToRepresentation(rep);
+      arg.addToRepresentation(rep, liveRegisters);
     }
+    rep.add(new DebugFunctionCallOp(fn, args));
     rep.add(new CommentOp("Invoking " + identifier));
+
     rep.add(new CommentOp("Pushing local vars"));
     Iterator<VariableDeclaration> iter = symbols.getVariablesInOrder();
     while (iter.hasNext()) {
-      rep.add(new PushOp(iter.next().getRegister()));
+      VariableDeclaration var = iter.next();
+      rep.add(new CommentOp("Push " + var.getName()));
+      rep.add(new PushOp(var.getRegister()));
     }
+
+    // Remove args from the live registers.
+    for (Expression arg : args) {
+      liveRegisters.remove(liveRegisters.size() - 1);
+    }
+
+    rep.add(new CommentOp("Pushing live registers"));
+    for (Register reg : liveRegisters) {
+      rep.add(new PushOp(reg));
+    }
+
     rep.add(new CommentOp("Pushing return label"));
     rep.add(new LiteralLabelOp(returnLabel, returnLabelRegister));
     rep.add(new PushOp(returnLabelRegister));
-    rep.add(new CommentOp("Pushing arguments"));
+
+    // Remove args from the live registers.
     for (Expression arg : args) {
       rep.add(new PushOp(arg.getRegister()));
     }
-    FunctionDeclaration fn = catalog.getFunction(identifier);
+
     rep.add(new CommentOp("Jumping to function " + identifier));
     rep.add(new GotoOp(fn.getLabel()));
     rep.add(new DestinationOp(returnLabel));
     rep.add(new CommentOp("Popping return value"));
     rep.add(new PopOp(register));
-    iter = symbols.getVariablesInOrder();
+
+    rep.add(new CommentOp("Popping live registers, except args"));
+    for (int i = 0; i < liveRegisters.size(); i++) {
+      rep.add(new PopOp(liveRegisters.get(liveRegisters.size() - i - 1)));
+    }
+    liveRegisters.add(register);
+
+    iter = symbols.getVariablesInReverseOrder();
     // Should be in reverse order.
     rep.add(new CommentOp("Popping local variables"));
     while (iter.hasNext()) {
-      rep.add(new PopOp(iter.next().getRegister()));
+      VariableDeclaration var = iter.next();
+      rep.add(new CommentOp("Popping local variable " + var.getName()));
+      rep.add(new PopOp(var.getRegister()));
     }
     rep.add(new CommentOp("Ending invocation of function " + identifier));
   }

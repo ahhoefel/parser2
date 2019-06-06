@@ -30,7 +30,6 @@ import java.util.Optional;
  * <p>
  * FunctionInvocation at return pointer:
  * - pop return values into registers
- * -
  */
 public class FunctionDeclaration implements Declaration {
 
@@ -66,6 +65,19 @@ public class FunctionDeclaration implements Declaration {
       symbols.addVariable(param);
     }
     this.statements.setSymbolCatalog(symbols);
+  }
+
+  public String formatParametersWithValues(List<Integer> values) {
+    StringBuilder out = new StringBuilder();
+    for (int i = 0; i < parameters.size(); i++) {
+      out.append(parameters.get(i).getName());
+      out.append(" ");
+      out.append(parameters.get(i).getType().toString());
+      out.append("[");
+      out.append(values.get(i));
+      out.append("]");
+    }
+    return out.toString();
   }
 
   public void addToRepresentation(Representation rep) {

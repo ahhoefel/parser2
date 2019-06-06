@@ -9,6 +9,7 @@ public class Context {
   private Optional<String> stopMessage;
   private Map<Register, Integer> registers;
   private List<Integer> stack;
+  private int stackDepth = 0;
   private int index;
 
   public Context() {
@@ -22,25 +23,25 @@ public class Context {
       return 0;
     }
     Integer value = registers.get(r);
-    System.out.print(String.format("get %d; ", value));
+    //System.out.print(String.format("get %d; ", value));
     return value;
   }
 
   public void putRegister(Register r, int value) {
     registers.put(r, value);
-    System.out.print(String.format("put %d; ", value));
+    //System.out.print(String.format("put %d; ", value));
   }
 
   public void push(Register r) {
     int value = getRegister(r);
     stack.add(value);
-    System.out.print(String.format("push %d; ", value));
+    //System.out.print(String.format("push %d; ", value));
   }
 
   public void pop(Register r) {
     int value = stack.remove(stack.size() - 1);
     putRegister(r, value);
-    System.out.print(String.format("pop %d; remaining stack: %s;", value, stack));
+    //System.out.print(String.format("pop %d; remaining stack: %s;\n", value, stack));
   }
 
   public void setIndex(int index) {
@@ -65,5 +66,28 @@ public class Context {
 
   public Optional<String> getStopMessage() {
     return stopMessage;
+  }
+
+  public void incrementStackDepth() {
+    stackDepth++;
+  }
+
+  public void decrementStackDepth() {
+    stackDepth--;
+  }
+
+  public String getStackIndent() {
+    String out = "";
+    for (int i = 0; i < stackDepth; i++) {
+      out += "  ";
+    }
+    return out;
+  }
+
+  public String toString() {
+    String out = "";
+    out += "Registers: " + registers + " \n";
+    out += stack + "\n";
+    return out;
   }
 }

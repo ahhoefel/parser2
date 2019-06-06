@@ -56,6 +56,10 @@ public class SymbolCatalog {
     return new VariableIterator();
   }
 
+  public ReverseVariableIterator getVariablesInReverseOrder() {
+    return new ReverseVariableIterator();
+  }
+
   private class VariableIterator implements Iterator<VariableDeclaration> {
     private int index;
     private Optional<VariableIterator> parentIter;
@@ -80,6 +84,33 @@ public class SymbolCatalog {
         return orderedVariables.get(index++);
       }
       return parentIter.get().next();
+    }
+  }
+
+  private class ReverseVariableIterator implements Iterator<VariableDeclaration> {
+    private int index;
+    private Optional<ReverseVariableIterator> parentIter;
+
+    public ReverseVariableIterator() {
+      index = orderedVariables.size() - 1;
+      if (!functionDeclaration && parent.isPresent()) {
+        parentIter = Optional.of(parent.get().getVariablesInReverseOrder());
+      } else {
+        parentIter = Optional.empty();
+      }
+    }
+
+    @Override
+    public boolean hasNext() {
+      return index >= 0 || (parentIter.isPresent() && parentIter.get().hasNext());
+    }
+
+    @Override
+    public VariableDeclaration next() {
+      if (parentIter.isPresent() && parentIter.get().hasNext()) {
+        return parentIter.get().next();
+      }
+      return orderedVariables.get(index--);
     }
   }
 

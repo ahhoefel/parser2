@@ -7,6 +7,8 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.List;
+
 public class LiteralExpression implements Expression {
 
   private int value;
@@ -38,8 +40,8 @@ public class LiteralExpression implements Expression {
   }
 
   @Override
-  public void addToRepresentation(Representation rep) {
+  public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     rep.add(new LiteralOp(value, register));
-
+    liveRegisters.add(register);
   }
 }

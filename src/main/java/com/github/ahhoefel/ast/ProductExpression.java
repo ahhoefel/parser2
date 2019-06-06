@@ -5,6 +5,8 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.MultiplyOp;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.List;
+
 public class ProductExpression implements Expression {
 
   private Expression a;
@@ -36,9 +38,12 @@ public class ProductExpression implements Expression {
   }
 
   @Override
-  public void addToRepresentation(Representation rep) {
-    a.addToRepresentation(rep);
-    b.addToRepresentation(rep);
+  public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
+    a.addToRepresentation(rep, liveRegisters);
+    b.addToRepresentation(rep, liveRegisters);
     rep.add(new MultiplyOp(a.getRegister(), b.getRegister(), register));
+    liveRegisters.remove(liveRegisters.size() - 1);
+    liveRegisters.remove(liveRegisters.size() - 1);
+    liveRegisters.add(register);
   }
 }

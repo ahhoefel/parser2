@@ -1,8 +1,12 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.SetOp;
 import com.github.ahhoefel.util.IndentedString;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AssignmentStatement implements Statement {
 
@@ -30,7 +34,8 @@ public class AssignmentStatement implements Statement {
 
   @Override
   public void addToRepresentation(Representation rep) {
-    expression.addToRepresentation(rep);
+    List<Register> liveRegisters = new ArrayList<>();
+    expression.addToRepresentation(rep, liveRegisters);
     rep.add(new SetOp(expression.getRegister(), lvalue.getRegister()));
   }
 }

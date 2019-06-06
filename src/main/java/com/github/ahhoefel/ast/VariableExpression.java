@@ -6,6 +6,8 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.SetOp;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.List;
+
 public class VariableExpression implements Expression {
 
   private final String identifier;
@@ -34,9 +36,10 @@ public class VariableExpression implements Expression {
   }
 
   @Override
-  public void addToRepresentation(Representation rep) {
+  public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     VariableDeclaration variable = symbols.getVariable(identifier);
     rep.add(new SetOp(variable.getRegister(), register));
+    liveRegisters.add(register);
   }
 
   public String getIdentifier() {

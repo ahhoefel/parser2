@@ -3,6 +3,8 @@ package com.github.ahhoefel.ast;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.ArrayList;
+
 public class ExpressionStatement implements Statement {
 
   private final Expression expression;
@@ -27,6 +29,6 @@ public class ExpressionStatement implements Statement {
 
   @Override
   public void addToRepresentation(Representation rep) {
-    expression.addToRepresentation(rep);
+    expression.addToRepresentation(rep, new ArrayList<>());
   }
 }

@@ -2,18 +2,18 @@ package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.ir.operation.AddOp;
+import com.github.ahhoefel.ir.operation.LessThanOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 
-public class SumExpression implements Expression {
+public class LessThanExpression implements Expression {
 
   private Expression a;
   private Expression b;
   private Register register;
 
-  public SumExpression(Expression a, Expression b) {
+  public LessThanExpression(Expression a, Expression b) {
     this.a = a;
     this.b = b;
     this.register = new Register();
@@ -27,7 +27,7 @@ public class SumExpression implements Expression {
   @Override
   public void toIndentedString(IndentedString out) {
     a.toIndentedString(out);
-    out.add(" + ");
+    out.add(" < ");
     b.toIndentedString(out);
   }
 
@@ -41,7 +41,7 @@ public class SumExpression implements Expression {
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     a.addToRepresentation(rep, liveRegisters);
     b.addToRepresentation(rep, liveRegisters);
-    rep.add(new AddOp(a.getRegister(), b.getRegister(), register));
+    rep.add(new LessThanOp(a.getRegister(), b.getRegister(), register));
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);

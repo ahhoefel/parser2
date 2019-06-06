@@ -18,7 +18,12 @@ public class CharRange {
   public final Symbol plus;
   public final Symbol times;
   public final Symbol forwardSlash;
+  public final Symbol bang;
+  public final Symbol ampersand;
+  public final Symbol pipe;
   public final Symbol unknown;
+  public final Symbol greaterThan;
+  public final Symbol lessThan;
 
   public CharRange(SymbolTable symbols) {
     letter = symbols.newSymbol("letter");
@@ -37,6 +42,11 @@ public class CharRange {
     plus = symbols.newSymbol("plus");
     times = symbols.newSymbol("times");
     forwardSlash = symbols.newSymbol("forwardSlash");
+    bang = symbols.newSymbol("bang");
+    ampersand = symbols.newSymbol("ampersand");
+    pipe = symbols.newSymbol("pipe");
+    greaterThan = symbols.newSymbol("greaterThan");
+    lessThan = symbols.newSymbol("lessThan");
     unknown = symbols.newSymbol("unknown");
   }
 }
