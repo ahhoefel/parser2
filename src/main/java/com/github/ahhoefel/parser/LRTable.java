@@ -11,9 +11,9 @@ public class LRTable {
   }
 
   public static class State {
-    public Map<Symbol, Rule> reduce;
-    public Map<Symbol, Integer> shift;
-    public Map<Symbol, Integer> state;
+    Map<Symbol, Rule> reduce;
+    Map<Symbol, Integer> shift;
+    Map<Symbol, Integer> state;
 
     public State(Map<Symbol, Rule> reduce, Map<Symbol, Integer> shift, Map<Symbol, Integer> state) {
       this.reduce = reduce;
@@ -22,11 +22,9 @@ public class LRTable {
     }
 
     public String toString() {
-      StringBuilder out = new StringBuilder();
-      out.append("Reduce: ").append(reduce).append('\n');
-      out.append("Shift: ").append(shift).append('\n');
-      out.append("State: ").append(state).append('\n');
-      return out.toString();
+      return "Reduce: " + reduce + '\n' +
+          "Shift: " + shift + '\n' +
+          "State: " + state + '\n';
     }
   }
 

@@ -3,22 +3,6 @@ package com.github.ahhoefel.parser;
 import java.util.*;
 
 public class LRParser {
-  LRItem start;
-  List<LRItem> items;
-
-  public LRParser(LRItem start, List<LRItem> items) {
-    this.start = start;
-    this.items = items;
-  }
-
-  public String toString() {
-    StringBuilder out = new StringBuilder();
-    for (LRItem item : items) {
-      out.append(item);
-      out.append("\n");
-    }
-    return out.toString();
-  }
 
   public static LRTable getSLRTable(Grammar g) {
     Grammar.FirstSymbols first = g.first();
@@ -30,11 +14,11 @@ public class LRParser {
     return new LRTable(states);
   }
 
-  public static LRTable getCannonicalLRTable(Grammar g) {
-    return getCannonicalLRTable(g, new ShiftReduceResolver());
+  public static LRTable getCanonicalLRTable(Grammar g) {
+    return getCanonicalLRTable(g, new ShiftReduceResolver());
   }
 
-  public static LRTable getCannonicalLRTable(Grammar g, ShiftReduceResolver r) {
+  public static LRTable getCanonicalLRTable(Grammar g, ShiftReduceResolver r) {
     Grammar.FirstSymbols first = g.first();
     List<LRItem> items = getLRItems(g, first, 1);
     List<LRTable.State> states = new ArrayList<>();
@@ -44,7 +28,7 @@ public class LRParser {
     return new LRTable(states);
   }
 
-  public static List<LRItem> getLRItems(Grammar g, Grammar.FirstSymbols first, int lookAhead) {
+  private static List<LRItem> getLRItems(Grammar g, Grammar.FirstSymbols first, int lookAhead) {
     Rule start = g.getAugmentedStartRule();
     MarkedRule markedStart = new MarkedRule(start, 0, g.getTerminals().getEof());
     LRItem startItem = new LRItem(Set.of(markedStart), g, first, lookAhead);
@@ -58,7 +42,7 @@ public class LRParser {
       Map<Symbol, Set<MarkedRule>> nexts = gotos(item);
       for (Map.Entry<Symbol, Set<MarkedRule>> entry : nexts.entrySet()) {
         LRItem nextItem = new LRItem(entry.getValue(), g, first, lookAhead);
-        int nextItemIndex = 0;
+        int nextItemIndex;
         if (itemMap.containsKey(nextItem)) {
           nextItemIndex = itemMap.get(nextItem);
           nextItem = items.get(nextItemIndex);
@@ -88,7 +72,7 @@ public class LRParser {
       if (nexts.containsKey(symbol)) {
         nexts.get(symbol).add(nextRule);
       } else {
-        Set<MarkedRule> n = new HashSet();
+        Set<MarkedRule> n = new HashSet<>();
         n.add(nextRule);
         nexts.put(symbol, n);
       }

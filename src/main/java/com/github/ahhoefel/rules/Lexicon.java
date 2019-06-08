@@ -135,7 +135,7 @@ public class Lexicon {
     resolver.addShiftPreference(wordIsSingleEqual, chars.eq);
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
-    table = LRParser.getCannonicalLRTable(grammar, resolver);
+    table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
   public List<Token> getTokens(Reader r) throws IOException {

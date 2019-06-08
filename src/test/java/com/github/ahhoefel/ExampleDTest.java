@@ -19,14 +19,14 @@ public class ExampleDTest {
   @Test
   public void testNoShiftReduceError() {
     ExampleD example = new ExampleD();
-    LRParser.getCannonicalLRTable(example.grammar); // no shift/reduce error.
+    LRParser.getCanonicalLRTable(example.grammar); // no shift/reduce error.
   }
 
 
   @Test
   public void test() {
     ExampleD e = new ExampleD();
-    LRTable p = LRParser.getCannonicalLRTable(e.grammar); // no shift/reduce error.
+    LRTable p = LRParser.getCanonicalLRTable(e.grammar); // no shift/reduce error.
 
     List<Symbol> input = List.of(
         e.identifier,

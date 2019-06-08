@@ -50,19 +50,12 @@ public class Language {
     rules.add(declaration, imp0rt.imp0rt).setAction(e -> e[0]);
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
-    table = LRParser.getCannonicalLRTable(grammar, resolver);
+    table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
   public RaeFile parse(Reader r) throws IOException {
     List<Token> tokens = lex.getTokens(r);
     tokens.add(new Token(terminals.getEof(), "eof"));
     return (RaeFile) Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource());
-  }
-
-  public static void main(String[] args) throws IOException {
-    Language lang = new Language();
-    //Reader r = new CharArrayReader("foo.bar(xx.yy,zz)".toCharArray());
-    //Interpreter.run(lang.parse(r));
-    System.out.println(lang.table);
   }
 }
