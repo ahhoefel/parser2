@@ -10,18 +10,20 @@ import java.util.List;
 
 public class Language {
 
-  private Lexicon lex;
+  Lexicon lex;
   private SymbolTable.TerminalTable terminals;
   private SymbolTable.NonTerminalTable nonTerminals;
   private Grammar grammar;
   private LRTable table;
 
   private FunctionRules function;
-  private ExpressionRules expression;
-  private StatementRules statement;
-  private TypeRules type;
+  ExpressionRules expression;
+  StatementRules statement;
+  TypeRules type;
+  private TypeDeclarationRules typeDeclaration;
   private ImportRules imp0rt;
 
+  ShiftReduceResolver resolver;
   private Symbol declarationList;
   private Symbol declaration;
 
@@ -29,25 +31,35 @@ public class Language {
     lex = new Lexicon();
     terminals = lex.getTerminals();
     nonTerminals = new SymbolTable.NonTerminalTable();
-    ShiftReduceResolver resolver = new ShiftReduceResolver();
+    resolver = new ShiftReduceResolver();
 
     declarationList = nonTerminals.newSymbol("declarationList");
     declaration = nonTerminals.newSymbol("declaration");
 
     Rule.Builder rules = new Rule.Builder();
-    type = new TypeRules(rules, nonTerminals, lex);
-    expression = new ExpressionRules(rules, nonTerminals, lex, resolver);
-    statement = new StatementRules(rules, lex, resolver, nonTerminals, expression.expression, type.type);
-    function = new FunctionRules(rules, lex, nonTerminals, statement.statementList, type.type);
+    type = new TypeRules(nonTerminals);
+    expression = new ExpressionRules(nonTerminals);
+    statement = new StatementRules(nonTerminals);
+    function = new FunctionRules(nonTerminals);
+    typeDeclaration = new TypeDeclarationRules(nonTerminals);
     imp0rt = new ImportRules(rules, lex, nonTerminals);
 
     rules.add(nonTerminals.getStart(), declarationList)
-        .setAction(e -> e[0]);
+        .setAction(e -> e[1]);
 
-    rules.add(declarationList, declarationList, declaration).setAction(e -> ((Declaration) e[1]).addToFile((RaeFile) e[0]));
-    rules.add(declarationList).setAction(e -> new RaeFile());
+    rules.add(declarationList, declarationList, declaration)
+        .setAction(e -> ((Declaration) e[1]).addToFile((RaeFile) e[2]));
+    rules.add(declarationList).setAction(e -> e[0]);
     rules.add(declaration, function.declaration).setAction(e -> e[0]);
     rules.add(declaration, imp0rt.imp0rt).setAction(e -> e[0]);
+    rules.add(declaration, typeDeclaration.typeDeclaration).setAction(e -> e[0]);
+
+    type.provideRules(rules, this);
+    expression.provideRules(rules, this);
+    statement.provideRules(rules, this);
+    function.provideRules(rules, this);
+    typeDeclaration.provideRules(rules, this);
+    imp0rt.provideRules(rules, this);
 
     grammar = new Grammar(terminals, nonTerminals, rules.build());
     table = LRParser.getCanonicalLRTable(grammar, resolver);
@@ -56,6 +68,8 @@ public class Language {
   public RaeFile parse(Reader r) throws IOException {
     List<Token> tokens = lex.getTokens(r);
     tokens.add(new Token(terminals.getEof(), "eof"));
-    return (RaeFile) Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource());
+    RaeFile file = new RaeFile();
+    Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), file);
+    return file;
   }
 }

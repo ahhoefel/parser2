@@ -1,7 +1,9 @@
 package com.github.ahhoefel.parser;
 
-import java.util.ArrayList;
+import com.github.ahhoefel.util.Stack;
+
 import java.util.Iterator;
+import java.util.Optional;
 
 public class Parser<T> {
 
@@ -16,20 +18,6 @@ public class Parser<T> {
 
     public String toString() {
       return String.format("(%s, %d)", symbol.toString(), stateIndex);
-    }
-  }
-
-  private static class Stack<E> extends ArrayList<E> {
-    public void push(E e) {
-      this.add(e);
-    }
-
-    public E pop() {
-      return this.remove(this.size() - 1);
-    }
-
-    public E peek() {
-      return this.get(this.size() - 1);
     }
   }
 
@@ -61,7 +49,15 @@ public class Parser<T> {
     return parseTokens(table, new TerminalSymbolIterator(iter), start);
   }
 
+  public static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, C context) {
+    return parseTokens(table, iter, start, Optional.of(context));
+  }
+
   public static Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start) {
+    return parseTokens(table, iter, start, Optional.empty());
+  }
+
+  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context) {
     Stack<SymbolState> stack = new Stack<>();
     Stack<Object> result = new Stack<>();
     Token nextToken = iter.next();
@@ -82,15 +78,33 @@ public class Parser<T> {
         }
       } else if (state.reduce.containsKey(nextSymbol)) {
         Rule rule = state.reduce.get(nextSymbol);
-        Object[] children = new Object[rule.getSymbols().size()];
-        for (int i = rule.getSymbols().size() - 1; i >= 0; i--) {
+        int numChildren = rule.getSymbols().size();
+        int numParameters = numChildren + (context.isPresent() ? 1 : 0);
+        Object[] children = new Object[numParameters];
+        for (int i = numChildren - 1; i >= 0; i--) {
           stack.pop();
           children[i] = result.pop();
+        }
+        if (context.isPresent()) {
+          children[numParameters - 1] = context.get();
         }
         stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
         result.push(rule.getAction().apply(children));
       } else {
-        throw new RuntimeException("Parsing error");
+        String out = "Parsing error.\n";
+        out += "Next token: " + nextToken + "\n";
+        out += "State: " + symbolState + "\n";
+        out += "Stack: ";
+        for (int i = 6; i >= 0; i--) {
+          Optional<SymbolState> s = stack.deepPeek(i);
+          if (!s.isPresent()) {
+            break;
+          }
+          out += s.get();
+          out += " ";
+        }
+        out += " (top)\n";
+        throw new RuntimeException(out);
       }
       symbolState = stack.peek();
     }

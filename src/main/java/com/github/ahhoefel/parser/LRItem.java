@@ -134,7 +134,11 @@ public class LRItem {
     Map<Symbol, Rule> reduce = new HashMap<>();
     for (Map.Entry<Symbol, List<Rule>> entry : reduces.entrySet()) {
       if (entry.getValue().size() > 1) {
-        throw new RuntimeException("Reduce error constructing LR table.");
+        String msg = "Rules for symbol " + entry.getKey() + "\n";
+        for (Rule rule : entry.getValue()) {
+          msg += rule.toString() + "\n";
+        }
+        throw new RuntimeException("Reduce error constructing LR table.\n" + msg);
       }
       reduce.put(entry.getKey(), entry.getValue().get(0));
     }

@@ -58,9 +58,16 @@ public class FunctionDeclaration implements Declaration {
     return label;
   }
 
+  public Type getReturnType() {
+    if (!returnType.isPresent()) {
+      return Type.VOID;
+    }
+    return returnType.get();
+  }
+
   public void setSymbolCatalog(SymbolCatalog parent) {
     parent.addFunction(this);
-    this.symbols = new SymbolCatalog(name, parent, true);
+    this.symbols = new SymbolCatalog(name, parent, Optional.of(this));
     for (VariableDeclaration param : parameters) {
       symbols.addVariable(param);
     }
@@ -114,5 +121,9 @@ public class FunctionDeclaration implements Declaration {
   public RaeFile addToFile(RaeFile file) {
     file.addFunction(this);
     return file;
+  }
+
+  public void typeCheck() {
+    this.statements.typeCheck();
   }
 }

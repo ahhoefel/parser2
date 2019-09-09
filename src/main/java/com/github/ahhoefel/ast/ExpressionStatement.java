@@ -31,4 +31,13 @@ public class ExpressionStatement implements Statement {
   public void addToRepresentation(Representation rep) {
     expression.addToRepresentation(rep, new ArrayList<>());
   }
+
+  @Override
+  public void typeCheck() {
+    if (expression.getType() != Type.VOID) {
+      throw new RuntimeException("Expression statement should have void type. Got: " + expression.getType());
+    }
+  }
+
+
 }

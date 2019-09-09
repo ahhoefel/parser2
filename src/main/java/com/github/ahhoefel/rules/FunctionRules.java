@@ -14,20 +14,23 @@ import java.util.List;
 import java.util.Optional;
 
 public class FunctionRules {
-  public Symbol declaration;
-  public Symbol parameterList;
-  public Symbol parameterListNonEmpty;
-  public Symbol parameter;
-  public Symbol optionalType;
+  Symbol declaration;
+  private Symbol parameterList;
+  private Symbol parameterListNonEmpty;
+  private Symbol parameter;
+  private Symbol optionalType;
 
-  public FunctionRules(Rule.Builder rules, Lexicon lex, SymbolTable.NonTerminalTable nonTerminals, Symbol statementList, Symbol type) {
+  public FunctionRules(SymbolTable.NonTerminalTable nonTerminals) {
     declaration = nonTerminals.newSymbol("functionDeclaration");
     parameterList = nonTerminals.newSymbol("parameterList");
     parameterListNonEmpty = nonTerminals.newSymbol("parameterListNonEmpty");
     parameter = nonTerminals.newSymbol("parameter");
     optionalType = nonTerminals.newSymbol("optionalType");
+  }
 
-    rules.add(declaration, lex.funcKeyword, lex.identifier, lex.lParen, parameterList, lex.rParen, optionalType, lex.lBrace, statementList, lex.rBrace)
+  public void provideRules(Rule.Builder rules, Language lang) {
+    Lexicon lex = lang.lex;
+    rules.add(declaration, lex.funcKeyword, lex.identifier, lex.lParen, parameterList, lex.rParen, optionalType, lex.lBrace, lang.statement.statementList, lex.rBrace)
         .setAction(e -> new FunctionDeclaration((Token) e[1], (List<VariableDeclaration>) e[3], (Optional<Type>) e[5], (Block) e[7]));
     rules.add(parameterList, parameter, lex.comma, parameterList)
         .setAction(e -> {
@@ -41,9 +44,8 @@ public class FunctionRules {
       return a;
     });
     rules.add(parameterList).setAction(e -> new ArrayList<VariableDeclaration>());
-    rules.add(parameter, lex.identifier, type).setAction(e -> new VariableDeclaration(((Token) e[0]).getValue(), (Type) e[1]));
-    rules.add(optionalType, type).setAction(e -> Optional.of(e[0]));
+    rules.add(parameter, lex.identifier, lang.type.type).setAction(e -> new VariableDeclaration(((Token) e[0]).getValue(), (Type) e[1]));
+    rules.add(optionalType, lang.type.type).setAction(e -> Optional.of(e[0]));
     rules.add(optionalType).setAction(e -> Optional.empty());
-
   }
 }

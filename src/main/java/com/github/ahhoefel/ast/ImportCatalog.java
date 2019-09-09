@@ -31,6 +31,7 @@ public class ImportCatalog {
   public void linkImports(FileTree.TargetMap map) {
     for (Import imp0rt : imports) {
       imp0rt.link(map);
+      System.out.println("\t" + imp0rt);
     }
   }
 

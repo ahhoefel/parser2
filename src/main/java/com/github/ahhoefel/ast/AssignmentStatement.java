@@ -38,4 +38,11 @@ public class AssignmentStatement implements Statement {
     expression.addToRepresentation(rep, liveRegisters);
     rep.add(new SetOp(expression.getRegister(), lvalue.getRegister()));
   }
+
+  @Override
+  public void typeCheck() {
+    if (!lvalue.getType().equals(expression.getType())) {
+      throw new RuntimeException("Type mismatch: " + lvalue.getType() + " = " + expression.getType());
+    }
+  }
 }

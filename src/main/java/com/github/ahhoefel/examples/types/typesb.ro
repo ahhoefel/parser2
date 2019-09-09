@@ -1,0 +1,10 @@
+
+
+type B struct {
+  x int
+  c C
+}
+
+type C struct {
+  y string
+}

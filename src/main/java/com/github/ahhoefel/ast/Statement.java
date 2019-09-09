@@ -9,4 +9,6 @@ public interface Statement {
   void toIndentedString(IndentedString out);
 
   void addToRepresentation(Representation rep);
+
+  void typeCheck();
 }

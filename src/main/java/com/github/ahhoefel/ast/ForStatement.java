@@ -47,4 +47,12 @@ public class ForStatement implements Statement {
     condition.addToRepresentation(rep, new ArrayList<>());
     rep.add(new ConditionalGotoOp(condition.getRegister(), blockLabel));
   }
+
+  @Override
+  public void typeCheck() {
+    if (condition.getType() != Type.BOOL) {
+      throw new RuntimeException("For condition type should be boolean. Got: " + condition.getType());
+    }
+    block.typeCheck();
+  }
 }

@@ -1,0 +1,12 @@
+
+type Foo struct {
+  a int
+  b int
+}
+
+func main() {
+  var x Foo = new Foo{
+    a: 3,
+    b: 4,
+  }
+}

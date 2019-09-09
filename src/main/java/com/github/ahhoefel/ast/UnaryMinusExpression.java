@@ -44,4 +44,12 @@ public class UnaryMinusExpression implements Expression {
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);
   }
+
+  @Override
+  public Type getType() {
+    if (a.getType() != Type.INT) {
+      throw new RuntimeException("Unary minus not defined for type: " + a.getType());
+    }
+    return Type.INT;
+  }
 }

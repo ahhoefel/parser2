@@ -50,4 +50,12 @@ public class IfStatement implements Statement {
     block.addToRepresentation(rep);
     rep.add(new DestinationOp(this.destination));
   }
+
+  @Override
+  public void typeCheck() {
+    if (condition.getType() != Type.BOOL) {
+      throw new RuntimeException("If condition should be boolean. Got: " + condition.getType());
+    }
+    block.typeCheck();
+  }
 }

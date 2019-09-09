@@ -9,21 +9,33 @@ import java.util.List;
 
 public class ExpressionRules {
 
-  public Symbol expression;
-  public Symbol functionInvocation;
-  public Symbol argList;
-  public Symbol argument;
+  Symbol expression;
+  private Symbol functionInvocation;
+  private Symbol argList;
+  private Symbol argument;
+  private StructLiteralRules structLiteral;
 
-  public ExpressionRules(Rule.Builder rules, SymbolTable nonTerminals, Lexicon lex, ShiftReduceResolver resolver) {
+  public ExpressionRules(SymbolTable nonTerminals) {
     expression = nonTerminals.newSymbol("expression");
     functionInvocation = nonTerminals.newSymbol("functionInvocation");
     argList = nonTerminals.newSymbol("argList");
     argument = nonTerminals.newSymbol("argument");
+    structLiteral = new StructLiteralRules(nonTerminals);
+  }
+
+  public void provideRules(Rule.Builder rules, Language lang) {
+    structLiteral.provideRules(rules, lang);
+    Lexicon lex = lang.lex;
+    ShiftReduceResolver resolver = lang.resolver;
 
     Rule identifierRule = rules.add(expression, lex.identifier)
         .setAction(e -> new VariableExpression((Token) e[0]));
-    rules.add(expression, lex.number).setAction(e -> new LiteralExpression((Token) e[0]));
+    rules.add(expression, lex.number).setAction(e -> new IntegerLiteralExpression((Token) e[0]));
+    rules.add(expression, lex.trueKeyword).setAction(e -> new BooleanLiteralExpression(true));
+    rules.add(expression, lex.falseKeyword).setAction(e -> new BooleanLiteralExpression(false));
     rules.add(expression, functionInvocation).setAction(e -> e[0]);
+    rules.add(expression, structLiteral.structLiteral).setAction(e -> e[0]);
+
     Rule memberAccessRule = rules.add(expression, expression, lex.period, lex.identifier)
         .setAction(e -> new MemberAccessExpression((Expression) e[0], (Token) e[2]));
     rules.add(expression, expression, lex.period, functionInvocation)
@@ -53,6 +65,8 @@ public class ExpressionRules {
         .setAction(e -> new LessThanExpression((Expression) e[2], (Expression) e[0]));
     Rule greaterThanOrEqual = rules.add(expression, expression, lex.greaterThanOrEqual, expression)
         .setAction(e -> new LessThanOrEqualExpression((Expression) e[2], (Expression) e[0]));
+    Rule notEqual = rules.add(expression, expression, lex.notEqual, expression)
+        .setAction(e -> new NotExpression(new EqualExpression((Expression) e[2], (Expression) e[0])));
 
     rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen)
         .setAction(e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>()));
@@ -88,7 +102,8 @@ public class ExpressionRules {
                 new Pair<>(minus, lex.hyphen)
             ),
             List.of(
-                new Pair<>(doubleEquals, lex.doubleEquals)
+                new Pair<>(doubleEquals, lex.doubleEquals),
+                new Pair<>(notEqual, lex.notEqual)
             ),
             List.of(
                 new Pair<>(lessThan, lex.lessThan),
@@ -120,63 +135,8 @@ public class ExpressionRules {
       }
     }
 
-    /*
-    resolver.addShiftPreference(times, lex.period);
-    resolver.addReducePreference(times, lex.plus);
-    resolver.addReducePreference(times, lex.times);
-    resolver.addReducePreference(times, lex.hyphen);
-    resolver.addReducePreference(times, lex.doubleAmpersand);
-    resolver.addReducePreference(times, lex.doublePipe);
-    resolver.addReducePreference(times, lex.greaterThan);
-    resolver.addReducePreference(times, lex.greaterThanOrEqual);
-    resolver.addReducePreference(times, lex.lessThan);
-    resolver.addReducePreference(times, lex.lessThanOrEqual);
-    resolver.addReducePreference(times, lex.doubleEquals);
-
-    resolver.addShiftPreference(plus, lex.period);
-    resolver.addShiftPreference(plus, lex.times);
-    resolver.addReducePreference(plus, lex.plus);
-    resolver.addReducePreference(plus, lex.hyphen);
-    resolver.addReducePreference(plus, lex.doubleAmpersand);
-    resolver.addReducePreference(plus, lex.doublePipe);
-    resolver.addReducePreference(plus, lex.greaterThan);
-    resolver.addReducePreference(plus, lex.greaterThanOrEqual);
-    resolver.addReducePreference(plus, lex.lessThan);
-    resolver.addReducePreference(plus, lex.lessThanOrEqual);
-    resolver.addReducePreference(plus, lex.doubleEquals);
-
-    resolver.addShiftPreference(minus, lex.period);
-    resolver.addShiftPreference(minus, lex.times);
-    resolver.addReducePreference(minus, lex.plus);
-    resolver.addReducePreference(minus, lex.hyphen);
-    resolver.addReducePreference(minus, lex.doubleAmpersand);
-    resolver.addReducePreference(minus, lex.doublePipe);
-    resolver.addReducePreference(minus, lex.greaterThan);
-    resolver.addReducePreference(minus, lex.greaterThanOrEqual);
-    resolver.addReducePreference(minus, lex.lessThan);
-    resolver.addReducePreference(minus, lex.lessThanOrEqual);
-    resolver.addReducePreference(minus, lex.doubleEquals);
-
-    resolver.addShiftPreference(doubleEquals, lex.period);
-    resolver.addShiftPreference(doubleEquals, lex.times);
-    resolver.addShiftPreference(doubleEquals, lex.plus);
-    resolver.addShiftPreference(doubleEquals, lex.plus);
-    resolver.addShiftPreference(doubleEquals, lex.hyphen);
-    resolver.addReducePreference(doubleEquals, lex.doubleAmpersand);
-    resolver.addReducePreference(doubleEquals, lex.doublePipe);
-    resolver.addReducePreference(doubleEquals, lex.greaterThan);
-    resolver.addReducePreference(doubleEquals, lex.greaterThanOrEqual);
-    resolver.addReducePreference(doubleEquals, lex.lessThan);
-    resolver.addReducePreference(doubleEquals, lex.lessThanOrEqual);
-    resolver.addReducePreference(doubleEquals, lex.doubleEquals);
-
-    resolver.addShiftPreference(unitaryMinus, lex.period);
-    resolver.addReducePreference(unitaryMinus, lex.plus);
-    resolver.addReducePreference(unitaryMinus, lex.times);
-    resolver.addReducePreference(unitaryMinus, lex.hyphen);
-    */
-
     resolver.addShiftPreference(identifierRule, lex.lParen);
     resolver.addShiftPreference(memberAccessRule, lex.lParen);
+    resolver.addReducePreference(identifierRule, lex.period);
   }
 }

@@ -1,0 +1,4 @@
+func main() {
+  var b bool = true
+  var c int = true
+}

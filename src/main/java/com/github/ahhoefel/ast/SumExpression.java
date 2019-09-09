@@ -46,4 +46,12 @@ public class SumExpression implements Expression {
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);
   }
+
+  @Override
+  public Type getType() {
+    if (a.getType() != Type.INT || b.getType() != Type.INT) {
+      throw new RuntimeException("Addition not defined for types: " + a.getType() + " " + b.getType());
+    }
+    return Type.INT;
+  }
 }

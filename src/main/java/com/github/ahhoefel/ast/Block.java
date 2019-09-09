@@ -51,4 +51,10 @@ public class Block {
       statement.toIndentedString(out);
     }
   }
+
+  public void typeCheck() {
+    for (Statement statement : statements) {
+      statement.typeCheck();
+    }
+  }
 }

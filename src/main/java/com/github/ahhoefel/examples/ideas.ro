@@ -43,4 +43,5 @@ static {
 
 a.C<int> val := new a.C<int>()
 
+Maybe main should be called on an instance of a statically computed object.
 

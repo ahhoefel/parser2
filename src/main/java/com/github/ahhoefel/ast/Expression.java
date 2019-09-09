@@ -14,4 +14,6 @@ public interface Expression {
   void setSymbolCatalog(SymbolCatalog symbols);
 
   void addToRepresentation(Representation rep, List<Register> liveRegisters);
+
+  Type getType();
 }

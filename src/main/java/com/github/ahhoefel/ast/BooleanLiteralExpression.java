@@ -4,24 +4,22 @@ import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
-import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 
-public class LiteralExpression implements Expression {
+public class BooleanLiteralExpression implements Expression {
 
-  private int value;
+  private boolean value;
   private Register register;
   private SymbolCatalog symbols;
 
-  public LiteralExpression(Token t) {
-    String text = t.getValue();
-    this.value = Integer.parseInt(text);
+  public BooleanLiteralExpression(boolean value) {
+    this.value = value;
     this.register = new Register();
   }
 
-  public int eval(Context context) {
+  public boolean eval(Context context) {
     return value;
   }
 
@@ -31,7 +29,7 @@ public class LiteralExpression implements Expression {
   }
 
   public void toIndentedString(IndentedString out) {
-    out.add(Integer.toString(value));
+    out.add(Boolean.toString(value));
   }
 
   @Override
@@ -41,7 +39,12 @@ public class LiteralExpression implements Expression {
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
-    rep.add(new LiteralOp(value, register));
+    rep.add(new LiteralOp(value ? 1 : 0, register));
     liveRegisters.add(register);
+  }
+
+  @Override
+  public Type getType() {
+    return Type.BOOL;
   }
 }

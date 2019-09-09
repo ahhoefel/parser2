@@ -45,4 +45,9 @@ public class MemberAccessExpression implements Expression {
     liveRegisters.add(register);
     throw new RuntimeException("not implemented");
   }
+
+  @Override
+  public Type getType() {
+    throw new RuntimeException("Member access type checking not completed.");
+  }
 }

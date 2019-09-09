@@ -42,6 +42,12 @@ public class VariableExpression implements Expression {
     liveRegisters.add(register);
   }
 
+  @Override
+  public Type getType() {
+    VariableDeclaration var = symbols.getVariable(identifier);
+    return var.getType();
+  }
+
   public String getIdentifier() {
     return identifier;
   }

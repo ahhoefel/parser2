@@ -12,12 +12,16 @@ public class Rule {
   private Function<Object[], Object> action;
 
   public Rule(Symbol source, List<Symbol> symbols) {
+    assert source != null;
+    assert symbols.stream().allMatch(x -> x != null);
     this.source = source;
     this.symbols = symbols;
     this.action = new ParseTreeAction();
   }
 
   public Rule(Symbol source, List<Symbol> symbols, Function<Object[], Object> action) {
+    assert source != null;
+    assert symbols.stream().allMatch(x -> x != null);
     this.source = source;
     this.symbols = symbols;
     this.action = action;

@@ -1,6 +1,7 @@
 package com.github.ahhoefel.ast;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SymbolCatalog {
 
@@ -8,21 +9,23 @@ public class SymbolCatalog {
   private ImportCatalog imports;
   private Map<String, FunctionDeclaration> functions;
   private Map<String, VariableDeclaration> variables;
+  private Map<String, TypeDeclaration> types;
   private List<VariableDeclaration> orderedVariables;
   private String scopeName;
-  private boolean functionDeclaration;
+  private Optional<FunctionDeclaration> functionDeclaration;
 
-  public SymbolCatalog(String scopeName, ImportCatalog imports, boolean functionDeclaration) {
+  public SymbolCatalog(String scopeName, ImportCatalog imports, Optional<FunctionDeclaration> functionDeclaration) {
     this.scopeName = scopeName;
     this.functionDeclaration = functionDeclaration;
     functions = new HashMap<>();
     variables = new HashMap<>();
+    types = new HashMap<>();
     parent = Optional.empty();
     this.imports = imports;
     orderedVariables = new ArrayList<>();
   }
 
-  public SymbolCatalog(String scopeName, SymbolCatalog parent, boolean functionDeclaration) {
+  public SymbolCatalog(String scopeName, SymbolCatalog parent, Optional<FunctionDeclaration> functionDeclaration) {
     this(scopeName, parent.imports, functionDeclaration);
     this.parent = Optional.ofNullable(parent);
   }
@@ -31,6 +34,10 @@ public class SymbolCatalog {
     System.out.println("Variable added to symbol table: " + variable);
     variables.put(variable.getName(), variable);
     orderedVariables.add(variable);
+  }
+
+  public void addType(TypeDeclaration type) {
+    types.put(type.getIdentifier(), type);
   }
 
   public VariableDeclaration getVariable(String name) {
@@ -43,7 +50,7 @@ public class SymbolCatalog {
 
   private Optional<VariableDeclaration> getVariableInternal(String name) {
     Optional<VariableDeclaration> variable = Optional.ofNullable(variables.get(name));
-    if (!variable.isPresent() && !functionDeclaration) {
+    if (!variable.isPresent() && !functionDeclaration.isPresent()) {
       if (!parent.isPresent()) {
         throw new RuntimeException("Expected parent to be present");
       }
@@ -66,7 +73,7 @@ public class SymbolCatalog {
 
     public VariableIterator() {
       index = 0;
-      if (!functionDeclaration && parent.isPresent()) {
+      if (!functionDeclaration.isPresent() && parent.isPresent()) {
         parentIter = Optional.of(parent.get().getVariablesInOrder());
       } else {
         parentIter = Optional.empty();
@@ -93,7 +100,7 @@ public class SymbolCatalog {
 
     public ReverseVariableIterator() {
       index = orderedVariables.size() - 1;
-      if (!functionDeclaration && parent.isPresent()) {
+      if (!functionDeclaration.isPresent() && parent.isPresent()) {
         parentIter = Optional.of(parent.get().getVariablesInReverseOrder());
       } else {
         parentIter = Optional.empty();
@@ -134,6 +141,26 @@ public class SymbolCatalog {
     return this.imports.get(shortName).getSymbols();
   }
 
+  public Type getType(Optional<String> packageName, String typeName) {
+    SymbolCatalog symbols = this;
+    if (packageName.isPresent()) {
+      symbols = imports.get(packageName.get()).getSymbols();
+    }
+    TypeDeclaration typeDeclaration = symbols.types.get(typeName);
+    if (typeDeclaration == null) {
+      String error = "Could not find symbol ";
+      if (packageName.isPresent()) {
+        error += packageName.get() + ".";
+      }
+      error += typeName + ". ";
+      error += "Known types: ";
+      error += String.join(", ", symbols.types.keySet().stream().map(String::toString).collect(Collectors.toList()));
+
+      throw new RuntimeException(error);
+    }
+    return typeDeclaration.getType();
+  }
+
   public void toStringBuilder(StringBuilder builder) {
     builder.append("Scope ").append(scopeName).append("\n");
     for (String var : variables.keySet()) {
@@ -146,11 +173,31 @@ public class SymbolCatalog {
       builder.append("Parent ");
       parent.get().toStringBuilder(builder);
     }
+
+    for (Map.Entry<String, FunctionDeclaration> entry : functions.entrySet()) {
+      builder.append("func ").append(entry.getKey()).append('\n');
+    }
+
+    for (Map.Entry<String, TypeDeclaration> entry : types.entrySet()) {
+      builder.append(entry.getValue());
+      builder.append('\n');
+    }
   }
 
   public String toString() {
     StringBuilder out = new StringBuilder();
     toStringBuilder(out);
     return out.toString();
+  }
+
+  public Optional<FunctionDeclaration> getContainingFunction() {
+    Optional<SymbolCatalog> catalog = Optional.of(this);
+    while (catalog.isPresent() && !catalog.get().functionDeclaration.isPresent()) {
+      catalog = catalog.get().parent;
+    }
+    if (!catalog.isPresent()) {
+      return Optional.empty();
+    }
+    return catalog.get().functionDeclaration;
   }
 }

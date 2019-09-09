@@ -29,10 +29,6 @@ public class Import implements Declaration {
     return file;
   }
 
-  public Target getTarget(String base) {
-    return new Target(base, path);
-  }
-
   public String getShortName() {
     return shortName;
   }
@@ -48,5 +44,9 @@ public class Import implements Declaration {
 
   public SymbolCatalog getSymbols() {
     return symbols;
+  }
+
+  public String toString() {
+    return String.format("import %s %s", shortName, path);
   }
 }

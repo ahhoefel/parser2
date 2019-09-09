@@ -11,26 +11,45 @@ import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class RaeFile {
 
-  private SymbolCatalog symbols;
+  private Target target;
   private ImportCatalog imports;
+  private SymbolCatalog symbols;
   private List<FunctionDeclaration> functions;
+  private List<TypeDeclaration> types;
+  private List<NamedType> unresolvedTypes;
   private Register endLabelRegister;
   private Label endLabel;
 
   public RaeFile() {
     imports = new ImportCatalog();
     functions = new ArrayList<>();
-    symbols = new SymbolCatalog("file", imports, false);
+    types = new ArrayList<>();
+    unresolvedTypes = new ArrayList<>();
+    symbols = new SymbolCatalog("file", imports, Optional.empty());
     endLabelRegister = new Register();
     endLabel = new Label();
+  }
+
+  public void setTarget(Target target) {
+    this.target = target;
+  }
+
+  public Target getTarget() {
+    return target;
   }
 
   public void addFunction(FunctionDeclaration f) {
     functions.add(f);
     f.setSymbolCatalog(symbols);
+  }
+
+  public void addType(TypeDeclaration t) {
+    types.add(t);
+    symbols.addType(t);
   }
 
   public void addImport(Import imp0rt) {
@@ -79,6 +98,25 @@ public class RaeFile {
   }
 
   public void linkImports(FileTree.TargetMap map) {
+    System.out.println("Linking imports of " + target);
     imports.linkImports(map);
+  }
+
+  public void linkSymbols() {
+    for (NamedType type : unresolvedTypes) {
+      type.linkTypes(symbols);
+    }
+    unresolvedTypes.clear();
+  }
+
+  public void deferResolution(NamedType type) {
+    System.out.println("Unresolved type: " + type);
+    unresolvedTypes.add(type);
+  }
+
+  public void typeCheck() {
+    for (FunctionDeclaration fn : functions) {
+      fn.typeCheck();
+    }
   }
 }

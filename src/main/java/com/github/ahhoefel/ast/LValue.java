@@ -23,7 +23,10 @@ public class LValue {
   }
 
   public Type getType() {
-    return type;
+    if (declaration) {
+      return type;
+    }
+    return symbols.getVariable(identifier).getType();
   }
 
   public void setSymbolCatalog(SymbolCatalog symbols) {

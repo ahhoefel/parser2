@@ -55,7 +55,7 @@ public class ExampleC {
     Tokenizer.TokenIterator tokens = new Tokenizer.TokenIterator(new RangeTokenizer(c.ch, c.terminals.getEof()), r, c.terminals.getEof());
 
     System.out.println(table);
-    Object tree = Parser.parseTokens(table, tokens, c.grammar.getAugmentedStartRule().getSource());
+    Object tree = Parser.parseTokens(table, tokens, c.grammar.getAugmentedStartRule().getSource(), null);
     System.out.println(tree);
   }
 }

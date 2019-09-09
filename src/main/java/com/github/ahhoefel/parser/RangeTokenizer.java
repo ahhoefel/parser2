@@ -23,6 +23,8 @@ public class RangeTokenizer implements Tokenizer {
     for (int i = 97; i < 123; i++) {
       charTerminalMap[i] = chars.letter;
     }
+    charTerminalMap[91] = chars.lbracket;
+    charTerminalMap[93] = chars.rbracket;
     charTerminalMap[123] = chars.lbrace;
     charTerminalMap[125] = chars.rbrace;
     charTerminalMap[32] = chars.space;
@@ -36,6 +38,7 @@ public class RangeTokenizer implements Tokenizer {
     charTerminalMap[45] = chars.hypen;
     charTerminalMap[46] = chars.period;
     charTerminalMap[47] = chars.forwardSlash;
+    charTerminalMap[58] = chars.colon;
     charTerminalMap[60] = chars.lessThan;
     charTerminalMap[61] = chars.eq;
     charTerminalMap[62] = chars.greaterThan;
@@ -67,5 +70,8 @@ public class RangeTokenizer implements Tokenizer {
     System.out.println(String.format("%c %d", ' ', (int) ' '));
     System.out.println(String.format("%c %d", '\n', (int) '\n'));
     System.out.println(String.format("%c %d", '\t', (int) '\t'));
+    System.out.println(String.format("%c %d", '[', (int) '['));
+    System.out.println(String.format("%c %d", ']', (int) ']'));
+    System.out.println(String.format("%c %d", (char) 92, (int) ']'));
   }
 }

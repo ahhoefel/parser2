@@ -11,9 +11,12 @@ public class CharRange {
   public final Symbol rparen;
   public final Symbol lbrace;
   public final Symbol rbrace;
+  public final Symbol lbracket;
+  public final Symbol rbracket;
   public final Symbol newline;
   public final Symbol period;
   public final Symbol comma;
+  public final Symbol colon;
   public final Symbol eq;
   public final Symbol plus;
   public final Symbol times;
@@ -35,9 +38,12 @@ public class CharRange {
     rparen = symbols.newSymbol("rparen");
     lbrace = symbols.newSymbol("lbrace");
     rbrace = symbols.newSymbol("rbrace");
+    lbracket = symbols.newSymbol("lbracket");
+    rbracket = symbols.newSymbol("rbracket");
     newline = symbols.newSymbol("newline");
     period = symbols.newSymbol("period");
     comma = symbols.newSymbol("comma");
+    colon = symbols.newSymbol("colon");
     eq = symbols.newSymbol("equals");
     plus = symbols.newSymbol("plus");
     times = symbols.newSymbol("times");

@@ -14,6 +14,7 @@ public class ReturnStatement implements Statement {
 
   private Expression expression;
   private Register returnDestination;
+  private FunctionDeclaration functionDeclaration;
 
   public ReturnStatement(Expression expression) {
     this.expression = expression;
@@ -22,6 +23,7 @@ public class ReturnStatement implements Statement {
 
   @Override
   public void addToSymbolCatalog(SymbolCatalog symbols) {
+    functionDeclaration = symbols.getContainingFunction().get();
     expression.setSymbolCatalog(symbols);
   }
 
@@ -39,5 +41,12 @@ public class ReturnStatement implements Statement {
     rep.add(new PopOp(returnDestination));
     rep.add(new PushOp(expression.getRegister()));
     rep.add(new GotoRegisterOp(returnDestination));
+  }
+
+  @Override
+  public void typeCheck() {
+    if (!functionDeclaration.getReturnType().equals(expression.getType())) {
+      throw new RuntimeException("Type mismatch. Return type " + functionDeclaration.getReturnType() + ", return statement " + expression.getType());
+    }
   }
 }

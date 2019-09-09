@@ -62,16 +62,7 @@ public class FunctionInvocationExpression implements Expression {
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
-    SymbolCatalog catalog = symbols;
-    if (implicitArg.isPresent()) {
-      if (!(implicitArg.get() instanceof VariableExpression)) {
-        throw new RuntimeException("Calling functions on expression not implemented.");
-      }
-      // Treating the variable expression as a package.
-      VariableExpression pkg = (VariableExpression) implicitArg.get();
-      catalog = symbols.getImport(pkg.getIdentifier());
-    }
-    FunctionDeclaration fn = catalog.getFunction(identifier);
+    FunctionDeclaration fn = getDeclaration();
 
     for (Expression arg : args) {
       arg.addToRepresentation(rep, liveRegisters);
@@ -127,5 +118,23 @@ public class FunctionInvocationExpression implements Expression {
       rep.add(new PopOp(var.getRegister()));
     }
     rep.add(new CommentOp("Ending invocation of function " + identifier));
+  }
+
+  private FunctionDeclaration getDeclaration() {
+    SymbolCatalog catalog = symbols;
+    if (implicitArg.isPresent()) {
+      if (!(implicitArg.get() instanceof VariableExpression)) {
+        throw new RuntimeException("Calling functions on expression not implemented.");
+      }
+      // Treating the variable expression as a package.
+      VariableExpression pkg = (VariableExpression) implicitArg.get();
+      catalog = symbols.getImport(pkg.getIdentifier());
+    }
+    return catalog.getFunction(identifier);
+  }
+
+  @Override
+  public Type getType() {
+    return getDeclaration().getReturnType();
   }
 }
