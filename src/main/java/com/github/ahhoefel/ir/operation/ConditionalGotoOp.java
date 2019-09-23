@@ -21,7 +21,7 @@ public class ConditionalGotoOp implements Operation {
 
   @Override
   public void run(Context context) {
-    if (context.getRegister(register) != 0) {
+    if (!context.getRegister(register).equalsZero()) {
       context.setIndex(label.getIndex());
     }
   }

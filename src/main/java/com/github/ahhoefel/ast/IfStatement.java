@@ -22,7 +22,7 @@ public class IfStatement implements Statement {
     this.condition = condition;
     this.block = block;
     this.destination = new Label();
-    this.negation = new Register();
+    this.negation = new Register(1);
   }
 
   @Override

@@ -135,6 +135,8 @@ public class FunctionInvocationExpression implements Expression {
 
   @Override
   public Type getType() {
-    return getDeclaration().getReturnType();
+    Type returnType = getDeclaration().getReturnType();
+    register.setWidth(returnType.width());
+    return returnType;
   }
 }

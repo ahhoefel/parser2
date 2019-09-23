@@ -27,12 +27,24 @@ public class NamedType implements Type {
     type = Optional.of(symbols.getType(packagePrefix, identifier));
   }
 
+  public Type getType() {
+    if (!type.isPresent()) {
+      throw new RuntimeException("Type not linked");
+    }
+    return type.get();
+  }
+
   @Override
   public int width() {
     if (type.isPresent()) {
       return type.get().width();
     }
     return 0;
+  }
+
+  public boolean equals(Object o) {
+    // Order matters here so we recursively descend into named types, flipping sides.
+    return o.equals(type.get());
   }
 
   public String toString() {
@@ -43,7 +55,7 @@ public class NamedType implements Type {
     out += identifier + " ";
     if (type.isPresent()) {
       out += type.get().toString();
-      out += "size:" + width();
+      //out += "size:" + width();
     } else {
       out += "unresolved";
     }

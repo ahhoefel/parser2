@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Register;
@@ -20,6 +21,10 @@ public class NegateOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, context.getRegister(a) == 0 ? 1 : 0);
+    Alloc v = new Alloc(1);
+    if (context.getRegister(a).equalsZero()) {
+      v.setWord(0, 1);
+    }
+    context.copyToRegister(destination, v);
   }
 }

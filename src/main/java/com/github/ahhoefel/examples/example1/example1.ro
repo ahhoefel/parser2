@@ -1,5 +1,5 @@
 
-func main() {
+func main() int {
   var x int = 3
   if x > 0 {
     x = 5
@@ -9,4 +9,5 @@ func main() {
     y = y + x
     x = -1 + x
   }
+  return 3
 }

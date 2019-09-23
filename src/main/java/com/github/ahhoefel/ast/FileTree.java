@@ -16,10 +16,12 @@ public class FileTree {
 
   public String base;
   public Map<String, RaeFile> files;
+  public Register mainFnReturnRegister;
 
   public FileTree(String base) {
     this.base = base;
     files = new HashMap<>();
+    mainFnReturnRegister = new Register();
   }
 
   public Representation representation(Target target) {
@@ -28,14 +30,21 @@ public class FileTree {
     if (main == null) {
       throw new RuntimeException("Target not in tree: " + target);
     }
-    if (main.getSymbols().getFunction("main") != null) {
+    FunctionDeclaration mainFn = main.getSymbols().getFunction("main");
+    if (mainFn != null) {
       Label stopLabel = new Label();
       Register stopLabelRegister = new Register();
       rep.add(new LiteralLabelOp(stopLabel, stopLabelRegister));
       rep.add(new PushOp(stopLabelRegister));
-      rep.add(new GotoOp(main.getSymbols().getFunction("main").getLabel()));
+      rep.add(new GotoOp(mainFn.getLabel()));
       rep.add(new DestinationOp(stopLabel));
-      rep.add(new StopOp("Ended execution."));
+      if (mainFn.getReturnType().equals(Type.VOID)) {
+        rep.add(new StopOp("Ended execution. Main function void."));
+      } else {
+        rep.add(new PopOp(mainFnReturnRegister));
+        rep.add(new StopOp(mainFnReturnRegister, mainFn.getReturnType()));
+      }
+      mainFnReturnRegister.setWidth(mainFn.getReturnType().width());
     } else {
       rep.add(new StopOp("No main."));
     }
@@ -100,6 +109,7 @@ public class FileTree {
       System.out.println("  " + file.getTarget().toString());
       file.typeCheck();
     }
+    System.out.println();
   }
 
   public class TargetMap {

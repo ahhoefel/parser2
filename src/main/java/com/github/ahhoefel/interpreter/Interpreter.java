@@ -25,10 +25,21 @@ public class Interpreter {
       //int ch = System.in.read();
       //System.out.println(op);
       //System.out.println(context);
-      op.run(context);
+      try {
+        op.run(context);
+      } catch (Exception e) {
+        System.out.println("Exception at operation " + context.getIndex());
+        System.out.println(op);
+        throw e;
+      }
       context.incrementIndex();
     }
-    System.out.println(context.getStopMessage().get());
+    if (context.getStopMessage().isPresent()) {
+      System.out.println(context.getStopMessage().get());
+    } else {
+      System.out.println("Result: " + context.getStopResult());
+      System.out.println("Result type: " + context.getStopType());
+    }
   }
 
   public static void runTarget(String targetString) throws IOException {

@@ -2,10 +2,7 @@ package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.ir.operation.DebugFunctionReturnOp;
-import com.github.ahhoefel.ir.operation.GotoRegisterOp;
-import com.github.ahhoefel.ir.operation.PopOp;
-import com.github.ahhoefel.ir.operation.PushOp;
+import com.github.ahhoefel.ir.operation.*;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
@@ -36,6 +33,7 @@ public class ReturnStatement implements Statement {
 
   @Override
   public void addToRepresentation(Representation rep) {
+    rep.add(new CommentOp("Return expression"));
     expression.addToRepresentation(rep, new ArrayList<>());
     rep.add(new DebugFunctionReturnOp(expression));
     rep.add(new PopOp(returnDestination));
@@ -48,5 +46,6 @@ public class ReturnStatement implements Statement {
     if (!functionDeclaration.getReturnType().equals(expression.getType())) {
       throw new RuntimeException("Type mismatch. Return type " + functionDeclaration.getReturnType() + ", return statement " + expression.getType());
     }
+    //returnDestination.setWidth(functionDeclaration.getReturnType().width());
   }
 }

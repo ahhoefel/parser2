@@ -36,7 +36,7 @@ public class Representation {
     return operations.size();
   }
 
-  public Operation getOperation(int i) {
-    return operations.get(i);
+  public Operation getOperation(long i) {
+    return operations.get((int) i);
   }
 }

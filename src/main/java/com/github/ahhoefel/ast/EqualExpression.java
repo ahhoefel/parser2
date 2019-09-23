@@ -16,7 +16,7 @@ public class EqualExpression implements Expression {
   public EqualExpression(Expression a, Expression b) {
     this.a = a;
     this.b = b;
-    this.register = new Register();
+    this.register = new Register(1);
   }
 
   @Override

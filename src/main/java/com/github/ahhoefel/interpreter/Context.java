@@ -1,5 +1,6 @@
 package com.github.ahhoefel.interpreter;
 
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 
 import java.util.*;
@@ -7,10 +8,13 @@ import java.util.*;
 public class Context {
 
   private Optional<String> stopMessage;
-  private Map<Register, Integer> registers;
-  private List<Integer> stack;
+  private Alloc stopResult;
+  private Type stopType;
+  private Map<Register, Alloc> registers;
+  private List<Alloc> stack;
   private int stackDepth = 0;
-  private int index;
+  private long index;
+  private boolean stopped = false;
 
   public Context() {
     registers = new HashMap<>();
@@ -18,37 +22,51 @@ public class Context {
     stopMessage = Optional.empty();
   }
 
-  public Integer getRegister(Register r) {
+  public Alloc getRegister(Register r) {
     if (!registers.containsKey(r)) {
-      return 0;
+      registers.put(r, r.createAlloc());
     }
-    Integer value = registers.get(r);
+    Alloc value = registers.get(r);
     //System.out.print(String.format("get %d; ", value));
     return value;
   }
 
-  public void putRegister(Register r, int value) {
-    registers.put(r, value);
-    //System.out.print(String.format("put %d; ", value));
+  public void copyToRegister(Register r, Alloc value) {
+    Alloc alloc = registers.get(r);
+    if (alloc == null) {
+      alloc = r.createAlloc();
+      registers.put(r, alloc);
+    }
+    alloc.copyFrom(value);
+    //System.out.println(r + " " + alloc);
+  }
+
+  public void copyToRegister(Register r, Alloc value, int inputOffsetBits, int outputOffsetBits, int lenBits) {
+    Alloc alloc = registers.get(r);
+    if (alloc == null) {
+      alloc = r.createAlloc();
+      registers.put(r, alloc);
+    }
+    alloc.copyFrom(value, inputOffsetBits, outputOffsetBits, lenBits);
   }
 
   public void push(Register r) {
-    int value = getRegister(r);
-    stack.add(value);
+    Alloc value = getRegister(r);
+    stack.add(value.copy());
     //System.out.print(String.format("push %d; ", value));
   }
 
   public void pop(Register r) {
-    int value = stack.remove(stack.size() - 1);
-    putRegister(r, value);
+    Alloc value = stack.remove(stack.size() - 1);
+    copyToRegister(r, value);
     //System.out.print(String.format("pop %d; remaining stack: %s;\n", value, stack));
   }
 
-  public void setIndex(int index) {
+  public void setIndex(long index) {
     this.index = index;
   }
 
-  public int getIndex() {
+  public long getIndex() {
     return index;
   }
 
@@ -57,15 +75,30 @@ public class Context {
   }
 
   public boolean isStopped() {
-    return stopMessage.isPresent();
+    return stopped;
   }
 
   public void stop(String message) {
     stopMessage = Optional.of(message);
+    stopped = true;
+  }
+
+  public void stop(Register result, Type type) {
+    stopResult = registers.get(result);
+    stopType = type;
+    stopped = true;
   }
 
   public Optional<String> getStopMessage() {
     return stopMessage;
+  }
+
+  public Alloc getStopResult() {
+    return stopResult;
+  }
+
+  public Type getStopType() {
+    return stopType;
   }
 
   public void incrementStackDepth() {

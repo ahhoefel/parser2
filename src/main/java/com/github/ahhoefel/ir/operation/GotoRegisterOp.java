@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Register;
@@ -17,7 +18,7 @@ public class GotoRegisterOp implements Operation {
 
   @Override
   public void run(Context context) {
-    int dest = context.getRegister(destination);
-    context.setIndex(dest);
+    Alloc dest = context.getRegister(destination);
+    context.setIndex(dest.getWord(0));
   }
 }

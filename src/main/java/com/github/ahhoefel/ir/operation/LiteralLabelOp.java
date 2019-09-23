@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Operation;
@@ -21,6 +22,8 @@ public class LiteralLabelOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, label.getIndex());
+    Alloc v = new Alloc(64);
+    v.setWord(0, label.getIndex());
+    context.copyToRegister(destination, v);
   }
 }

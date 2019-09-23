@@ -22,6 +22,6 @@ public class MultiplyOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, context.getRegister(a) * context.getRegister(b));
+    context.copyToRegister(destination, context.getRegister(a).times(context.getRegister(b)));
   }
 }

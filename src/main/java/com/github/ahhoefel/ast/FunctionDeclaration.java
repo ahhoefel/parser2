@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
@@ -74,7 +75,7 @@ public class FunctionDeclaration implements Declaration {
     this.statements.setSymbolCatalog(symbols);
   }
 
-  public String formatParametersWithValues(List<Integer> values) {
+  public String formatParametersWithValues(List<Alloc> values) {
     StringBuilder out = new StringBuilder();
     for (int i = 0; i < parameters.size(); i++) {
       out.append(parameters.get(i).getName());

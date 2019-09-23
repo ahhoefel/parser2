@@ -2,6 +2,7 @@ package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.ir.operation.SetOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 public class StructLiteralExpression implements Expression {
 
   private Type type;
+  private StructType structType;
   private Map<String, Expression> values;
   private Register register;
 
@@ -52,11 +54,34 @@ public class StructLiteralExpression implements Expression {
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
-
+    int destinationOffset = 0;
+    for (String name : structType.memberNames()) {
+      Type type = structType.getMember(name);
+      Expression e = values.get(name);
+      e.addToRepresentation(rep, liveRegisters);
+      rep.add(new SetOp(e.getRegister(), register, 0, destinationOffset, e.getType().width()));
+      destinationOffset += type.width();
+    }
+    liveRegisters.add(register);
   }
 
   @Override
   public Type getType() {
-    throw new RuntimeException("Expressions in struct literal not type checked yet.");
+    if (structType != null) {
+      return structType;
+    }
+    structType = StructType.toStructType(type);
+
+    int width = 0;
+    for (Map.Entry<String, Expression> entry : values.entrySet()) {
+      Type memberType = structType.getMember(entry.getKey());
+      Type exprType = entry.getValue().getType();
+      if (!memberType.equals(exprType)) {
+        throw new RuntimeException("Struct literal member " + entry.getKey() + " expected to be type " + memberType + ". Got " + exprType + ".");
+      }
+      width += memberType.width();
+    }
+    this.register.setWidth(width);
+    return type;
   }
 }

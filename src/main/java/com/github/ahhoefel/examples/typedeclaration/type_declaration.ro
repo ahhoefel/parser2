@@ -4,9 +4,10 @@ type Foo struct {
   b int
 }
 
-func main() {
+func main() Foo {
   var x Foo = new Foo{
     a: 3,
     b: 4,
   }
+  return x
 }

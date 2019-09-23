@@ -22,6 +22,6 @@ public class AddOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, context.getRegister(a) + context.getRegister(b));
+    context.copyToRegister(destination, context.getRegister(a).add(context.getRegister(b)));
   }
 }

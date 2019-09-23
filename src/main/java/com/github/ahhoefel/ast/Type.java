@@ -10,7 +10,7 @@ public interface Type {
 
     @Override
     public int width() {
-      return 1;
+      return 64;
     }
 
     public String toString() {

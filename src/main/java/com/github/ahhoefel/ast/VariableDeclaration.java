@@ -32,6 +32,7 @@ public class VariableDeclaration {
   }
 
   public Type getType() {
+    register.setWidth(type.width());
     return type;
   }
 

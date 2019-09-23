@@ -2,6 +2,7 @@ package com.github.ahhoefel.ir.operation;
 
 import com.github.ahhoefel.ast.Expression;
 import com.github.ahhoefel.ast.FunctionDeclaration;
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 
@@ -20,7 +21,7 @@ public class DebugFunctionCallOp implements Operation {
 
   @Override
   public void run(Context context) {
-    List<Integer> argValues = new ArrayList<>();
+    List<Alloc> argValues = new ArrayList<>();
     for (Expression arg : args) {
       argValues.add(context.getRegister(arg.getRegister()));
     }

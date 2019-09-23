@@ -38,14 +38,17 @@ public class VariableExpression implements Expression {
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     VariableDeclaration variable = symbols.getVariable(identifier);
-    rep.add(new SetOp(variable.getRegister(), register));
+    rep.add(new SetOp(variable.getRegister(), register, 0, 0, variable.getType().width()));
     liveRegisters.add(register);
   }
 
   @Override
   public Type getType() {
     VariableDeclaration var = symbols.getVariable(identifier);
-    return var.getType();
+    Type type = var.getType();
+    register.setWidth(type.width());
+    //System.out.println(register + " " + type.width());
+    return type;
   }
 
   public String getIdentifier() {

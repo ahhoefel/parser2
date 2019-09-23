@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Register;
@@ -20,6 +21,8 @@ public class LiteralOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, value);
+    Alloc v = new Alloc(64);
+    v.setWord(0, value);
+    context.copyToRegister(destination, v);
   }
 }

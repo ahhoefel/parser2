@@ -36,7 +36,7 @@ public class AssignmentStatement implements Statement {
   public void addToRepresentation(Representation rep) {
     List<Register> liveRegisters = new ArrayList<>();
     expression.addToRepresentation(rep, liveRegisters);
-    rep.add(new SetOp(expression.getRegister(), lvalue.getRegister()));
+    rep.add(new SetOp(expression.getRegister(), lvalue.getRegister(), 0, 0, expression.getType().width()));
   }
 
   @Override

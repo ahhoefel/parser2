@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
+import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Register;
@@ -22,6 +23,10 @@ public class LessThanOrEqualOp implements Operation {
 
   @Override
   public void run(Context context) {
-    context.putRegister(destination, context.getRegister(a) <= context.getRegister(b) ? 1 : 0);
+    Alloc v = new Alloc(1);
+    if (context.getRegister(a).lessThanOrEqual(context.getRegister(b))) {
+      v.setWord(0, 1);
+    }
+    context.copyToRegister(destination, v);
   }
 }

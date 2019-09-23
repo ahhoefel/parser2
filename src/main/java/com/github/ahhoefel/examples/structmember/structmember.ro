@@ -1,0 +1,17 @@
+
+type Foo struct {
+  a int
+  b int
+}
+
+func main() int {
+  var x Foo = getFoo()
+  return x.b
+}
+
+func getFoo() Foo {
+  return new Foo {
+    a: 3,
+    b: 4,
+  }
+}

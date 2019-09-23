@@ -14,8 +14,9 @@ public class DebugFunctionReturnOp implements Operation {
 
   @Override
   public void run(Context context) {
-    System.out.println(context.getStackIndent() + "return " + context.getRegister(expression.getRegister()));
+    //System.out.println(context.getStackIndent() + "return " + expression.getRegister() + ": " + context.getRegister(expression.getRegister()));
     context.decrementStackDepth();
+    //System.out.println(context);
   }
 
   public String toString() {

@@ -16,7 +16,7 @@ public class LessThanExpression implements Expression {
   public LessThanExpression(Expression a, Expression b) {
     this.a = a;
     this.b = b;
-    this.register = new Register();
+    this.register = new Register(1);
   }
 
   @Override

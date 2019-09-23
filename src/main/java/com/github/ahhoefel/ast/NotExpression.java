@@ -14,7 +14,7 @@ public class NotExpression implements Expression {
 
   public NotExpression(Expression a) {
     this.a = a;
-    this.register = new Register();
+    this.register = new Register(1);
   }
 
   @Override
