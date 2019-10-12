@@ -37,7 +37,7 @@ public class StatementRules {
 
     // If statement
     rules.add(statement, lex.ifKeyword, lang.expression.expression, lex.lBrace, statementList, lex.rBrace)
-        .setAction(e -> new IfStatement((Expression) e[1], (Block) e[3]));
+        .setAction(e -> new IfStatement((Expression) e[1], (Block) e[3], ((Token) e[0]).getLocation()));
 
     // For statement
     rules.add(statement, lex.forKeyword, lang.expression.expression, lex.lBrace, statementList, lex.rBrace)

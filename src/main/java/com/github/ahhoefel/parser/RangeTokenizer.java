@@ -1,15 +1,17 @@
 package com.github.ahhoefel.parser;
 
-public class RangeTokenizer implements Tokenizer {
+import com.github.ahhoefel.ast.CodeLocation;
+
+public class RangeTokenizer {
 
   private Symbol[] charTerminalMap;
   private Symbol unknown;
   private Symbol eof;
 
-  public RangeTokenizer(CharRange chars, Symbol eof) {
+  public RangeTokenizer(CharacterSet chars) {
     this.charTerminalMap = new Symbol[256];
     this.unknown = chars.unknown;
-    this.eof = eof;
+    this.eof = chars.eof;
     for (int i = 0; i < 256; i++) {
       charTerminalMap[i] = chars.unknown;
     }
@@ -47,14 +49,18 @@ public class RangeTokenizer implements Tokenizer {
     charTerminalMap[124] = chars.pipe;
   }
 
-  public Token of(int c) {
+  public Token of(int c, CodeLocation location) {
     if (c < 0) {
-      return new Token(eof, "eof");
+      return new Token(eof, "eof", location);
     }
     if (c >= charTerminalMap.length) {
-      return new Token(unknown, Character.toString((char) c));
+      return new Token(unknown, Character.toString((char) c), location);
     }
-    return new Token(charTerminalMap[c], Character.toString((char) c));
+    return new Token(charTerminalMap[c], Character.toString((char) c), location);
+  }
+
+  public Symbol getEof() {
+    return eof;
   }
 
   public static void main(String[] arg) {

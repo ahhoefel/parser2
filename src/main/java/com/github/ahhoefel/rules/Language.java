@@ -1,11 +1,12 @@
 package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.ast.Declaration;
+import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.RaeFile;
+import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.parser.*;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.List;
 
 public class Language {
@@ -65,11 +66,12 @@ public class Language {
     table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
-  public RaeFile parse(Reader r) throws IOException {
-    List<Token> tokens = lex.getTokens(r);
-    tokens.add(new Token(terminals.getEof(), "eof"));
+  public RaeFile parse(Target target, ErrorLog log) throws IOException {
     RaeFile file = new RaeFile();
-    Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), file);
+    List<Token> tokens = lex.parse(target, log);
+    tokens.add(new Token(terminals.getEof(), "eof", null));
+    System.out.println("Parsing...");
+    Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), file, log);
     return file;
   }
 }

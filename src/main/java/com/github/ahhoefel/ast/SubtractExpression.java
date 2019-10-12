@@ -6,6 +6,7 @@ import com.github.ahhoefel.ir.operation.SubtractOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SubtractExpression implements Expression {
 
@@ -48,10 +49,20 @@ public class SubtractExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.INT || b.getType() != Type.INT) {
-      throw new RuntimeException("Subtraction not defined for types: " + a.getType() + " " + b.getType());
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    Optional<Type> bType = b.checkType(log);
+    if (!aType.isPresent() || !bType.isPresent()) {
+      return Optional.empty();
     }
+    if (aType.get() != Type.INT || bType.get() != Type.INT) {
+      log.add(new ParseError(null, "Subtraction not defined for types: " + a.getType() + " " + b.getType()));
+    }
+    return Optional.of(Type.INT);
+  }
+
+  @Override
+  public Type getType() {
     return Type.INT;
   }
 }

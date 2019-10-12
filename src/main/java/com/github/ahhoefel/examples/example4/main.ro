@@ -1,6 +1,7 @@
 import foo
 
-func main() {
+func main() int {
   var x int = 2
   var y int = foo.bar(x)
+  return y
 }

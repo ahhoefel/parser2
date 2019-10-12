@@ -7,6 +7,7 @@ import com.github.ahhoefel.ir.operation.LiteralOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class BooleanLiteralExpression implements Expression {
 
@@ -16,7 +17,7 @@ public class BooleanLiteralExpression implements Expression {
 
   public BooleanLiteralExpression(boolean value) {
     this.value = value;
-    this.register = new Register();
+    this.register = new Register(1);
   }
 
   public boolean eval(Context context) {
@@ -41,6 +42,11 @@ public class BooleanLiteralExpression implements Expression {
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     rep.add(new LiteralOp(value ? 1 : 0, register));
     liveRegisters.add(register);
+  }
+
+  @Override
+  public Optional<Type> checkType(ErrorLog log) {
+    return Optional.of(Type.BOOL);
   }
 
   @Override

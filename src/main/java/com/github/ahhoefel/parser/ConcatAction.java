@@ -1,5 +1,7 @@
 package com.github.ahhoefel.parser;
 
+import com.github.ahhoefel.ast.CodeLocation;
+
 import java.util.function.Function;
 
 public class ConcatAction implements Function<Object[], Object> {
@@ -9,14 +11,21 @@ public class ConcatAction implements Function<Object[], Object> {
       return "";
     }
     StringBuffer buf = new StringBuffer();
+    Symbol type = null;
+    CodeLocation location = null;
     for (Object o : objects) {
       if (o instanceof Token) {
-        buf.append(((Token) o).getValue());
+        Token token = (Token) o;
+        buf.append(token.getValue());
+        if (type == null) {
+          type = token.getSymbol();
+          location = token.getLocation();
+        }
       } else {
         buf.append(o);
       }
     }
-    return buf.toString();
+    return new Token(type, buf.toString(), location);
   }
 
   public static final ConcatAction SINGLETON = new ConcatAction();

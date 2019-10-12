@@ -11,11 +11,13 @@ public class SymbolTable {
   public static class NonTerminalTable extends SymbolTable {
     private Symbol startp;
     private Symbol start;
+    private Symbol eof;
 
     public NonTerminalTable() {
       super();
       startp = newSymbol("startp");
       start = newSymbol("start");
+      eof = newSymbol("eof");
     }
 
     public Symbol getAugmentedStart() {
@@ -24,6 +26,10 @@ public class SymbolTable {
 
     public Symbol getStart() {
       return start;
+    }
+
+    public Symbol getEof() {
+      return eof;
     }
   }
 

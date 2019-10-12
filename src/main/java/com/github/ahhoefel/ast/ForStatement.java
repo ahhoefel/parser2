@@ -49,10 +49,10 @@ public class ForStatement implements Statement {
   }
 
   @Override
-  public void typeCheck() {
+  public void typeCheck(ErrorLog log) {
     if (condition.getType() != Type.BOOL) {
-      throw new RuntimeException("For condition type should be boolean. Got: " + condition.getType());
+      log.add(new ParseError(null, "For condition type should be boolean. Got: " + condition.getType()));
     }
-    block.typeCheck();
+    block.typeCheck(log);
   }
 }

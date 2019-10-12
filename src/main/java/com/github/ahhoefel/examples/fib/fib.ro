@@ -1,6 +1,6 @@
 
-func main() {
-  var x int = fib(6)
+func main() int {
+  return fib(6)
 }
 
 func fib(n int) int {

@@ -7,7 +7,7 @@ public class Whitespace {
   public Symbol whitespace;
   public Symbol whitespaceChar;
 
-  public Whitespace(SymbolTable symbols, CharRange chars, Rule.Builder rules, ShiftReduceResolver resolver) {
+  public Whitespace(SymbolTable symbols, CharacterSet chars, Rule.Builder rules, ShiftReduceResolver resolver) {
     whitespace = symbols.newSymbol("whitespace");
     whitespaceChar = symbols.newSymbol("whitespaceChar");
     ConcatAction concat = ConcatAction.SINGLETON;

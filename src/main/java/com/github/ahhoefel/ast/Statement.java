@@ -10,5 +10,5 @@ public interface Statement {
 
   void addToRepresentation(Representation rep);
 
-  void typeCheck();
+  void typeCheck(ErrorLog log);
 }

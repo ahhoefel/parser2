@@ -8,7 +8,7 @@ public class Identifier {
   public Symbol identifierHeadChar;
   public Symbol identifierTailChar;
 
-  public Identifier(SymbolTable symbols, CharRange chars, Rule.Builder rules, ShiftReduceResolver resolver) {
+  public Identifier(SymbolTable symbols, CharacterSet chars, Rule.Builder rules, ShiftReduceResolver resolver) {
     identifier = symbols.newSymbol("identifier");
     identifierTail = symbols.newSymbol("identifierTail");
     identifierHeadChar = symbols.newSymbol("identifierHeadChar");

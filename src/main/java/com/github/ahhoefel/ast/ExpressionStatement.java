@@ -33,11 +33,9 @@ public class ExpressionStatement implements Statement {
   }
 
   @Override
-  public void typeCheck() {
+  public void typeCheck(ErrorLog log) {
     if (expression.getType() != Type.VOID) {
-      throw new RuntimeException("Expression statement should have void type. Got: " + expression.getType());
+      log.add(new ParseError(null, "Expression statement should have void type. Got: " + expression.getType()));
     }
   }
-
-
 }

@@ -1,7 +1,14 @@
 package com.github.ahhoefel.parser;
 
-public class CharRange {
+import com.github.ahhoefel.ast.Target;
+import com.github.ahhoefel.io.TokenIterator;
 
+import java.io.IOException;
+import java.util.Iterator;
+
+public class CharacterSet {
+
+  public final SymbolTable.TerminalTable symbols;
   public final Symbol letter;
   public final Symbol number;
   public final Symbol hypen;
@@ -27,8 +34,11 @@ public class CharRange {
   public final Symbol unknown;
   public final Symbol greaterThan;
   public final Symbol lessThan;
+  public final Symbol eof;
 
-  public CharRange(SymbolTable symbols) {
+  public CharacterSet() {
+    symbols = new SymbolTable.TerminalTable();
+    eof = symbols.getEof();
     letter = symbols.newSymbol("letter");
     number = symbols.newSymbol("number");
     hypen = symbols.newSymbol("hypen");
@@ -54,5 +64,12 @@ public class CharRange {
     greaterThan = symbols.newSymbol("greaterThan");
     lessThan = symbols.newSymbol("lessThan");
     unknown = symbols.newSymbol("unknown");
+  }
+
+  public Iterator<Token> parse(Target target) throws IOException {
+    System.out.print("Reading... ");
+    RangeTokenizer rangeTokenizer = new RangeTokenizer(this);
+    TokenIterator tokens = new TokenIterator(rangeTokenizer, target);
+    return tokens;
   }
 }

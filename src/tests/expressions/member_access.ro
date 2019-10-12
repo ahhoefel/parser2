@@ -1,0 +1,23 @@
+
+func main() bool {
+  var x Foo = getFoo()
+  if x.a != 3 {
+    return false
+  }
+  if x.b != 4 {
+    return false
+  }
+  return true
+}
+
+type Foo struct {
+  a int
+  b int
+}
+
+func getFoo() Foo {
+  return new Foo {
+    a: 3,
+    b: 4,
+  }
+}

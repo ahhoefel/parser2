@@ -52,9 +52,9 @@ public class Block {
     }
   }
 
-  public void typeCheck() {
+  public void typeCheck(ErrorLog log) {
     for (Statement statement : statements) {
-      statement.typeCheck();
+      statement.typeCheck(log);
     }
   }
 }

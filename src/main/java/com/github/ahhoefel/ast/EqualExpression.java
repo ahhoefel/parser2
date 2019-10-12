@@ -6,6 +6,7 @@ import com.github.ahhoefel.ir.operation.EqualOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class EqualExpression implements Expression {
 
@@ -48,10 +49,20 @@ public class EqualExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.INT || b.getType() != Type.INT) {
-      throw new RuntimeException("Equality does not apply to types: " + a.getType() + " " + b.getType());
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    Optional<Type> bType = b.checkType(log);
+    if (!aType.isPresent() || !bType.isPresent()) {
+      return Optional.empty();
     }
+    if (!aType.get().equals(bType.get())) {
+      log.add(new ParseError(null, "Equality does not apply to types: " + a.getType() + " " + b.getType()));
+    }
+    return Optional.of(Type.BOOL);
+  }
+
+  @Override
+  public Type getType() {
     return Type.BOOL;
   }
 }

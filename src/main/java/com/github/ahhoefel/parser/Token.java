@@ -1,13 +1,17 @@
 package com.github.ahhoefel.parser;
 
+import com.github.ahhoefel.ast.CodeLocation;
+
 public class Token {
 
   private final String value;
   private final Symbol symbol;
+  private CodeLocation location;
 
-  public Token(Symbol symbol, String value) {
+  public Token(Symbol symbol, String value, CodeLocation location) {
     this.symbol = symbol;
     this.value = value;
+    this.location = location;
   }
 
   public String toString() {
@@ -20,6 +24,10 @@ public class Token {
 
   public String getValue() {
     return value;
+  }
+
+  public CodeLocation getLocation() {
+    return location;
   }
 
   public boolean equals(Object o) {

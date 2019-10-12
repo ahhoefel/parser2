@@ -20,6 +20,7 @@ public class FunctionInvocationExpression implements Expression {
   private SymbolCatalog symbols;
   private Register returnLabelRegister;
   private Label returnLabel;
+  private Type type;
 
   public FunctionInvocationExpression(Token identifier, List<Expression> args) {
     this.identifier = identifier.getValue();
@@ -134,9 +135,14 @@ public class FunctionInvocationExpression implements Expression {
   }
 
   @Override
+  public Optional<Type> checkType(ErrorLog log) {
+    type = getDeclaration().getReturnType();
+    register.setWidth(type.width());
+    return Optional.of(type);
+  }
+
+  @Override
   public Type getType() {
-    Type returnType = getDeclaration().getReturnType();
-    register.setWidth(returnType.width());
-    return returnType;
+    return type;
   }
 }

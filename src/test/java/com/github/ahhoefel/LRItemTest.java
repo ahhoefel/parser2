@@ -182,7 +182,7 @@ public class LRItemTest {
 
     System.out.println(table);
     List<Symbol> input = List.of(n, plus, n, eof);
-    Object tree = Parser.parseTerminals(table, input.iterator(), grammar.getAugmentedStartRule().getSource());
-    System.out.println(tree);
+    //Object tree = Parser.parseTerminals(table, input.iterator(), grammar.getAugmentedStartRule().getSource());
+    // System.out.println(tree);
   }
 }

@@ -8,6 +8,7 @@ import com.github.ahhoefel.util.IndentedString;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class StructLiteralExpression implements Expression {
 
@@ -66,22 +67,31 @@ public class StructLiteralExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
+  public Optional<Type> checkType(ErrorLog log) {
     if (structType != null) {
-      return structType;
+      return Optional.of(structType);
     }
     structType = StructType.toStructType(type);
 
     int width = 0;
     for (Map.Entry<String, Expression> entry : values.entrySet()) {
       Type memberType = structType.getMember(entry.getKey());
-      Type exprType = entry.getValue().getType();
-      if (!memberType.equals(exprType)) {
-        throw new RuntimeException("Struct literal member " + entry.getKey() + " expected to be type " + memberType + ". Got " + exprType + ".");
+      Optional<Type> exprType = entry.getValue().checkType(log);
+      if (!exprType.isPresent()) {
+        return Optional.empty();
+      }
+      if (!memberType.equals(exprType.get())) {
+        log.add(new ParseError(null, "Struct literal member " + entry.getKey() + " expected to be type " + memberType + ". Got " + exprType + "."));
+        return Optional.empty();
       }
       width += memberType.width();
     }
     this.register.setWidth(width);
+    return Optional.of(structType);
+  }
+
+  @Override
+  public Type getType() {
     return type;
   }
 }

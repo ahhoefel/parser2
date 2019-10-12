@@ -98,7 +98,7 @@ public class RaeFile {
   }
 
   public void linkImports(FileTree.TargetMap map) {
-    System.out.println("Linking imports of " + target);
+    //System.out.println("Linking imports of " + target);
     imports.linkImports(map);
   }
 
@@ -114,9 +114,9 @@ public class RaeFile {
     unresolvedTypes.add(type);
   }
 
-  public void typeCheck() {
+  public void typeCheck(ErrorLog log) {
     for (FunctionDeclaration fn : functions) {
-      fn.typeCheck();
+      fn.typeCheck(log);
     }
   }
 }

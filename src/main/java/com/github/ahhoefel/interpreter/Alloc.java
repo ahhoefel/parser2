@@ -53,6 +53,22 @@ public class Alloc {
     return c;
   }
 
+  public Alloc and(Alloc b) {
+    Alloc c = new Alloc(width);
+    for (int i = 0; i < data.length; i++) {
+      c.data[i] = data[i] & b.data[i];
+    }
+    return c;
+  }
+
+  public Alloc or(Alloc b) {
+    Alloc c = new Alloc(width);
+    for (int i = 0; i < data.length; i++) {
+      c.data[i] = data[i] | b.data[i];
+    }
+    return c;
+  }
+
   public Alloc times(Alloc b) {
     Alloc c = new Alloc(width);
     for (int i = 0; i < data.length; i++) {
@@ -123,16 +139,17 @@ public class Alloc {
     }
     int outputOffsetWords = outputOffsetBits / 64;
 
-    if (lenBits % 64 != 0) {
-      throw new RuntimeException("not supported");
-    }
     int lenWords = lenBits / 64;
+    int remainderBits = lenBits % 64;
 
     int n = outputOffsetBits % 64;
     int m = 64 - n;
     if (n == 0) {
-      this.copyFromWordAligned(input, inputOffsetWords, outputOffsetWords, lenWords);
+      this.copyFromWordAligned(input, inputOffsetWords, outputOffsetWords, lenWords, remainderBits);
       return;
+    }
+    if (remainderBits != 0) {
+      throw new RuntimeException("not supported");
     }
     int offsetBytes = outputOffsetBits / 64;
     long mMaskLow = 0xFFFF_FFFF_FFFF_FFFFL >>> m;
@@ -149,11 +166,20 @@ public class Alloc {
     }
   }
 
-  private void copyFromWordAligned(Alloc input, int inputOffsetWords, int outputOffsetWords, int lenWords) {
+  private void copyFromWordAligned(Alloc input, int inputOffsetWords, int outputOffsetWords, int lenWords, int remainderBits) {
     // System.out.println("CopyFromWordALigned: " + other + " offsetBytes " + offsetBytes);
     for (int i = 0; i < lenWords; i++) {
       this.data[i + outputOffsetWords] = input.data[i + inputOffsetWords];
     }
+    if (remainderBits == 0) {
+      return;
+    }
+
+    long lastInput = input.data[lenWords + inputOffsetWords];
+    long lastOutput = this.data[lenWords + outputOffsetWords];
+    long lowMask = 0xFFFF_FFFF_FFFF_FFFFL >>> 64 - remainderBits;
+    long highMask = 0xFFFF_FFFF_FFFF_FFFFL << remainderBits;
+    this.data[lenWords + outputOffsetWords] = (lastInput & lowMask) | (lastOutput) & highMask;
   }
 
   public String toString() {

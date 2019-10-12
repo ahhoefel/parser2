@@ -21,7 +21,7 @@ public class LiteralOp implements Operation {
 
   @Override
   public void run(Context context) {
-    Alloc v = new Alloc(64);
+    Alloc v = new Alloc(destination.getWidth());
     v.setWord(0, value);
     context.copyToRegister(destination, v);
   }

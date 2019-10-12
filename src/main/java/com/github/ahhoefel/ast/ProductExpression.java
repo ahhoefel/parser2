@@ -6,6 +6,7 @@ import com.github.ahhoefel.ir.operation.MultiplyOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class ProductExpression implements Expression {
 
@@ -48,10 +49,20 @@ public class ProductExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.INT || b.getType() != Type.INT) {
-      throw new RuntimeException("Product does not apply to types: " + a.getType() + " " + b.getType());
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    Optional<Type> bType = b.checkType(log);
+    if (!aType.isPresent() || !bType.isPresent()) {
+      return Optional.empty();
     }
+    if (aType.get() != Type.INT || bType.get() != Type.INT) {
+      log.add(new ParseError(null, "Product does not apply to types: " + a.getType() + " " + b.getType()));
+    }
+    return Optional.of(Type.INT);
+  }
+
+  @Override
+  public Type getType() {
     return Type.INT;
   }
 }

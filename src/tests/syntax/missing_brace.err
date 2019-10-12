@@ -1,0 +1,5 @@
+syntax:missing_brace:0:65
+Parsing error.
+Next token: var(var)
+State: (rparen, 17)
+Stack:  (top)

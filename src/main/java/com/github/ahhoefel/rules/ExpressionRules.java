@@ -54,9 +54,12 @@ public class ExpressionRules {
         .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
     rules.add(expression, lex.lParen, expression, lex.rParen)
         .setAction(e -> e[1]);
-    Rule doubleAmpersand = rules.add(expression, expression, lex.doubleAmpersand, expression);
-    Rule doublePipe = rules.add(expression, expression, lex.doublePipe, expression);
-    Rule doubleEquals = rules.add(expression, expression, lex.doubleEquals, expression);
+    Rule doubleAmpersand = rules.add(expression, expression, lex.doubleAmpersand, expression)
+        .setAction(e -> new AndExpression((Expression) e[0], (Expression) e[2]));
+    Rule doublePipe = rules.add(expression, expression, lex.doublePipe, expression)
+        .setAction(e -> new OrExpression((Expression) e[0], (Expression) e[2]));
+    Rule doubleEquals = rules.add(expression, expression, lex.doubleEquals, expression)
+        .setAction(e -> new EqualExpression((Expression) e[0], (Expression) e[2]));
     Rule lessThan = rules.add(expression, expression, lex.lessThan, expression)
         .setAction(e -> new LessThanExpression((Expression) e[0], (Expression) e[2]));
     Rule lessThanOrEqual = rules.add(expression, expression, lex.lessThanOrEqual, expression)

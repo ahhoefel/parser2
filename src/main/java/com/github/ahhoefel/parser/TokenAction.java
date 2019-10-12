@@ -24,12 +24,12 @@ public class TokenAction implements Function<Object[], Object> {
 
   @Override
   public Object apply(Object[] objects) {
-    Object o = objects[0];
-    String value = o instanceof String ? (String) o : ((Token) o).getValue();
+    Token token = (Token) objects[0];
+    String value = token.getValue();
     Symbol symbol = keywordMap.get(value);
     if (symbol == null) {
       symbol = terminal;
     }
-    return new Token(symbol, value);
+    return new Token(symbol, value, token.getLocation());
   }
 }

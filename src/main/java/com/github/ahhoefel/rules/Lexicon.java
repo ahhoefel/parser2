@@ -1,10 +1,12 @@
 package com.github.ahhoefel.rules;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.parser.*;
 
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Lexicon {
@@ -18,7 +20,7 @@ public class Lexicon {
 
   private SymbolTable.TerminalTable terminals;
   private SymbolTable.NonTerminalTable nonTerminals;
-  private CharRange chars;
+  private CharacterSet chars;
   private Grammar grammar;
   private LRTable table;
 
@@ -67,9 +69,9 @@ public class Lexicon {
   public Symbol falseKeyword;
 
   public Lexicon() {
-    terminals = new SymbolTable.TerminalTable();
+    chars = new CharacterSet();
+    terminals = chars.symbols;
     nonTerminals = new SymbolTable.NonTerminalTable();
-    chars = new CharRange(terminals);
 
     resultSymbols = new SymbolTable.TerminalTable();
     identifier = resultSymbols.newSymbol("identifierGrammar");
@@ -171,10 +173,18 @@ public class Lexicon {
     table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
-  public List<Token> getTokens(Reader r) throws IOException {
-    Tokenizer.TokenIterator iter = new Tokenizer.TokenIterator(new RangeTokenizer(chars, terminals.getEof()), r, terminals.getEof());
+  public List<Token> parse(Target target, ErrorLog log) throws IOException {
+    Iterator<Token> tokens = chars.parse(target);
+    System.out.print("Lexing... ");
+    return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
+  }
+
+  /*
+  public List<Token> getTokens(Target target) throws IOException {
+    Tokenizer.TokenIterator iter = new Tokenizer.TokenIterator(chars.getTokenizer(),target);
     return (List<Token>) Parser.parseTokens(table, iter, grammar.getAugmentedStartRule().getSource());
   }
+  */
 
   public SymbolTable.TerminalTable getTerminals() {
     return resultSymbols;

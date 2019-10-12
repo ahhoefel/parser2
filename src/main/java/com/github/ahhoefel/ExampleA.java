@@ -86,12 +86,12 @@ public class ExampleA {
 
     List<Symbol> input = Arrays.asList(id, times, id, plus, num, eof);
     System.out.println(table);
-    Object tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
-    System.out.println(tree);
+    //Object tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
+    //System.out.println(tree);
 
     table = LRParser.getSLRTable(grammar);
     System.out.println(table);
-    tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
-    System.out.println(tree);
+    //tree = Parser.parseTerminals(table, input.iterator(), nonTerminals.getAugmentedStart());
+    //System.out.println(tree);
   }
 }

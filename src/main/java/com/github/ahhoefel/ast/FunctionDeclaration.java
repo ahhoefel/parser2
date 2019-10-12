@@ -124,7 +124,7 @@ public class FunctionDeclaration implements Declaration {
     return file;
   }
 
-  public void typeCheck() {
-    this.statements.typeCheck();
+  public void typeCheck(ErrorLog log) {
+    this.statements.typeCheck(log);
   }
 }

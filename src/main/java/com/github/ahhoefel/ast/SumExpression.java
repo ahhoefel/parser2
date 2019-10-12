@@ -6,6 +6,7 @@ import com.github.ahhoefel.ir.operation.AddOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SumExpression implements Expression {
 
@@ -48,10 +49,22 @@ public class SumExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.INT || b.getType() != Type.INT) {
-      throw new RuntimeException("Addition not defined for types: " + a.getType() + " " + b.getType());
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    Optional<Type> bType = b.checkType(log);
+    if (!aType.isPresent() || !bType.isPresent()) {
+      return Optional.empty();
     }
+
+    if (aType.get() != Type.INT || bType.get() != Type.INT) {
+      log.add(new ParseError(null, "Addition not defined for types: " + a.getType() + " " + b.getType()));
+      return Optional.empty();
+    }
+    return Optional.of(Type.INT);
+  }
+
+  @Override
+  public Type getType() {
     return Type.INT;
   }
 }

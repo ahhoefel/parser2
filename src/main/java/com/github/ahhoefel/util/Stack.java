@@ -25,7 +25,7 @@ public class Stack<T> {
   }
 
   public Optional<T> deepPeek(int i) {
-    if (i > elems.size()) {
+    if (i >= elems.size()) {
       return Optional.empty();
     }
     return Optional.of(elems.get(elems.size() - i - 1));

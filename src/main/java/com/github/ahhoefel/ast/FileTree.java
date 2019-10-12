@@ -6,13 +6,13 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;
 import com.github.ahhoefel.rules.Language;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
 public class FileTree {
+
 
   public String base;
   public Map<String, RaeFile> files;
@@ -54,7 +54,8 @@ public class FileTree {
     return rep;
   }
 
-  public static FileTree fromTarget(Target target) throws IOException {
+  public static Result fromTarget(Target target) throws IOException {
+    ErrorLog log = new ErrorLog();
     String base = target.getBase();
     FileTree tree = new FileTree(base);
     Language lang = new Language();
@@ -62,15 +63,11 @@ public class FileTree {
     paths.push(target.getSuffix());
     while (!paths.isEmpty()) {
       String p = paths.pop();
-      Target t = new Target(base, p);
-      System.out.println("Reading target " + t.getFilePath());
-      FileReader reader = new FileReader(t.getFilePath());
-      RaeFile file = lang.parse(reader);
+      Target t = new Target(target.getSource(), base, p);
+      System.out.println("Target " + t.getFilePath());
+      RaeFile file = lang.parse(t, log);
       file.setTarget(t);
       tree.files.put(p, file);
-      if (file == null) {
-        System.out.println("Unable to parse file " + t.getFilePath());
-      }
       for (Import im : file.getImports().toList()) {
         String next = im.getPath();
         if (!tree.files.containsKey(next)) {
@@ -78,36 +75,38 @@ public class FileTree {
           tree.files.put(next, null);
         }
       }
-      System.out.println("Symbols: " + file.getSymbols().toString());
+      //System.out.println("Symbols: " + file.getSymbols().toString());
     }
     tree.linkImports();
     tree.linkSymbols();
-    tree.typeCheck();
-    return tree;
+    tree.typeCheck(log);
+    if (log.isEmpty()) {
+      return new Result(tree);
+    }
+    return new Result(log);
   }
 
   private void linkImports() {
+    System.out.print("Linking imports... ");
+    TargetMap map = new TargetMap();
     for (RaeFile file : this.files.values()) {
-      file.linkImports(new TargetMap());
+      file.linkImports(map);
     }
   }
 
   private void linkSymbols() {
+    System.out.print("Linking symbols... ");
     for (Map.Entry<String, RaeFile> entry : this.files.entrySet()) {
-      System.out.println("Linking symbols: " + entry.getKey());
+      //System.out.println("Linking symbols: " + entry.getKey());
       entry.getValue().linkSymbols();
-    }
-    for (Map.Entry<String, RaeFile> entry : this.files.entrySet()) {
-      System.out.println("Symbols of: " + entry.getKey());
-      System.out.println(entry.getValue().getSymbols());
     }
   }
 
-  private void typeCheck() {
-    System.out.println("Type checking tree.");
+  private void typeCheck(ErrorLog log) {
+    System.out.println("Type checking...");
     for (RaeFile file : this.files.values()) {
-      System.out.println("  " + file.getTarget().toString());
-      file.typeCheck();
+      //System.out.println("  " + file.getTarget().toString());
+      file.typeCheck(log);
     }
     System.out.println();
   }
@@ -115,6 +114,31 @@ public class FileTree {
   public class TargetMap {
     public RaeFile get(String p) {
       return files.get(p);
+    }
+  }
+
+  public static class Result {
+    private FileTree tree;
+    private ErrorLog log;
+
+    public Result(FileTree tree) {
+      this.tree = tree;
+    }
+
+    public Result(ErrorLog log) {
+      this.log = log;
+    }
+
+    public boolean pass() {
+      return tree != null;
+    }
+
+    public ErrorLog getLog() {
+      return log;
+    }
+
+    public FileTree getTree() {
+      return tree;
     }
   }
 }

@@ -7,6 +7,7 @@ import com.github.ahhoefel.ir.operation.SubtractOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UnaryMinusExpression implements Expression {
 
@@ -46,10 +47,19 @@ public class UnaryMinusExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.INT) {
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    if (!aType.isPresent()) {
+      return Optional.empty();
+    }
+    if (aType.get() != Type.INT) {
       throw new RuntimeException("Unary minus not defined for type: " + a.getType());
     }
+    return Optional.of(Type.INT);
+  }
+
+  @Override
+  public Type getType() {
     return Type.INT;
   }
 }

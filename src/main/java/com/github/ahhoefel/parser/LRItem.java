@@ -110,7 +110,8 @@ public class LRItem {
       }
       if (rule.getRule() == grammar.getAugmentedStartRule()) {
         shifts.putIfAbsent(grammar.getTerminals().getEof(), new ArrayList<>());
-        shifts.get(grammar.getTerminals().getEof()).add(-1);
+        //shifts.get(grammar.getTerminals().getEof()).add(-1);
+        shifts.get(grammar.getTerminals().getEof()).add(grammar.getNonTerminals().getEof().getIndex());
         continue;
       }
       reduces.putIfAbsent(rule.getLookAhead(), new ArrayList<>());

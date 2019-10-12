@@ -31,8 +31,12 @@ public class VariableDeclaration {
     return register;
   }
 
-  public Type getType() {
+  public Type getType(ErrorLog log) {
     register.setWidth(type.width());
+    return type;
+  }
+
+  public Type getType() {
     return type;
   }
 

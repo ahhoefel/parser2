@@ -42,9 +42,9 @@ public class ReturnStatement implements Statement {
   }
 
   @Override
-  public void typeCheck() {
-    if (!functionDeclaration.getReturnType().equals(expression.getType())) {
-      throw new RuntimeException("Type mismatch. Return type " + functionDeclaration.getReturnType() + ", return statement " + expression.getType());
+  public void typeCheck(ErrorLog log) {
+    if (!functionDeclaration.getReturnType().equals(expression.checkType(log).get())) {
+      log.add(new ParseError(null, "Type mismatch. Return type " + functionDeclaration.getReturnType() + ", return statement " + expression.getType()));
     }
     //returnDestination.setWidth(functionDeclaration.getReturnType().width());
   }

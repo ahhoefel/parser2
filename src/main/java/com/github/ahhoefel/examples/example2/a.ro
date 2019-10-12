@@ -8,6 +8,7 @@ func count(n int) int {
  return 2
 }
 
-func main() {
+func main() int {
   var z int = count(8)
+  return z
 }

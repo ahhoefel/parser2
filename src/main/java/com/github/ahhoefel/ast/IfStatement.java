@@ -10,6 +10,7 @@ import com.github.ahhoefel.ir.operation.NegateOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class IfStatement implements Statement {
 
@@ -17,12 +18,14 @@ public class IfStatement implements Statement {
   private final Expression condition;
   private final Label destination;
   private final Register negation;
+  private final CodeLocation location;
 
-  public IfStatement(Expression condition, Block block) {
+  public IfStatement(Expression condition, Block block, CodeLocation location) {
     this.condition = condition;
     this.block = block;
     this.destination = new Label();
     this.negation = new Register(1);
+    this.location = location;
   }
 
   @Override
@@ -52,10 +55,15 @@ public class IfStatement implements Statement {
   }
 
   @Override
-  public void typeCheck() {
-    if (condition.getType() != Type.BOOL) {
-      throw new RuntimeException("If condition should be boolean. Got: " + condition.getType());
+  public void typeCheck(ErrorLog log) {
+    Optional<Type> type = condition.checkType(log);
+    if (!type.isPresent()) {
+      log.add(new ParseError(location, "failed to type check condition."));
+      return;
     }
-    block.typeCheck();
+    if (type.get() != Type.BOOL) {
+      log.add(new ParseError(location, "If condition should be boolean. Got: " + condition.getType()));
+    }
+    block.typeCheck(log);
   }
 }

@@ -3,15 +3,19 @@ package com.github.ahhoefel.ast;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.parser.Token;
 
+import java.util.Optional;
+
 public class LValue {
   private String identifier;
   private Type type;
   private boolean declaration;
   private SymbolCatalog symbols;
+  private CodeLocation location;
 
   public LValue(Token token) {
     this.identifier = token.getValue();
     declaration = false;
+    location = token.getLocation();
   }
 
   public String getIdentifier() {
@@ -22,11 +26,23 @@ public class LValue {
     return declaration;
   }
 
-  public Type getType() {
-    if (declaration) {
-      return type;
+  public CodeLocation getLocation() {
+    return location;
+  }
+
+  public Type getType(ErrorLog log) {
+    if (!declaration) {
+      Optional<VariableDeclaration> variableDeclaration = symbols.getVariable(identifier);
+      if (!variableDeclaration.isPresent()) {
+        log.add(new ParseError(null, String.format("Variable %s not declared", identifier)));
+      }
+      type = variableDeclaration.get().getType();
     }
-    return symbols.getVariable(identifier).getType();
+    return type;
+  }
+
+  public Type getType() {
+    return type;
   }
 
   public void setSymbolCatalog(SymbolCatalog symbols) {
@@ -37,7 +53,7 @@ public class LValue {
   }
 
   public Register getRegister() {
-    return symbols.getVariable(identifier).getRegister();
+    return symbols.getVariable(identifier).get().getRegister();
   }
 
   public static LValue withDeclaration(Token identifer, Type type) {

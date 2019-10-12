@@ -76,8 +76,10 @@ public class Rule {
       for (Object o : objects) {
         if (o instanceof Token) {
           children.add(new ParseTree((Token) o));
-        } else {
+        } else if (o instanceof ParseTree) {
           children.add((ParseTree) o);
+        } else {
+          throw new RuntimeException(String.format("Cannot build parse tree from %s: expected Token or ParseTree. Likely an action hasn't been specified on a parse rule.", o.getClass().toString()));
         }
       }
       return new ParseTree(Rule.this, children);

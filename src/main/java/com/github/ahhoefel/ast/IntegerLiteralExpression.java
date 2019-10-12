@@ -8,6 +8,7 @@ import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class IntegerLiteralExpression implements Expression {
 
@@ -43,6 +44,11 @@ public class IntegerLiteralExpression implements Expression {
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     rep.add(new LiteralOp(value, register));
     liveRegisters.add(register);
+  }
+
+  @Override
+  public Optional<Type> checkType(ErrorLog log) {
+    return Optional.of(Type.INT);
   }
 
   @Override

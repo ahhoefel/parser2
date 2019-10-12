@@ -1,5 +1,7 @@
 package com.github.ahhoefel.parser;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.ParseError;
 import com.github.ahhoefel.util.Stack;
 
 import java.util.Iterator;
@@ -21,43 +23,15 @@ public class Parser<T> {
     }
   }
 
-  private static class TerminalSymbolIterator implements Iterator<Token> {
-
-    private Iterator<Symbol> iter;
-
-    public TerminalSymbolIterator(Iterator<Symbol> iter) {
-      this.iter = iter;
-    }
-
-
-    @Override
-    public boolean hasNext() {
-      return iter.hasNext();
-    }
-
-    @Override
-    public Token next() {
-      Symbol next = iter.next();
-      if (next == null) {
-        return null;
-      }
-      return new Token(next, next.toString());
-    }
+  public static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, C context, ErrorLog log) {
+    return parseTokens(table, iter, start, Optional.of(context), log);
   }
 
-  public static Object parseTerminals(LRTable table, Iterator<Symbol> iter, Symbol start) {
-    return parseTokens(table, new TerminalSymbolIterator(iter), start);
+  public static Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, ErrorLog log) {
+    return parseTokens(table, iter, start, Optional.empty(), log);
   }
 
-  public static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, C context) {
-    return parseTokens(table, iter, start, Optional.of(context));
-  }
-
-  public static Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start) {
-    return parseTokens(table, iter, start, Optional.empty());
-  }
-
-  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context) {
+  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context, ErrorLog log) {
     Stack<SymbolState> stack = new Stack<>();
     Stack<Object> result = new Stack<>();
     Token nextToken = iter.next();
@@ -65,16 +39,20 @@ public class Parser<T> {
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
       LRTable.State state = table.state.get(symbolState.stateIndex);
-      //System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
+      // System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
+      // System.out.println(result);
       if (state.shift.containsKey(nextSymbol)) {
-        if (state.shift.get(nextSymbol) == -1) {
-          break;
-        }
+        // if (state.shift.get(nextSymbol) == -1) {
+        // break;
+        // }
         stack.push(new SymbolState(nextSymbol, state.shift.get(nextSymbol)));
         result.push(nextToken);
         if (iter.hasNext()) {
           nextToken = iter.next();
           nextSymbol = nextToken.getSymbol();
+        } else {
+          result.pop(); // Remove eof
+          break;
         }
       } else if (state.reduce.containsKey(nextSymbol)) {
         Rule rule = state.reduce.get(nextSymbol);
@@ -89,7 +67,14 @@ public class Parser<T> {
           children[numParameters - 1] = context.get();
         }
         stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
-        result.push(rule.getAction().apply(children));
+        try {
+          result.push(rule.getAction().apply(children));
+        } catch (Exception e) {
+          System.out.println(new ParseError(nextToken.getLocation(), "ParseActionException at rule " + rule));
+          e.printStackTrace();
+          log.add(new ParseError(nextToken.getLocation(), "ParseActionException at rule " + rule));
+          return null;
+        }
       } else {
         String out = "Parsing error.\n";
         out += "Next token: " + nextToken + "\n";
@@ -103,8 +88,9 @@ public class Parser<T> {
           out += s.get();
           out += " ";
         }
-        out += " (top)\n";
-        throw new RuntimeException(out);
+        out += " (top)";
+        log.add(new ParseError(nextToken.getLocation(), out));
+        return null;
       }
       symbolState = stack.peek();
     }

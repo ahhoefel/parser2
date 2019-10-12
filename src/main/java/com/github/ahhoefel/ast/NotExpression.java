@@ -6,6 +6,7 @@ import com.github.ahhoefel.ir.operation.NegateOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class NotExpression implements Expression {
 
@@ -42,10 +43,19 @@ public class NotExpression implements Expression {
   }
 
   @Override
-  public Type getType() {
-    if (a.getType() != Type.BOOL) {
-      throw new RuntimeException("Negation not defined for type: " + a.getType());
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> aType = a.checkType(log);
+    if (!aType.isPresent()) {
+      return Optional.empty();
     }
+    if (aType.get() != Type.BOOL) {
+      log.add(new ParseError(null, "Negation not defined for type: " + a.getType()));
+    }
+    return Optional.of(Type.BOOL);
+  }
+
+  @Override
+  public Type getType() {
     return Type.BOOL;
   }
 }

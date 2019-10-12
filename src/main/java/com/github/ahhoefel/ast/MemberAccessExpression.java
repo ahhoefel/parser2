@@ -8,6 +8,7 @@ import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
+import java.util.Optional;
 
 public class MemberAccessExpression implements Expression {
 
@@ -16,6 +17,7 @@ public class MemberAccessExpression implements Expression {
   private StructType structType;
   private SymbolCatalog symbols;
   private Register register;
+  private Type memberType;
 
   public MemberAccessExpression(Expression expression, Token member) {
     this.member = member;
@@ -47,20 +49,36 @@ public class MemberAccessExpression implements Expression {
     liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);
     rep.add(new CommentOp("Accessing member " + member.getValue()));
+    if (rep == null) {
+      System.out.println("Null rep");
+    }
+    if (expression == null) {
+      System.out.println("Null expr");
+    }
+    if (structType == null) {
+      System.out.println("null strut type");
+    }
     rep.add(new SetOp(expression.getRegister(), register, structType.getMemberOffset(member.getValue()), 0, structType.getMember(member.getValue()).width()));
   }
 
   @Override
   public Type getType() {
-    structType = StructType.toStructType(expression.getType());
-    Type memberType = structType.getMember(member.getValue());
+    return memberType;
+  }
+
+  @Override
+  public Optional<Type> checkType(ErrorLog log) {
+    Optional<Type> type = expression.checkType(log);
+    structType = StructType.toStructType(type.get());
+    memberType = structType.getMember(member.getValue());
     if (memberType == null) {
-      throw new RuntimeException(String.format("No member %s on %s", member.getValue(), expression.getType()));
+      log.add(new ParseError(null, String.format("No member %s on %s", member.getValue(), expression.getType())));
+      return Optional.empty();
     }
     register.setWidth(memberType.width());
-    //if (!memberType.equals(expression.getType())) {
-    //  throw new RuntimeException(String.format("Type mismatch: Cannot assign expression of type %s to member %s on type %s", expression.getType(), member.getValue(), type));
+    //if (!memberType.equals(expression.checkType())) {
+    //  throw new RuntimeException(String.format("Type mismatch: Cannot assign expression of type %s to member %s on type %s", expression.checkType(), member.getValue(), type));
     //}
-    return memberType;
+    return Optional.of(memberType);
   }
 }

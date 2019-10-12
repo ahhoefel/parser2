@@ -31,7 +31,7 @@ public class SymbolCatalog {
   }
 
   public void addVariable(VariableDeclaration variable) {
-    System.out.println("Variable added to symbol table: " + variable);
+    //System.out.println("Variable added to symbol table: " + variable);
     variables.put(variable.getName(), variable);
     orderedVariables.add(variable);
   }
@@ -40,21 +40,13 @@ public class SymbolCatalog {
     types.put(type.getIdentifier(), type);
   }
 
-  public VariableDeclaration getVariable(String name) {
-    Optional<VariableDeclaration> variable = getVariableInternal(name);
-    if (!variable.isPresent()) {
-      throw new RuntimeException(String.format("Variable %s not declared\n%s", name, this.toString()));
-    }
-    return variable.get();
-  }
-
-  private Optional<VariableDeclaration> getVariableInternal(String name) {
+  public Optional<VariableDeclaration> getVariable(String name) {
     Optional<VariableDeclaration> variable = Optional.ofNullable(variables.get(name));
     if (!variable.isPresent() && !functionDeclaration.isPresent()) {
       if (!parent.isPresent()) {
         throw new RuntimeException("Expected parent to be present");
       }
-      variable = parent.get().getVariableInternal(name);
+      variable = parent.get().getVariable(name);
     }
     return variable;
   }
