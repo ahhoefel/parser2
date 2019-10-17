@@ -23,8 +23,9 @@ public class NamedType implements Type {
     return packagePrefix;
   }
 
-  public void linkTypes(SymbolCatalog symbols) {
-    type = Optional.of(symbols.getType(packagePrefix, identifier));
+  public void linkTypes(SymbolCatalog symbols, ErrorLog log) {
+    Type t = symbols.getType(packagePrefix, identifier, log);
+    type = Optional.ofNullable(t);
   }
 
   public Type getType() {

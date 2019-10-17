@@ -78,7 +78,7 @@ public class FileTree {
       //System.out.println("Symbols: " + file.getSymbols().toString());
     }
     tree.linkImports();
-    tree.linkSymbols();
+    tree.linkSymbols(log);
     tree.typeCheck(log);
     if (log.isEmpty()) {
       return new Result(tree);
@@ -94,11 +94,11 @@ public class FileTree {
     }
   }
 
-  private void linkSymbols() {
+  private void linkSymbols(ErrorLog log) {
     System.out.print("Linking symbols... ");
     for (Map.Entry<String, RaeFile> entry : this.files.entrySet()) {
       //System.out.println("Linking symbols: " + entry.getKey());
-      entry.getValue().linkSymbols();
+      entry.getValue().linkSymbols(log);
     }
   }
 

@@ -1,5 +1,9 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.ParseError;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.MultiplyOp;
@@ -8,16 +12,15 @@ import com.github.ahhoefel.util.IndentedString;
 import java.util.List;
 import java.util.Optional;
 
-public class ProductExpression implements Expression {
+public class ProductExpression extends ExpressionAdapter {
 
   private Expression a;
   private Expression b;
-  private Register register;
 
   public ProductExpression(Expression a, Expression b) {
+    super(64);
     this.a = a;
     this.b = b;
-    this.register = new Register();
   }
 
   @Override
@@ -43,9 +46,9 @@ public class ProductExpression implements Expression {
     a.addToRepresentation(rep, liveRegisters);
     b.addToRepresentation(rep, liveRegisters);
     rep.add(new MultiplyOp(a.getRegister(), b.getRegister(), register));
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.add(register);
+    a.removeLiveRegisters(liveRegisters);
+    b.removeLiveRegisters(liveRegisters);
+    addLiveRegisters(liveRegisters);
   }
 
   @Override
@@ -64,5 +67,10 @@ public class ProductExpression implements Expression {
   @Override
   public Type getType() {
     return Type.INT;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

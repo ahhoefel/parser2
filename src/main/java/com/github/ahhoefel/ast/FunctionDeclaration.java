@@ -11,6 +11,7 @@ import com.github.ahhoefel.ir.operation.PopOp;
 import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -66,6 +67,18 @@ public class FunctionDeclaration implements Declaration {
     return returnType.get();
   }
 
+  public List<Type> getParameterTypes() {
+    List<Type> types = new ArrayList<>();
+    for (VariableDeclaration param : parameters) {
+      types.add(param.getType());
+    }
+    return types;
+  }
+
+  public String getParameterName(int i) {
+    return parameters.get(i).getName();
+  }
+
   public void setSymbolCatalog(SymbolCatalog parent) {
     parent.addFunction(this);
     this.symbols = new SymbolCatalog(name, parent, Optional.of(this));
@@ -91,14 +104,13 @@ public class FunctionDeclaration implements Declaration {
   public void addToRepresentation(Representation rep) {
     rep.add(new CommentOp("func " + name));
     rep.add(new DestinationOp(label));
-    for (VariableDeclaration param : parameters) {
-      rep.add(new PopOp(param.getRegister()));
+    for (int i = parameters.size() - 1; i >= 0; i--) {
+      rep.add(new PopOp(parameters.get(i).getRegister()));
     }
     statements.addToRepresentation(rep);
-    if (!returnType.isPresent()) {
-      rep.add(new PopOp(returnLabelRegister));
-      rep.add(new GotoRegisterOp(returnLabelRegister));
-    }
+    //if (!returnType.isPresent() && returnType.get().equals(Type.VOID)) {
+    rep.add(new PopOp(returnLabelRegister));
+    rep.add(new GotoRegisterOp(returnLabelRegister));
     rep.add(new CommentOp("end func " + name));
   }
 

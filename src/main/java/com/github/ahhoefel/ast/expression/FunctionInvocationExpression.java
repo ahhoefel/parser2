@@ -1,5 +1,6 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
@@ -21,6 +22,7 @@ public class FunctionInvocationExpression implements Expression {
   private Register returnLabelRegister;
   private Label returnLabel;
   private Type type;
+  private CodeLocation location;
 
   public FunctionInvocationExpression(Token identifier, List<Expression> args) {
     this.identifier = identifier.getValue();
@@ -29,6 +31,7 @@ public class FunctionInvocationExpression implements Expression {
     this.returnLabelRegister = new Register();
     this.returnLabel = new Label();
     this.implicitArg = Optional.empty();
+    this.location = identifier.getLocation();
   }
 
   public void setImplicitArg(Expression implicitArg) {
@@ -81,7 +84,7 @@ public class FunctionInvocationExpression implements Expression {
 
     // Remove args from the live registers.
     for (Expression arg : args) {
-      liveRegisters.remove(liveRegisters.size() - 1);
+      arg.removeLiveRegisters(liveRegisters);
     }
 
     rep.add(new CommentOp("Pushing live registers"));
@@ -101,14 +104,18 @@ public class FunctionInvocationExpression implements Expression {
     rep.add(new CommentOp("Jumping to function " + identifier));
     rep.add(new GotoOp(fn.getLabel()));
     rep.add(new DestinationOp(returnLabel));
-    rep.add(new CommentOp("Popping return value"));
-    rep.add(new PopOp(register));
+    if (type != Type.VOID) {
+      rep.add(new CommentOp("Popping return value"));
+      rep.add(new PopOp(register));
+    } else {
+      rep.add(new CommentOp("Void return type. Not popping."));
+    }
 
     rep.add(new CommentOp("Popping live registers, except args"));
     for (int i = 0; i < liveRegisters.size(); i++) {
       rep.add(new PopOp(liveRegisters.get(liveRegisters.size() - i - 1)));
     }
-    liveRegisters.add(register);
+    addLiveRegisters(liveRegisters);
 
     iter = symbols.getVariablesInReverseOrder();
     // Should be in reverse order.
@@ -119,6 +126,16 @@ public class FunctionInvocationExpression implements Expression {
       rep.add(new PopOp(var.getRegister()));
     }
     rep.add(new CommentOp("Ending invocation of function " + identifier));
+  }
+
+  @Override
+  public void addLiveRegisters(List<Register> stack) {
+    stack.add(register);
+  }
+
+  @Override
+  public void removeLiveRegisters(List<Register> stack) {
+    stack.remove(stack.size() - 1);
   }
 
   private FunctionDeclaration getDeclaration() {
@@ -136,7 +153,19 @@ public class FunctionInvocationExpression implements Expression {
 
   @Override
   public Optional<Type> checkType(ErrorLog log) {
-    type = getDeclaration().getReturnType();
+    FunctionDeclaration declaration = getDeclaration();
+    List<Type> paramTypes = declaration.getParameterTypes();
+    if (args.size() != paramTypes.size()) {
+      log.add(new ParseError(location, String.format("Number of parameters (%d) does not match number of arguments (%d)", paramTypes.size(), args.size())));
+    } else {
+      for (int i = 0; i < args.size(); i++) {
+        Optional<Type> type = args.get(i).checkType(log);
+        if (!type.get().equals(paramTypes.get(i))) {
+          log.add(new ParseError(location, String.format("Type mismatch: %s passed to %s parameter %s", type.get(), paramTypes.get(i), declaration.getParameterName(i))));
+        }
+      }
+    }
+    type = declaration.getReturnType();
     register.setWidth(type.width());
     return Optional.of(type);
   }
@@ -144,5 +173,10 @@ public class FunctionInvocationExpression implements Expression {
   @Override
   public Type getType() {
     return type;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

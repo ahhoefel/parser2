@@ -62,23 +62,23 @@ public class Interpreter {
       }
       return pass;
     } catch (IOException e) {
-      System.out.println(e);
+      e.printStackTrace();
       return false;
     }
   }
 
   private static boolean testExecution(Target target, FileTree tree) throws IOException {
     Representation rep = tree.representation(target);
-    //System.out.println(rep);
-    Context cxt = runRepresentation(rep);
-    if (cxt.getStopType().width() != 1) {
+    System.out.println(rep);
+    Context ctx = runRepresentation(rep);
+    if (ctx.getStopType() == null || ctx.getStopType().width() != 1) {
       System.out.println("FAIL: expected boolean result");
       return false;
     }
-    if (cxt.getStopResult().getWord(0) == 0) {
+    if (ctx.getStopResult().getWord(0) == 0) {
       System.out.println("FAIL: returned false");
     }
-    return cxt.getStopResult().getWord(0) != 0;
+    return ctx.getStopResult().getWord(0) != 0;
   }
 
   private static Context runRepresentation(Representation rep) throws IOException {

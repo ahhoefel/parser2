@@ -1,0 +1,15 @@
+func main() bool {
+  var t T = new T {
+    x: 3,
+  }
+  bar(t)
+  return t.x == 3
+}
+
+type T struct {
+  x int
+}
+
+func bar(r T) {
+  r.x = 4
+}

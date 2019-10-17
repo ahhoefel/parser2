@@ -14,9 +14,9 @@ public class UnionType implements Type {
   }
 
   @Override
-  public void linkTypes(SymbolCatalog catalog) {
+  public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
     for (Member member : members) {
-      member.getType().linkTypes(catalog);
+      member.getType().linkTypes(catalog, log);
     }
   }
 

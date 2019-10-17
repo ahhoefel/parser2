@@ -1,8 +1,8 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.ast.Expression;
-import com.github.ahhoefel.ast.StructLiteralExpression;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.expression.Expression;
+import com.github.ahhoefel.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;

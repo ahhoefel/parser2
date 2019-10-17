@@ -1,5 +1,8 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
@@ -9,21 +12,15 @@ import com.github.ahhoefel.util.IndentedString;
 import java.util.List;
 import java.util.Optional;
 
-public class UnaryMinusExpression implements Expression {
+public class UnaryMinusExpression extends ExpressionAdapter {
 
   private Expression a;
-  private Register register;
   private Register zeroRegister;
 
   public UnaryMinusExpression(Expression a) {
+    super(64);
     this.a = a;
-    this.register = new Register();
     this.zeroRegister = new Register();
-  }
-
-  @Override
-  public Register getRegister() {
-    return register;
   }
 
   @Override
@@ -42,8 +39,8 @@ public class UnaryMinusExpression implements Expression {
     a.addToRepresentation(rep, liveRegisters);
     rep.add(new LiteralOp(0, zeroRegister));
     rep.add(new SubtractOp(zeroRegister, a.getRegister(), register));
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.add(register);
+    a.removeLiveRegisters(liveRegisters);
+    addLiveRegisters(liveRegisters);
   }
 
   @Override
@@ -61,5 +58,10 @@ public class UnaryMinusExpression implements Expression {
   @Override
   public Type getType() {
     return Type.INT;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

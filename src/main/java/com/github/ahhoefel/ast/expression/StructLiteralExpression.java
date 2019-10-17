@@ -1,5 +1,6 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.SetOp;
@@ -63,7 +64,17 @@ public class StructLiteralExpression implements Expression {
       rep.add(new SetOp(e.getRegister(), register, 0, destinationOffset, e.getType().width()));
       destinationOffset += type.width();
     }
-    liveRegisters.add(register);
+    addLiveRegisters(liveRegisters);
+  }
+
+  @Override
+  public void addLiveRegisters(List<Register> stack) {
+    stack.add(register);
+  }
+
+  @Override
+  public void removeLiveRegisters(List<Register> stack) {
+    stack.remove(stack.size() - 1);
   }
 
   @Override
@@ -93,5 +104,10 @@ public class StructLiteralExpression implements Expression {
   @Override
   public Type getType() {
     return type;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

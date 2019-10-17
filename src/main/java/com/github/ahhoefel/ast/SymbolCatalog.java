@@ -133,7 +133,7 @@ public class SymbolCatalog {
     return this.imports.get(shortName).getSymbols();
   }
 
-  public Type getType(Optional<String> packageName, String typeName) {
+  public Type getType(Optional<String> packageName, String typeName, ErrorLog log) {
     SymbolCatalog symbols = this;
     if (packageName.isPresent()) {
       symbols = imports.get(packageName.get()).getSymbols();
@@ -148,7 +148,8 @@ public class SymbolCatalog {
       error += "Known types: ";
       error += String.join(", ", symbols.types.keySet().stream().map(String::toString).collect(Collectors.toList()));
 
-      throw new RuntimeException(error);
+      log.add(new ParseError(null, error));
+      return null;
     }
     return typeDeclaration.getType();
   }

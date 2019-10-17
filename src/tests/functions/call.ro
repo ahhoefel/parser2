@@ -15,6 +15,12 @@ func main() bool {
   if boolParameters(true, true) != true {
     return false
   }
+  if projectX(3,4) != 3 {
+    return false
+  }
+  if projectY(3,4) != 4 {
+    return false
+  }
   return true
 }
 
@@ -32,4 +38,12 @@ func intParameter(x int) int {
 
 func boolParameters(x bool, y bool) bool {
   return x && y
+}
+
+func projectX(x int, y int) int {
+  return x
+}
+
+func projectY(x int, y int) int {
+  return y
 }

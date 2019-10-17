@@ -1,9 +1,11 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 public class ExpressionStatement implements Statement {
 
@@ -34,7 +36,8 @@ public class ExpressionStatement implements Statement {
 
   @Override
   public void typeCheck(ErrorLog log) {
-    if (expression.getType() != Type.VOID) {
+    Optional<Type> type = expression.checkType(log);
+    if (type.isPresent() && type.get() != Type.VOID) {
       log.add(new ParseError(null, "Expression statement should have void type. Got: " + expression.getType()));
     }
   }

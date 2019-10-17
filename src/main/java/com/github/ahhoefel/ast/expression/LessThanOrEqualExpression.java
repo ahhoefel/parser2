@@ -1,34 +1,32 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.ParseError;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.ir.operation.SubtractOp;
+import com.github.ahhoefel.ir.operation.LessThanOrEqualOp;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 import java.util.Optional;
 
-public class SubtractExpression implements Expression {
+public class LessThanOrEqualExpression extends ExpressionAdapter {
 
   private Expression a;
   private Expression b;
-  private Register register;
 
-  public SubtractExpression(Expression a, Expression b) {
+  public LessThanOrEqualExpression(Expression a, Expression b) {
+    super(1);
     this.a = a;
     this.b = b;
-    this.register = new Register();
-  }
-
-  @Override
-  public Register getRegister() {
-    return register;
   }
 
   @Override
   public void toIndentedString(IndentedString out) {
     a.toIndentedString(out);
-    out.add(" - ");
+    out.add(" <= ");
     b.toIndentedString(out);
   }
 
@@ -42,10 +40,10 @@ public class SubtractExpression implements Expression {
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     a.addToRepresentation(rep, liveRegisters);
     b.addToRepresentation(rep, liveRegisters);
-    rep.add(new SubtractOp(a.getRegister(), b.getRegister(), register));
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.add(register);
+    rep.add(new LessThanOrEqualOp(a.getRegister(), b.getRegister(), register));
+    a.removeLiveRegisters(liveRegisters);
+    b.removeLiveRegisters(liveRegisters);
+    addLiveRegisters(liveRegisters);
   }
 
   @Override
@@ -56,13 +54,18 @@ public class SubtractExpression implements Expression {
       return Optional.empty();
     }
     if (aType.get() != Type.INT || bType.get() != Type.INT) {
-      log.add(new ParseError(null, "Subtraction not defined for types: " + a.getType() + " " + b.getType()));
+      log.add(new ParseError(null, "Inequality does not apply to types: " + a.getType() + " " + b.getType()));
     }
-    return Optional.of(Type.INT);
+    return Optional.of(Type.BOOL);
   }
 
   @Override
   public Type getType() {
-    return Type.INT;
+    return Type.BOOL;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

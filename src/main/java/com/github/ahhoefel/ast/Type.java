@@ -4,7 +4,7 @@ public interface Type {
 
   class IntType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog) {
+    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
 
     }
 
@@ -24,7 +24,7 @@ public interface Type {
 
   class BooleanType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog) {
+    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
 
     }
 
@@ -44,7 +44,7 @@ public interface Type {
 
   class StringType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog) {
+    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
     }
 
     @Override
@@ -63,7 +63,7 @@ public interface Type {
 
   class VoidType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog) {
+    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
     }
 
     @Override
@@ -80,7 +80,7 @@ public interface Type {
     }
   }
 
-  void linkTypes(SymbolCatalog catalog);
+  void linkTypes(SymbolCatalog catalog, ErrorLog log);
 
   int width();
 

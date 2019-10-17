@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
-import com.github.ahhoefel.ast.Expression;
+import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 

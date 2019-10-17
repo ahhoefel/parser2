@@ -1,0 +1,5 @@
+syntax:struct_literal_missing_comma:0:91
+Parsing error.
+Next token: rbrace(})
+State: (numberGrammar, 204)
+Stack: (new, 312) (type, 347) (lbrace, 348) (structLiteralArgs, 349) (identifierGrammar, 198) (colon, 201) (numberGrammar, 204)  (top)

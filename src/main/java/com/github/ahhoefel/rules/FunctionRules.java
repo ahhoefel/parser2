@@ -32,10 +32,10 @@ public class FunctionRules {
     Lexicon lex = lang.lex;
     rules.add(declaration, lex.funcKeyword, lex.identifier, lex.lParen, parameterList, lex.rParen, optionalType, lex.lBrace, lang.statement.statementList, lex.rBrace)
         .setAction(e -> new FunctionDeclaration((Token) e[1], (List<VariableDeclaration>) e[3], (Optional<Type>) e[5], (Block) e[7]));
-    rules.add(parameterList, parameter, lex.comma, parameterList)
+    rules.add(parameterList, parameterList, lex.comma, parameter)
         .setAction(e -> {
-          ArrayList<VariableDeclaration> a = (ArrayList<VariableDeclaration>) e[2];
-          a.add((VariableDeclaration) e[0]);
+          ArrayList<VariableDeclaration> a = (ArrayList<VariableDeclaration>) e[0];
+          a.add((VariableDeclaration) e[2]);
           return a;
         });
     rules.add(parameterList, parameter).setAction(e -> {

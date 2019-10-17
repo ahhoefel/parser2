@@ -1,5 +1,9 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.ParseError;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.NegateOp;
@@ -8,19 +12,13 @@ import com.github.ahhoefel.util.IndentedString;
 import java.util.List;
 import java.util.Optional;
 
-public class NotExpression implements Expression {
+public class NotExpression extends ExpressionAdapter {
 
   private Expression a;
-  private Register register;
 
   public NotExpression(Expression a) {
+    super(1);
     this.a = a;
-    this.register = new Register(1);
-  }
-
-  @Override
-  public Register getRegister() {
-    return register;
   }
 
   @Override
@@ -38,8 +36,8 @@ public class NotExpression implements Expression {
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     a.addToRepresentation(rep, liveRegisters);
     rep.add(new NegateOp(a.getRegister(), register));
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.add(register);
+    a.removeLiveRegisters(liveRegisters);
+    addLiveRegisters(liveRegisters);
   }
 
   @Override
@@ -57,5 +55,10 @@ public class NotExpression implements Expression {
   @Override
   public Type getType() {
     return Type.BOOL;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
   }
 }

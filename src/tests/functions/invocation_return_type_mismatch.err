@@ -1,2 +1,0 @@
-functions:invocation_return_type_mismatch:0:22
-Type mismatch: int = bool

@@ -1,0 +1,11 @@
+type T struct {
+  x int
+  y int
+}
+
+func foo() {
+  var t T = new T {
+    x: 3,
+    y: 4
+  }
+}

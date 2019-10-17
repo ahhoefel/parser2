@@ -1,5 +1,8 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.ErrorLog;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.util.IndentedString;
@@ -15,6 +18,12 @@ public interface Expression {
   void setSymbolCatalog(SymbolCatalog symbols);
 
   void addToRepresentation(Representation rep, List<Register> liveRegisters);
+
+  void addLiveRegisters(List<Register> stack);
+
+  void removeLiveRegisters(List<Register> stack);
+
+  boolean isLValue();
 
   Optional<Type> checkType(ErrorLog log);
   Type getType();

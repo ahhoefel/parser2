@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;

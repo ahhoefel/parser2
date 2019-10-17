@@ -28,9 +28,9 @@ public class StructType implements Type {
   }
 
   @Override
-  public void linkTypes(SymbolCatalog catalog) {
+  public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
     for (Type type : members.values()) {
-      type.linkTypes(catalog);
+      type.linkTypes(catalog, log);
     }
   }
 

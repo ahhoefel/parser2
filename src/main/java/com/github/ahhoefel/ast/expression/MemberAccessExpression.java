@@ -1,5 +1,6 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.CommentOp;
@@ -10,7 +11,7 @@ import com.github.ahhoefel.util.IndentedString;
 import java.util.List;
 import java.util.Optional;
 
-public class MemberAccessExpression implements Expression {
+public class MemberAccessExpression implements LValueExpression {
 
   private final Token member;
   private final Expression expression;
@@ -46,8 +47,7 @@ public class MemberAccessExpression implements Expression {
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
     expression.addToRepresentation(rep, liveRegisters);
-    liveRegisters.remove(liveRegisters.size() - 1);
-    liveRegisters.add(register);
+    expression.removeLiveRegisters(liveRegisters);
     rep.add(new CommentOp("Accessing member " + member.getValue()));
     if (rep == null) {
       System.out.println("Null rep");
@@ -59,6 +59,17 @@ public class MemberAccessExpression implements Expression {
       System.out.println("null strut type");
     }
     rep.add(new SetOp(expression.getRegister(), register, structType.getMemberOffset(member.getValue()), 0, structType.getMember(member.getValue()).width()));
+    addLiveRegisters(liveRegisters);
+  }
+
+  @Override
+  public void addLiveRegisters(List<Register> stack) {
+    stack.add(register);
+  }
+
+  @Override
+  public void removeLiveRegisters(List<Register> stack) {
+    stack.remove(stack.size() - 1);
   }
 
   @Override
@@ -80,5 +91,30 @@ public class MemberAccessExpression implements Expression {
     //  throw new RuntimeException(String.format("Type mismatch: Cannot assign expression of type %s to member %s on type %s", expression.checkType(), member.getValue(), type));
     //}
     return Optional.of(memberType);
+  }
+
+  @Override
+  public boolean isLValue() {
+    return true;
+  }
+
+
+  @Override
+  public void addToRepresentationAsLValue(Representation rep, List<Register> liveRegisters, Expression out) {
+    rep.add(new CommentOp("LValue expression"));
+    expression.addToRepresentation(rep, liveRegisters);
+    //liveRegisters.remove(liveRegisters.size() - 1);
+    liveRegisters.add(register);
+    rep.add(new CommentOp("Assigning to member " + member.getValue()));
+    if (rep == null) {
+      System.out.println("null rep");
+    }
+    if (expression == null) {
+      System.out.println("null expr");
+    }
+    if (structType == null) {
+      System.out.println("null strut type");
+    }
+    rep.add(new SetOp(out.getRegister(), expression.getRegister(), 0, structType.getMemberOffset(member.getValue()), structType.getMember(member.getValue()).width()));
   }
 }

@@ -1,6 +1,7 @@
 package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.ast.*;
+import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
@@ -47,7 +48,7 @@ public class StatementRules {
     Rule statementToAssignment = rules.add(statement, lvalue, lex.equals, lang.expression.expression)
         .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2]));
     rules.add(lvalue, lex.varKeyword, lex.identifier, lang.type.type).setAction(e -> LValue.withDeclaration((Token) e[1], (Type) e[2]));
-    rules.add(lvalue, lex.identifier).setAction(e -> new LValue((Token) e[0]));
+    rules.add(lvalue, lang.expression.expression).setAction(e -> LValue.fromExpression((Expression) e[0], null));
 
     // Return statement
     Rule statementToReturn = rules.add(statement, lex.returnKeyword, lang.expression.expression)

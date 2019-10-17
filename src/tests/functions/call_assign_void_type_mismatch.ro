@@ -1,0 +1,7 @@
+func main() {
+  var y int = foo()
+}
+
+func foo() {
+  var x int = 5
+}

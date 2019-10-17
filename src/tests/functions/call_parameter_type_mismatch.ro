@@ -1,0 +1,7 @@
+func main() {
+  var x int = foo(3, true)
+}
+
+func foo(x bool, y bool) int {
+  return 3
+}

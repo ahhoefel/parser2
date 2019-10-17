@@ -102,9 +102,9 @@ public class RaeFile {
     imports.linkImports(map);
   }
 
-  public void linkSymbols() {
+  public void linkSymbols(ErrorLog log) {
     for (NamedType type : unresolvedTypes) {
-      type.linkTypes(symbols);
+      type.linkTypes(symbols, log);
     }
     unresolvedTypes.clear();
   }

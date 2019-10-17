@@ -1,15 +1,15 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.expression;
 
+import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.ir.operation.SetOp;
 import com.github.ahhoefel.parser.Token;
 import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 import java.util.Optional;
 
-public class VariableExpression implements Expression {
+public class VariableExpression implements LValueExpression {
 
   private final String identifier;
   private SymbolCatalog symbols;
@@ -26,7 +26,9 @@ public class VariableExpression implements Expression {
 
   @Override
   public Register getRegister() {
-    return register;
+    VariableDeclaration variable = symbols.getVariable(identifier).get();
+    return variable.getRegister();
+    //return register;
   }
 
   @Override
@@ -41,9 +43,19 @@ public class VariableExpression implements Expression {
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
-    VariableDeclaration variable = symbols.getVariable(identifier).get();
-    rep.add(new SetOp(variable.getRegister(), register, 0, 0, variable.getType().width()));
-    liveRegisters.add(register);
+    //VariableDeclaration variable = symbols.getVariable(identifier).get();
+    //rep.add(new SetOp(variable.getRegister(), register, 0, 0, variable.getType().width()));
+    //liveRegisters.add(register);
+  }
+
+  @Override
+  public void addLiveRegisters(List<Register> stack) {
+
+  }
+
+  @Override
+  public void removeLiveRegisters(List<Register> stack) {
+
   }
 
   @Override
@@ -69,5 +81,16 @@ public class VariableExpression implements Expression {
 
   public String getIdentifier() {
     return identifier;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return true;
+  }
+
+  @Override
+  public void addToRepresentationAsLValue(Representation rep, List<Register> liveRegisters, Expression value) {
+    //VariableDeclaration variable = symbols.getVariable(identifier).get();
+    // rep.add(new SetOp(value.getRegister(), variable.getRegister(), 0, 0, value.getType().width()));
   }
 }
