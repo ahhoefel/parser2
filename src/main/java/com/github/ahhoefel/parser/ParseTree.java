@@ -43,21 +43,6 @@ public class ParseTree {
     return Objects.equals(t.token, this.token) && Objects.equals(t.children, this.children) && Objects.equals(t.rule, this.rule);
   }
 
-  /*
-    public void toString(StringBuffer buf, String indent) {
-      if (token != null) {
-        buf.append(indent).append(token.toString()).append('\n');
-        return;
-      }
-      String t = indent + "  ";
-      buf.append(indent).append("Rule: ").append(rule.toString()).append('\n');
-      for (ParseTree child : children) {
-        buf.append(indent).append("Child: {\n");
-        child.toString(buf, t);
-        buf.append(indent).append("}\n");
-      }
-    }
-  */
   public void toString(StringBuffer buf, String indent) {
     if (token != null) {
       buf.append(indent).append("Token: ").append(token.toString()).append('\n');

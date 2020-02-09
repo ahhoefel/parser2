@@ -7,11 +7,13 @@ public class RangeTokenizer {
   private Symbol[] charTerminalMap;
   private Symbol unknown;
   private Symbol eof;
+  private Symbol newLine;
 
   public RangeTokenizer(CharacterSet chars) {
     this.charTerminalMap = new Symbol[256];
     this.unknown = chars.unknown;
     this.eof = chars.eof;
+    this.newLine = chars.newline;
     for (int i = 0; i < 256; i++) {
       charTerminalMap[i] = chars.unknown;
     }
@@ -61,6 +63,10 @@ public class RangeTokenizer {
 
   public Symbol getEof() {
     return eof;
+  }
+
+  public Symbol getNewLine() {
+    return newLine;
   }
 
   public static void main(String[] arg) {

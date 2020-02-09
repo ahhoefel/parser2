@@ -136,7 +136,7 @@ public class Lexicon {
       return words;
     });
     rules.add(word, identifierGrammar.identifier).setAction(new TokenAction(identifier, keywords));
-    rules.add(word, whitespaceGrammar.whitespace).setAction(x -> null);
+    rules.add(word, whitespaceGrammar.whitespace).setAction(e -> null);
     Rule wordIsNumber = rules.add(word, numberGrammar.number).setAction(new TokenAction(number));
     rules.add(word, chars.period).setAction(new TokenAction(period));
     rules.add(word, chars.lparen).setAction(new TokenAction(lParen));
@@ -178,13 +178,6 @@ public class Lexicon {
     System.out.print("Lexing... ");
     return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
   }
-
-  /*
-  public List<Token> getTokens(Target target) throws IOException {
-    Tokenizer.TokenIterator iter = new Tokenizer.TokenIterator(chars.getTokenizer(),target);
-    return (List<Token>) Parser.parseTokens(table, iter, grammar.getAugmentedStartRule().getSource());
-  }
-  */
 
   public SymbolTable.TerminalTable getTerminals() {
     return resultSymbols;

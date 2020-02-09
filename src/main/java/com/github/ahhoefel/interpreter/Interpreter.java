@@ -60,6 +60,7 @@ public class Interpreter {
         }
         return false;
       }
+      System.out.println("PASS: got expected error: " + expectedError);
       return pass;
     } catch (IOException e) {
       e.printStackTrace();
@@ -69,7 +70,7 @@ public class Interpreter {
 
   private static boolean testExecution(Target target, FileTree tree) throws IOException {
     Representation rep = tree.representation(target);
-    System.out.println(rep);
+    //System.out.println(rep);
     Context ctx = runRepresentation(rep);
     if (ctx.getStopType() == null || ctx.getStopType().width() != 1) {
       System.out.println("FAIL: expected boolean result");

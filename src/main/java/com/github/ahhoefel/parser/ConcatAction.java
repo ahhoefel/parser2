@@ -13,7 +13,8 @@ public class ConcatAction implements Function<Object[], Object> {
     StringBuffer buf = new StringBuffer();
     Symbol type = null;
     CodeLocation location = null;
-    for (Object o : objects) {
+    for (int i = 0; i < objects.length; i++) {
+      Object o = objects[i];
       if (o instanceof Token) {
         Token token = (Token) o;
         buf.append(token.getValue());

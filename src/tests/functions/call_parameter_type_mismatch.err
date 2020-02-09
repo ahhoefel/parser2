@@ -1,2 +1,2 @@
-functions:call_parameter_type_mismatch:0:30
+functions:call_parameter_type_mismatch:2:15
 Type mismatch: int passed to bool parameter x

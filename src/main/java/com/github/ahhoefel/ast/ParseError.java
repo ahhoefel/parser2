@@ -6,14 +6,32 @@ public class ParseError {
 
   private CodeLocation location;
   private String description;
+  private String snippet;
 
   public ParseError(CodeLocation location, String description) {
     this.location = location;
     this.description = description;
   }
 
+  public ParseError(CodeLocation location, String snippet, String description) {
+    this.location = location;
+    this.snippet = snippet;
+    this.description = description;
+  }
+
   public String toString() {
-    return (location != null ? location.toString() : "no location") + " " + description;
+    String out = "";
+    if (location != null) {
+      out += location.toString();
+    } else {
+      out += "no location ";
+    }
+    if (snippet != null) {
+      out += snippet;
+    }
+    out += "\n";
+    out += description;
+    return out;
   }
 
   public boolean equals(Object o) {

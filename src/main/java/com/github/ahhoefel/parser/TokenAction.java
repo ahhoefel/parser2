@@ -16,6 +16,9 @@ public class TokenAction implements Function<Object[], Object> {
 
   public TokenAction(Symbol terminal, List<Symbol> keywords) {
     this.terminal = terminal;
+    if (terminal == null) {
+      throw new RuntimeException("Token action cannot have null terminal.");
+    }
     keywordMap = new HashMap<>();
     for (Symbol keyword : keywords) {
       keywordMap.put(keyword.toString(), keyword);

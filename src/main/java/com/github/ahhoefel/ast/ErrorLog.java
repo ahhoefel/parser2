@@ -31,7 +31,8 @@ public class ErrorLog {
       List<String> lines = Files.readAllLines(target.getErrorPath());
       for (int i = 0; i < lines.size(); i++) {
         String[] locationParts = lines.get(i).split(":");
-        CodeLocation location = new CodeLocation(new Target(target.getSource(), locationParts[0] + ":" + locationParts[1]), Integer.parseInt(locationParts[2]), Integer.parseInt(locationParts[3]));
+        Target t = new Target(target.getSource(), locationParts[0] + ":" + locationParts[1]);
+        CodeLocation location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1, 0);
         StringBuilder errorMsg = new StringBuilder();
         i++;
         errorMsg.append(lines.get(i));

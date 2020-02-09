@@ -39,12 +39,9 @@ public class Parser<T> {
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
       LRTable.State state = table.state.get(symbolState.stateIndex);
-      // System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
-      // System.out.println(result);
+      //System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
+      //System.out.println(result);
       if (state.shift.containsKey(nextSymbol)) {
-        // if (state.shift.get(nextSymbol) == -1) {
-        // break;
-        // }
         stack.push(new SymbolState(nextSymbol, state.shift.get(nextSymbol)));
         result.push(nextToken);
         if (iter.hasNext()) {
@@ -59,9 +56,9 @@ public class Parser<T> {
         int numChildren = rule.getSymbols().size();
         int numParameters = numChildren + (context.isPresent() ? 1 : 0);
         Object[] children = new Object[numParameters];
-        for (int i = numChildren - 1; i >= 0; i--) {
+        for (int i = 0; i < numChildren; i++) {
           stack.pop();
-          children[i] = result.pop();
+          children[numChildren - i - 1] = result.pop();
         }
         if (context.isPresent()) {
           children[numParameters - 1] = context.get();

@@ -1,4 +1,4 @@
-syntax:struct_literal_missing_comma:0:91
+syntax:struct_literal_missing_comma:10:3
 Parsing error.
 Next token: rbrace(})
 State: (numberGrammar, 204)

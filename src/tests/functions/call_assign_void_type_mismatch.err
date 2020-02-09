@@ -1,2 +1,2 @@
-functions:call_assign_void_type_mismatch:0:22
+functions:call_assign_void_type_mismatch:2:7
 Type mismatch: int = void

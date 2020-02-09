@@ -1,4 +1,4 @@
-syntax:missing_brace:0:65
+syntax:missing_brace:7:3
 Parsing error.
 Next token: var(var)
 State: (rparen, 15)

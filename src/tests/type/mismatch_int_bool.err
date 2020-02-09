@@ -1,2 +1,2 @@
-type:mismatch_int_bool:0:21
+type:mismatch_int_bool:2:7
 Type mismatch: int = bool
