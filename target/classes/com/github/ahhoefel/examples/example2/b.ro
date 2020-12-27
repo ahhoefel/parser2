@@ -1,0 +1,9 @@
+import a
+
+func count(n int) int {
+ if n != 0 {
+   return 2 + a.count(n - 1)
+ }
+ return 2
+}
+

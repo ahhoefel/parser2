@@ -68,6 +68,7 @@ public class Lexicon {
   public Symbol trueKeyword;
   public Symbol falseKeyword;
 
+  @SuppressWarnings("unchecked")
   public Lexicon() {
     chars = new CharacterSet();
     terminals = chars.symbols;
@@ -116,8 +117,9 @@ public class Lexicon {
     newKeyword = resultSymbols.newSymbol("new");
     trueKeyword = resultSymbols.newSymbol("true");
     falseKeyword = resultSymbols.newSymbol("false");
-    List<Symbol> keywords = List.of(
-        forKeyword, ifKeyword, funcKeyword, varKeyword, intKeyword, boolKeyword, stringKeyword, returnKeyword, importKeyword, typeKeyword, structKeyword, unionKeyword, newKeyword, trueKeyword, falseKeyword);
+    List<Symbol> keywords = List.of(forKeyword, ifKeyword, funcKeyword, varKeyword, intKeyword, boolKeyword,
+        stringKeyword, returnKeyword, importKeyword, typeKeyword, structKeyword, unionKeyword, newKeyword, trueKeyword,
+        falseKeyword);
 
     Rule.Builder rules = new Rule.Builder();
     ShiftReduceResolver resolver = new ShiftReduceResolver();
@@ -173,6 +175,7 @@ public class Lexicon {
     table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
+  @SuppressWarnings("unchecked")
   public List<Token> parse(Target target, ErrorLog log) throws IOException {
     Iterator<Token> tokens = chars.parse(target);
     System.out.print("Lexing... ");

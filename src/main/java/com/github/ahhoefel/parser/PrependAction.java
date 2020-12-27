@@ -7,10 +7,11 @@ import java.util.function.Function;
 public class PrependAction implements Function<Object[], Object> {
 
   @Override
+  @SuppressWarnings("unchecked")
   public Object apply(Object[] objects) {
     List<Object> list;
     if (objects.length == 1) {
-      list = new ArrayList();
+      list = new ArrayList<Object>();
     } else {
       list = (List<Object>) objects[1];
     }

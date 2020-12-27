@@ -14,7 +14,6 @@ import java.util.Optional;
 public class BooleanLiteralExpression extends ExpressionAdapter {
 
   private boolean value;
-  private SymbolCatalog symbols;
 
   public BooleanLiteralExpression(boolean value) {
     super(1);
@@ -27,7 +26,6 @@ public class BooleanLiteralExpression extends ExpressionAdapter {
 
   @Override
   public void setSymbolCatalog(SymbolCatalog symbols) {
-    this.symbols = symbols;
   }
 
   @Override

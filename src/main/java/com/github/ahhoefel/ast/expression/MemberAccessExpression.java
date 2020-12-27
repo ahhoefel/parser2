@@ -16,7 +16,6 @@ public class MemberAccessExpression implements LValueExpression {
   private final Token member;
   private final Expression expression;
   private StructType structType;
-  private SymbolCatalog symbols;
   private Register register;
   private Type memberType;
 
@@ -40,7 +39,6 @@ public class MemberAccessExpression implements LValueExpression {
 
   @Override
   public void setSymbolCatalog(SymbolCatalog symbols) {
-    this.symbols = symbols;
     expression.setSymbolCatalog(symbols);
   }
 
@@ -49,16 +47,14 @@ public class MemberAccessExpression implements LValueExpression {
     expression.addToRepresentation(rep, liveRegisters);
     expression.removeLiveRegisters(liveRegisters);
     rep.add(new CommentOp("Accessing member " + member.getValue()));
-    if (rep == null) {
-      System.out.println("Null rep");
-    }
     if (expression == null) {
       System.out.println("Null expr");
     }
     if (structType == null) {
       System.out.println("null strut type");
     }
-    rep.add(new SetOp(expression.getRegister(), register, structType.getMemberOffset(member.getValue()), 0, structType.getMember(member.getValue()).width()));
+    rep.add(new SetOp(expression.getRegister(), register, structType.getMemberOffset(member.getValue()), 0,
+        structType.getMember(member.getValue()).width()));
     addLiveRegisters(liveRegisters);
   }
 
@@ -87,9 +83,11 @@ public class MemberAccessExpression implements LValueExpression {
       return Optional.empty();
     }
     register.setWidth(memberType.width());
-    //if (!memberType.equals(expression.checkType())) {
-    //  throw new RuntimeException(String.format("Type mismatch: Cannot assign expression of type %s to member %s on type %s", expression.checkType(), member.getValue(), type));
-    //}
+    // if (!memberType.equals(expression.checkType())) {
+    // throw new RuntimeException(String.format("Type mismatch: Cannot assign
+    // expression of type %s to member %s on type %s", expression.checkType(),
+    // member.getValue(), type));
+    // }
     return Optional.of(memberType);
   }
 
@@ -98,23 +96,17 @@ public class MemberAccessExpression implements LValueExpression {
     return true;
   }
 
-
   @Override
   public void addToRepresentationAsLValue(Representation rep, List<Register> liveRegisters, Expression out) {
     rep.add(new CommentOp("LValue expression"));
     expression.addToRepresentation(rep, liveRegisters);
-    //liveRegisters.remove(liveRegisters.size() - 1);
+    // liveRegisters.remove(liveRegisters.size() - 1);
     liveRegisters.add(register);
     rep.add(new CommentOp("Assigning to member " + member.getValue()));
-    if (rep == null) {
-      System.out.println("null rep");
-    }
-    if (expression == null) {
-      System.out.println("null expr");
-    }
     if (structType == null) {
       System.out.println("null strut type");
     }
-    rep.add(new SetOp(out.getRegister(), expression.getRegister(), 0, structType.getMemberOffset(member.getValue()), structType.getMember(member.getValue()).width()));
+    rep.add(new SetOp(out.getRegister(), expression.getRegister(), 0, structType.getMemberOffset(member.getValue()),
+        structType.getMember(member.getValue()).width()));
   }
 }

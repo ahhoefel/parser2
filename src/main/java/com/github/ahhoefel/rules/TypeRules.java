@@ -21,6 +21,7 @@ public class TypeRules {
     members = nonTerminals.newSymbol("members");
   }
 
+  @SuppressWarnings("unchecked")
   public void provideRules(Rule.Builder rules, Language lang) {
     Lexicon lex = lang.lex;
 
@@ -42,13 +43,13 @@ public class TypeRules {
       return type;
     });
     rules.add(type, type, lex.lBracket, lex.rBracket).setAction(e -> new ArrayType((Type) e[0]));
-    rules.add(type, type, lex.lBracket, typeParams, lex.rBracket).setAction(e -> new ParameterizedType((List<Type>) e[2]));
-    rules.add(typeParams, typeParams, lex.comma, type)
-        .setAction(e -> {
-          List<Type> params = (List<Type>) e[0];
-          params.add((Type) e[2]);
-          return params;
-        });
+    rules.add(type, type, lex.lBracket, typeParams, lex.rBracket)
+        .setAction(e -> new ParameterizedType((List<Type>) e[2]));
+    rules.add(typeParams, typeParams, lex.comma, type).setAction(e -> {
+      List<Type> params = (List<Type>) e[0];
+      params.add((Type) e[2]);
+      return params;
+    });
     rules.add(typeParams, type).setAction(e -> {
       List<Type> params = new ArrayList<>();
       params.add((Type) e[0]);

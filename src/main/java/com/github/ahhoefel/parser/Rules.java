@@ -16,11 +16,9 @@ public class Rules {
   private Map<Symbol, Set<Symbol>> followingNonTerminals;
   private Map<Symbol, Set<Symbol>> followingTerminals;
   private SymbolTable.TerminalTable terminals;
-  private SymbolTable.NonTerminalTable nonTerminals;
 
   public Rules(SymbolTable.TerminalTable terminals, SymbolTable.NonTerminalTable nonTerminals, List<Rule> rules) {
     this.terminals = terminals;
-    this.nonTerminals = nonTerminals;
     this.rules = new ArrayList<>();
     this.rules.add(0, new Rule(nonTerminals.getAugmentedStart(), List.of(nonTerminals.getStart())));
     this.rules.addAll(rules);
@@ -172,7 +170,8 @@ public class Rules {
     return firsts;
   }
 
-  private Set<Symbol> makeFirstTerminals(Symbol start, Map<Symbol, Set<Symbol>> simpleFirstTerminals, Map<Symbol, Set<Symbol>> firstNonTerminals) {
+  private Set<Symbol> makeFirstTerminals(Symbol start, Map<Symbol, Set<Symbol>> simpleFirstTerminals,
+      Map<Symbol, Set<Symbol>> firstNonTerminals) {
     Set<Symbol> firstTerminals = new HashSet<>();
     for (Symbol symbol : firstNonTerminals.get(start)) {
       firstTerminals.addAll(simpleFirstTerminals.get(symbol));

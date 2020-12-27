@@ -16,35 +16,37 @@ import java.util.Optional;
 public class FunctionRules {
   Symbol declaration;
   private Symbol parameterList;
-  private Symbol parameterListNonEmpty;
   private Symbol parameter;
   private Symbol optionalType;
 
   public FunctionRules(SymbolTable.NonTerminalTable nonTerminals) {
     declaration = nonTerminals.newSymbol("functionDeclaration");
     parameterList = nonTerminals.newSymbol("parameterList");
-    parameterListNonEmpty = nonTerminals.newSymbol("parameterListNonEmpty");
     parameter = nonTerminals.newSymbol("parameter");
     optionalType = nonTerminals.newSymbol("optionalType");
   }
 
+  @SuppressWarnings("unchecked")
   public void provideRules(Rule.Builder rules, Language lang) {
     Lexicon lex = lang.lex;
-    rules.add(declaration, lex.funcKeyword, lex.identifier, lex.lParen, parameterList, lex.rParen, optionalType, lex.lBrace, lang.statement.statementList, lex.rBrace)
-        .setAction(e -> new FunctionDeclaration((Token) e[1], (List<VariableDeclaration>) e[3], (Optional<Type>) e[5], (Block) e[7]));
-    rules.add(parameterList, parameterList, lex.comma, parameter)
-        .setAction(e -> {
-          ArrayList<VariableDeclaration> a = (ArrayList<VariableDeclaration>) e[0];
-          a.add((VariableDeclaration) e[2]);
-          return a;
-        });
+    rules
+        .add(declaration, lex.funcKeyword, lex.identifier, lex.lParen, parameterList, lex.rParen, optionalType,
+            lex.lBrace, lang.statement.statementList, lex.rBrace)
+        .setAction(e -> new FunctionDeclaration((Token) e[1], (List<VariableDeclaration>) e[3], (Optional<Type>) e[5],
+            (Block) e[7]));
+    rules.add(parameterList, parameterList, lex.comma, parameter).setAction(e -> {
+      ArrayList<VariableDeclaration> a = (ArrayList<VariableDeclaration>) e[0];
+      a.add((VariableDeclaration) e[2]);
+      return a;
+    });
     rules.add(parameterList, parameter).setAction(e -> {
       ArrayList<VariableDeclaration> a = new ArrayList<>();
       a.add((VariableDeclaration) e[0]);
       return a;
     });
     rules.add(parameterList).setAction(e -> new ArrayList<VariableDeclaration>());
-    rules.add(parameter, lex.identifier, lang.type.type).setAction(e -> new VariableDeclaration(((Token) e[0]).getValue(), (Type) e[1]));
+    rules.add(parameter, lex.identifier, lang.type.type)
+        .setAction(e -> new VariableDeclaration(((Token) e[0]).getValue(), (Type) e[1]));
     rules.add(optionalType, lang.type.type).setAction(e -> Optional.of(e[0]));
     rules.add(optionalType).setAction(e -> Optional.empty());
   }

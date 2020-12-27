@@ -29,13 +29,8 @@ public class LRItemTest {
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
     Grammar.FirstSymbols first = grammar.first();
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0, terminals.getEof()), grammar, first);
-    Assert.assertEquals(closure, Set.of(
-        new MarkedRule(r0, 0, terminals.getEof()),
-        new MarkedRule(r1, 0, y),
-        new MarkedRule(r1, 0, z),
-        new MarkedRule(r2, 0, y),
-        new MarkedRule(r2, 0, z)
-    ));
+    Assert.assertEquals(closure, Set.of(new MarkedRule(r0, 0, terminals.getEof()), new MarkedRule(r1, 0, y),
+        new MarkedRule(r1, 0, z), new MarkedRule(r2, 0, y), new MarkedRule(r2, 0, z)));
   }
 
   @Test
@@ -63,25 +58,12 @@ public class LRItemTest {
 
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6, 1, plus), grammar, first);
     Assert.assertEquals(closure,
-        Set.of(
-            new MarkedRule(r1, 0, plus),
-            new MarkedRule(r1, 0, rparen),
-            new MarkedRule(r2, 0, plus),
-            new MarkedRule(r2, 0, rparen),
-            new MarkedRule(r3, 0, plus),
-            new MarkedRule(r3, 0, times),
-            new MarkedRule(r3, 0, rparen),
-            new MarkedRule(r4, 0, plus),
-            new MarkedRule(r4, 0, times),
-            new MarkedRule(r4, 0, rparen),
-            new MarkedRule(r5, 0, plus),
-            new MarkedRule(r5, 0, times),
-            new MarkedRule(r5, 0, rparen),
-            new MarkedRule(r6, 0, plus),
-            new MarkedRule(r6, 0, times),
-            new MarkedRule(r6, 0, rparen),
-            new MarkedRule(r6, 1, plus)
-        ));
+        Set.of(new MarkedRule(r1, 0, plus), new MarkedRule(r1, 0, rparen), new MarkedRule(r2, 0, plus),
+            new MarkedRule(r2, 0, rparen), new MarkedRule(r3, 0, plus), new MarkedRule(r3, 0, times),
+            new MarkedRule(r3, 0, rparen), new MarkedRule(r4, 0, plus), new MarkedRule(r4, 0, times),
+            new MarkedRule(r4, 0, rparen), new MarkedRule(r5, 0, plus), new MarkedRule(r5, 0, times),
+            new MarkedRule(r5, 0, rparen), new MarkedRule(r6, 0, plus), new MarkedRule(r6, 0, times),
+            new MarkedRule(r6, 0, rparen), new MarkedRule(r6, 1, plus)));
     // [start => ^ T , )],
     // [start => ^ T , +]
     // [start => ^ start + T , )],
@@ -100,60 +82,38 @@ public class LRItemTest {
     // [F => ^ ( start ) , *],
     // [F => ^ ( start ) , +],
 
-    closure = LRItem.closure(
-        Set.of(
-            new MarkedRule(r1, 1, terminals.getEof())
-        ), grammar, first);
-    Assert.assertEquals(closure, Set.of(
-        new MarkedRule(r1, 1, terminals.getEof())
-    ));
+    closure = LRItem.closure(Set.of(new MarkedRule(r1, 1, terminals.getEof())), grammar, first);
+    Assert.assertEquals(closure, Set.of(new MarkedRule(r1, 1, terminals.getEof())));
   }
 
-/*
-  @Test
-  public void testClosureSeed() {
-    SymbolTable.NonTerminalTable nonTerminals = new SymbolTable.NonTerminalTable();
-    Symbol start = nonTerminals.getStart();
-    Symbol t = nonTerminals.newSymbol("T");
-    Symbol f = nonTerminals.newSymbol("F");
-
-    SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
-    Symbol plus = terminals.newSymbol("+");
-    Symbol times = terminals.newSymbol("*");
-    Symbol n = terminals.newSymbol("n");
-    Symbol lparen = terminals.newSymbol("(");
-    Symbol rparen = terminals.newSymbol(")");
-
-    Rule r1 = new Rule(start, List.of(t));
-    Rule r2 = new Rule(start, List.of(start, plus, t));
-    Rule r3 = new Rule(t, List.of(f));
-    Rule r4 = new Rule(t, List.of(t, times, f));
-    Rule r5 = new Rule(f, List.of(n));
-    Rule r6 = new Rule(f, List.of(lparen, start, rparen));
-    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
-    Grammar.FirstSymbols first = grammar.first();
-
-    Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6,1, plus), grammar, first);
-    System.out.println(closure);
-    Assert.assertEquals(Set.of(
-        new MarkedRule(r6, 1, plus),
-        new MarkedRule(r1, 0, plus),
-        new MarkedRule(r2, 0, plus),
-        new MarkedRule(r3, 0, plus),
-        new MarkedRule(r4, 0, plus),
-        new MarkedRule(r5, 0, plus),
-        new MarkedRule(r6, 0, plus)
-    ), closure);
-
-    closure = LRItem.closure(
-        Set.of(
-            new MarkedRule(r1, 1, terminals.getEof())
-        ), grammar, first);
-    Assert.assertEquals(closure, Set.of(
-        new MarkedRule(r1, 1, terminals.getEof())
-    ));
-  }
-*/
+  /*
+   * @Test public void testClosureSeed() { SymbolTable.NonTerminalTable
+   * nonTerminals = new SymbolTable.NonTerminalTable(); Symbol start =
+   * nonTerminals.getStart(); Symbol t = nonTerminals.newSymbol("T"); Symbol f =
+   * nonTerminals.newSymbol("F");
+   * 
+   * SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable(); Symbol
+   * plus = terminals.newSymbol("+"); Symbol times = terminals.newSymbol("*");
+   * Symbol n = terminals.newSymbol("n"); Symbol lparen =
+   * terminals.newSymbol("("); Symbol rparen = terminals.newSymbol(")");
+   * 
+   * Rule r1 = new Rule(start, List.of(t)); Rule r2 = new Rule(start,
+   * List.of(start, plus, t)); Rule r3 = new Rule(t, List.of(f)); Rule r4 = new
+   * Rule(t, List.of(t, times, f)); Rule r5 = new Rule(f, List.of(n)); Rule r6 =
+   * new Rule(f, List.of(lparen, start, rparen)); Grammar grammar = new
+   * Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
+   * Grammar.FirstSymbols first = grammar.first();
+   * 
+   * Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6,1, plus), grammar,
+   * first); System.out.println(closure); Assert.assertEquals(Set.of( new
+   * MarkedRule(r6, 1, plus), new MarkedRule(r1, 0, plus), new MarkedRule(r2, 0,
+   * plus), new MarkedRule(r3, 0, plus), new MarkedRule(r4, 0, plus), new
+   * MarkedRule(r5, 0, plus), new MarkedRule(r6, 0, plus) ), closure);
+   * 
+   * closure = LRItem.closure( Set.of( new MarkedRule(r1, 1, terminals.getEof())
+   * ), grammar, first); Assert.assertEquals(closure, Set.of( new MarkedRule(r1,
+   * 1, terminals.getEof()) )); }
+   */
 
   @Test
   public void testMakeItemGraph() {
@@ -163,7 +123,7 @@ public class LRItemTest {
     Symbol f = nonTerminals.newSymbol("F");
 
     SymbolTable.TerminalTable terminals = new SymbolTable.TerminalTable();
-    Symbol eof = terminals.getEof();
+    // Symbol eof = terminals.getEof();
     Symbol plus = terminals.newSymbol("+");
     Symbol times = terminals.newSymbol("*");
     Symbol n = terminals.newSymbol("n");
@@ -176,13 +136,15 @@ public class LRItemTest {
     Rule r5 = new Rule(f, List.of(n));
     Rule r6 = new Rule(f, List.of(lparen, start, rparen));
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
-    Rules rules = new Rules(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
+    // Rules rules = new Rules(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5,
+    // r6));
     LRTable table = LRParser.getSLRTable(grammar);
     Assert.assertEquals(22, table.state.size());
 
     System.out.println(table);
-    List<Symbol> input = List.of(n, plus, n, eof);
-    //Object tree = Parser.parseTerminals(table, input.iterator(), grammar.getAugmentedStartRule().getSource());
+    // List<Symbol> input = List.of(n, plus, n, eof);
+    // Object tree = Parser.parseTerminals(table, input.iterator(),
+    // grammar.getAugmentedStartRule().getSource());
     // System.out.println(tree);
   }
 }

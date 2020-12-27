@@ -1,0 +1,52 @@
+import {
+  x/y
+  z a/b/c
+}
+
+func foo(x int) int {
+  y := bar(x)
+  return y + 1
+}
+
+class Buz {
+   t int
+}
+
+func Buz foo() int {
+  return this.t
+}
+
+var y = Buz {
+    t: 1,
+}
+
+func bar() (func()){
+  f = foo{x : 1} // binding at runtime.
+  return f
+}
+
+func template(Type T) class {
+  class C {
+     T t
+  }
+  method C bar() T {
+    return this.t
+  }
+  return C
+}
+
+static {
+  declare("foobar", foo{x:1})
+  declare("C", template(int)) // dependent packages can now use example2.C
+}
+
+
+a.C<int> val := new a.C<int>()
+
+Maybe main should be called on an instance of a statically computed object.
+
+variable declaration syntax always has type:
+
+x int = 3
+x int = foo()
+

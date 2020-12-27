@@ -1,0 +1,13 @@
+
+func main() int {
+  var x int = 3
+  if x > 0 {
+    x = 5
+  }
+  var y int = 0
+  for x >= 0 {
+    y = y + x
+    x = -1 + x
+  }
+  return 3
+}

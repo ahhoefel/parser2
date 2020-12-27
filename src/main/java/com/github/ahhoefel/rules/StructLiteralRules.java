@@ -33,6 +33,7 @@ public class StructLiteralRules {
     structLiteralArg = nonTerminals.newSymbol("structLiteralArg");
   }
 
+  @SuppressWarnings("unchecked")
   public void provideRules(Rule.Builder rules, Language lang) {
     // Do we need the new keyword here? Why is grammar not LR(1)?
     rules.add(structLiteral, lang.lex.newKeyword, lang.type.type, lang.lex.lBrace, structLiteralArgs, lang.lex.rBrace)
@@ -43,14 +44,12 @@ public class StructLiteralRules {
           }
           return expr;
         });
-    rules.add(structLiteralArgs)
-        .setAction(e -> new ArrayList<Pair>());
-    rules.add(structLiteralArgs, structLiteralArgs, structLiteralArg)
-        .setAction(e -> {
-          List<Pair> args = (List<Pair>) e[0];
-          args.add((Pair) e[1]);
-          return args;
-        });
+    rules.add(structLiteralArgs).setAction(e -> new ArrayList<Pair>());
+    rules.add(structLiteralArgs, structLiteralArgs, structLiteralArg).setAction(e -> {
+      List<Pair> args = (List<Pair>) e[0];
+      args.add((Pair) e[1]);
+      return args;
+    });
     rules.add(structLiteralArg, lang.lex.identifier, lang.lex.colon, lang.expression.expression, lang.lex.comma)
         .setAction(e -> new Pair(((Token) e[0]).getValue(), (Expression) e[2]));
   }

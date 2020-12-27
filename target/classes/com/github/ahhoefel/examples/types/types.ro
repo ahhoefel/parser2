@@ -1,0 +1,8 @@
+
+import typesb
+
+type A struct {
+  a int
+  b typesb.B
+}
+

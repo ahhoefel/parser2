@@ -69,7 +69,7 @@ public class LRItem {
     if (i == markedRuleSymbols.size()) {
       lookAheads.add(markedRule.getLookAhead());
     }
-    //System.out.println("firstBetaA" + markedRule + ": " + lookAheads);
+    // System.out.println("firstBetaA" + markedRule + ": " + lookAheads);
     return lookAheads;
   }
 
@@ -110,7 +110,7 @@ public class LRItem {
       }
       if (rule.getRule() == grammar.getAugmentedStartRule()) {
         shifts.putIfAbsent(grammar.getTerminals().getEof(), new ArrayList<>());
-        //shifts.get(grammar.getTerminals().getEof()).add(-1);
+        // shifts.get(grammar.getTerminals().getEof()).add(-1);
         shifts.get(grammar.getTerminals().getEof()).add(grammar.getNonTerminals().getEof().getIndex());
         continue;
       }
@@ -164,7 +164,7 @@ public class LRItem {
         throw new RuntimeException(shiftReduceErrorString(terminal, reduce.get(terminal)));
       }
       ShiftReduceResolver.Preference preference = pref.get();
-      switch (pref.get()) {
+      switch (preference) {
         case SHIFT:
           reduce.remove(terminal);
           break;
