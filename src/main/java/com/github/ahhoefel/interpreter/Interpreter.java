@@ -12,8 +12,8 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 public class Interpreter {
-  public static final Path SOURCE_DIR = Paths.get("/Users/hoefel/IdeaProjects/parser2/src/main");
-  public static final Path TEST_DIR = Paths.get("/Users/hoefel/IdeaProjects/parser2/src/tests");
+  public static final Path SOURCE_DIR = Paths.get("/Users/hoefel/dev/parser2/src/main");
+  public static final Path TEST_DIR = Paths.get("/Users/hoefel/dev/parser2/src/tests");
 
   public static void main(String[] args) throws IOException {
     runTarget(args[0]);
@@ -51,17 +51,21 @@ public class Interpreter {
         return testExecution(target, result.getTree());
       }
       System.out.println(result.getLog());
-      boolean pass = Objects.equals(result.getLog(), expectedError);
-      if (!pass) {
-        if (expectedError.isEmpty()) {
-          System.out.println("FAIL: unexpected error.");
-        } else {
-          System.out.println("FAIL: expected " + expectedError);
-        }
-        return false;
+      if (Objects.equals(result.getLog(), expectedError)) {
+        System.out.println("PASS");
+        return true;
       }
-      System.out.println("PASS: got expected error: " + expectedError);
-      return pass;
+
+      if (expectedError.isEmpty()) {
+        System.out.println("FAIL: unexpected error:\n" + result.getLog());
+      } else {
+        System.out.println("FAIL: expected error does not match actual.");
+        System.out.println("Acutal error:");
+        System.out.println(result.getLog());
+        System.out.println("Expected error:");
+        System.out.println(expectedError);
+      }
+      return false;
     } catch (IOException e) {
       e.printStackTrace();
       return false;
@@ -70,7 +74,7 @@ public class Interpreter {
 
   private static boolean testExecution(Target target, FileTree tree) throws IOException {
     Representation rep = tree.representation(target);
-    //System.out.println(rep);
+    // System.out.println(rep);
     Context ctx = runRepresentation(rep);
     if (ctx.getStopType() == null || ctx.getStopType().width() != 1) {
       System.out.println("FAIL: expected boolean result");
@@ -91,9 +95,9 @@ public class Interpreter {
         break;
       }
       Operation op = rep.getOperation(context.getIndex());
-      //int ch = System.in.read();
-      //System.out.println(op);
-      //System.out.println(context);
+      // int ch = System.in.read();
+      // System.out.println(op);
+      // System.out.println(context);
       try {
         op.run(context);
       } catch (Exception e) {

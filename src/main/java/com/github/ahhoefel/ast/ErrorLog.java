@@ -32,7 +32,14 @@ public class ErrorLog {
       for (int i = 0; i < lines.size(); i++) {
         String[] locationParts = lines.get(i).split(":");
         Target t = new Target(target.getSource(), locationParts[0] + ":" + locationParts[1]);
-        CodeLocation location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1, 0);
+        CodeLocation location;
+        if (locationParts.length == 5) {
+          location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
+              Integer.parseInt(locationParts[4]));
+        } else {
+          location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
+              0);
+        }
         StringBuilder errorMsg = new StringBuilder();
         i++;
         errorMsg.append(lines.get(i));
