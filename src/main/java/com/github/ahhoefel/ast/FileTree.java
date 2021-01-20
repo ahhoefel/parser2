@@ -7,12 +7,13 @@ import com.github.ahhoefel.ir.operation.*;
 import com.github.ahhoefel.rules.Language;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
 public class FileTree {
-
 
   public String base;
   public Map<String, RaeFile> files;
@@ -60,11 +61,11 @@ public class FileTree {
     FileTree tree = new FileTree(base);
     Language lang = new Language();
     Stack<String> paths = new Stack<>();
+    List<Target> targets = new ArrayList<>();
     paths.push(target.getSuffix());
     while (!paths.isEmpty()) {
       String p = paths.pop();
       Target t = new Target(target.getSource(), base, p);
-      System.out.println("Target " + t.getFilePath());
       RaeFile file = lang.parse(t, log);
       file.setTarget(t);
       tree.files.put(p, file);
@@ -75,19 +76,18 @@ public class FileTree {
           tree.files.put(next, null);
         }
       }
-      //System.out.println("Symbols: " + file.getSymbols().toString());
+      // System.out.println("Symbols: " + file.getSymbols().toString());
     }
     tree.linkImports();
     tree.linkSymbols(log);
     tree.typeCheck(log);
     if (log.isEmpty()) {
-      return new Result(tree);
+      return new Result(targets, tree);
     }
-    return new Result(log);
+    return new Result(targets, log);
   }
 
   private void linkImports() {
-    System.out.print("Linking imports... ");
     TargetMap map = new TargetMap();
     for (RaeFile file : this.files.values()) {
       file.linkImports(map);
@@ -95,20 +95,15 @@ public class FileTree {
   }
 
   private void linkSymbols(ErrorLog log) {
-    System.out.print("Linking symbols... ");
     for (Map.Entry<String, RaeFile> entry : this.files.entrySet()) {
-      //System.out.println("Linking symbols: " + entry.getKey());
       entry.getValue().linkSymbols(log);
     }
   }
 
   private void typeCheck(ErrorLog log) {
-    System.out.println("Type checking...");
     for (RaeFile file : this.files.values()) {
-      //System.out.println("  " + file.getTarget().toString());
       file.typeCheck(log);
     }
-    System.out.println();
   }
 
   public class TargetMap {
@@ -120,13 +115,16 @@ public class FileTree {
   public static class Result {
     private FileTree tree;
     private ErrorLog log;
+    private List<Target> targets;
 
-    public Result(FileTree tree) {
+    public Result(List<Target> targets, FileTree tree) {
       this.tree = tree;
+      this.targets = targets;
     }
 
-    public Result(ErrorLog log) {
+    public Result(List<Target> targets, ErrorLog log) {
       this.log = log;
+      this.targets = targets;
     }
 
     public boolean pass() {
@@ -139,6 +137,10 @@ public class FileTree {
 
     public FileTree getTree() {
       return tree;
+    }
+
+    public List<Target> getTargets() {
+      return targets;
     }
   }
 }

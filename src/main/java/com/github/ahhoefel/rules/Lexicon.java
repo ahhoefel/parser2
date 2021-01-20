@@ -178,7 +178,7 @@ public class Lexicon {
   @SuppressWarnings("unchecked")
   public List<Token> parse(Target target, ErrorLog log) throws IOException {
     Iterator<Token> tokens = chars.parse(target);
-    System.out.print("Lexing... ");
+    // System.out.print("Lexing... ");
     return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
   }
 

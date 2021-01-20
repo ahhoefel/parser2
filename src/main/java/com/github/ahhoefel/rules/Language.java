@@ -45,8 +45,7 @@ public class Language {
     typeDeclaration = new TypeDeclarationRules(nonTerminals);
     imp0rt = new ImportRules(rules, lex, nonTerminals);
 
-    rules.add(nonTerminals.getStart(), declarationList)
-        .setAction(e -> e[1]);
+    rules.add(nonTerminals.getStart(), declarationList).setAction(e -> e[1]);
 
     rules.add(declarationList, declarationList, declaration)
         .setAction(e -> ((Declaration) e[1]).addToFile((RaeFile) e[2]));
@@ -70,7 +69,7 @@ public class Language {
     RaeFile file = new RaeFile();
     List<Token> tokens = lex.parse(target, log);
     tokens.add(new Token(terminals.getEof(), "eof", null));
-    System.out.println("Parsing...");
+    // System.out.println("Parsing...");
     Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), file, log);
     return file;
   }

@@ -15,9 +15,7 @@ public class TestHarness {
           s = s.substring(0, s.length() - 3);
           int i = s.lastIndexOf("/");
           return s.substring(0, i) + ":" + s.substring(i + 1);
-        })
-        // .forEach(System.out::println);
-        .allMatch(targetString -> Interpreter.testTarget(targetString));
+        }).allMatch(targetString -> Interpreter.testTarget(targetString));
     if (pass) {
       System.out.println("PASSED TESTS");
     } else {

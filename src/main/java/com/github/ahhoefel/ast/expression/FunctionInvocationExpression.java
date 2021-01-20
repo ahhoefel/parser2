@@ -71,7 +71,7 @@ public class FunctionInvocationExpression implements Expression {
     for (Expression arg : args) {
       arg.addToRepresentation(rep, liveRegisters);
     }
-    rep.add(new DebugFunctionCallOp(fn, args));
+    // rep.add(new DebugFunctionCallOp(fn, args));
     rep.add(new CommentOp("Invoking " + identifier));
 
     rep.add(new CommentOp("Pushing local vars"));
@@ -156,12 +156,14 @@ public class FunctionInvocationExpression implements Expression {
     FunctionDeclaration declaration = getDeclaration();
     List<Type> paramTypes = declaration.getParameterTypes();
     if (args.size() != paramTypes.size()) {
-      log.add(new ParseError(location, String.format("Number of parameters (%d) does not match number of arguments (%d)", paramTypes.size(), args.size())));
+      log.add(new ParseError(location, String.format(
+          "Number of parameters (%d) does not match number of arguments (%d)", paramTypes.size(), args.size())));
     } else {
       for (int i = 0; i < args.size(); i++) {
         Optional<Type> type = args.get(i).checkType(log);
         if (!type.get().equals(paramTypes.get(i))) {
-          log.add(new ParseError(location, String.format("Type mismatch: %s passed to %s parameter %s", type.get(), paramTypes.get(i), declaration.getParameterName(i))));
+          log.add(new ParseError(location, String.format("Type mismatch: %s passed to %s parameter %s", type.get(),
+              paramTypes.get(i), declaration.getParameterName(i))));
         }
       }
     }

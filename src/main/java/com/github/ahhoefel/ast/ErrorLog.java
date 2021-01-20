@@ -25,6 +25,8 @@ public class ErrorLog {
     return builder.toString();
   }
 
+  // Reads the error file for a given target.
+  // Error files are the expected errors from testing the given target.
   public static ErrorLog readErrors(Target target) {
     ErrorLog log = new ErrorLog();
     try {

@@ -40,6 +40,7 @@ public class Interpreter {
 
   public static boolean testTarget(String targetString) {
     Target target = new Target(TEST_DIR, targetString);
+    System.out.print("Testing " + target + " ... ");
     try {
       FileTree.Result result = FileTree.fromTarget(target);
       ErrorLog expectedError = ErrorLog.readErrors(target);
@@ -48,9 +49,11 @@ public class Interpreter {
           System.out.println("FAIL: expected error: " + expectedError);
           return false;
         }
-        return testExecution(target, result.getTree());
+        boolean pass = testExecution(target, result.getTree());
+        System.out.println(pass ? "PASS" : "FAIL");
+        return pass;
+
       }
-      System.out.println(result.getLog());
       if (Objects.equals(result.getLog(), expectedError)) {
         System.out.println("PASS");
         return true;
@@ -74,7 +77,6 @@ public class Interpreter {
 
   private static boolean testExecution(Target target, FileTree tree) throws IOException {
     Representation rep = tree.representation(target);
-    // System.out.println(rep);
     Context ctx = runRepresentation(rep);
     if (ctx.getStopType() == null || ctx.getStopType().width() != 1) {
       System.out.println("FAIL: expected boolean result");
@@ -87,7 +89,6 @@ public class Interpreter {
   }
 
   private static Context runRepresentation(Representation rep) throws IOException {
-    System.out.println("Starting execution.");
     Context context = new Context();
     while (!context.isStopped()) {
       if (context.getIndex() >= rep.size()) {
@@ -101,18 +102,18 @@ public class Interpreter {
       try {
         op.run(context);
       } catch (Exception e) {
-        System.out.println("Exception at operation " + context.getIndex());
-        System.out.println(op);
+        // System.out.println("Exception at operation " + context.getIndex());
+        // System.out.println(op);
         throw e;
       }
       context.incrementIndex();
     }
-    if (context.getStopMessage().isPresent()) {
-      System.out.println(context.getStopMessage().get());
-    } else {
-      System.out.println("Result: " + context.getStopResult());
-      System.out.println("Result type: " + context.getStopType());
-    }
+    /*
+     * if (context.getStopMessage().isPresent()) {
+     * System.out.println(context.getStopMessage().get()); } else {
+     * System.out.println("Result: " + context.getStopResult());
+     * System.out.println("Result type: " + context.getStopType()); }
+     */
     return context;
   }
 }

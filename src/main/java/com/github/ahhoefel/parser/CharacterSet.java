@@ -67,7 +67,7 @@ public class CharacterSet {
   }
 
   public Iterator<Token> parse(Target target) throws IOException {
-    System.out.print("Reading... ");
+    // System.out.print("Reading... ");
     RangeTokenizer rangeTokenizer = new RangeTokenizer(this);
     TokenIterator tokens = new TokenIterator(rangeTokenizer, target);
     return tokens;
