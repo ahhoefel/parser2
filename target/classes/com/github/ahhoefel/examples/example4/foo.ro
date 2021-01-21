@@ -1,3 +1,0 @@
-func bar(z int) int {
-  return z + 1
-}
