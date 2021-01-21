@@ -78,6 +78,7 @@ public class FileTree {
       }
       // System.out.println("Symbols: " + file.getSymbols().toString());
     }
+    // This is what should be replaced with the visitor pattern.
     tree.linkImports();
     tree.linkSymbols(log);
     tree.typeCheck(log);
