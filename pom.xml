@@ -9,8 +9,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <name>parser</name>
-    <!-- FIXME change it to the project's website -->
-    <url>http://www.example.com</url>
+    <url>https://github.com/ahhoefel/parser2/</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,6 +18,20 @@
     </properties>
 
     <dependencies>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>llvm-platform</artifactId>
+            <version>10.0.1-1.5.4</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>llvm-platform</artifactId>
+            <version>7.0.1-1.4.4</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
