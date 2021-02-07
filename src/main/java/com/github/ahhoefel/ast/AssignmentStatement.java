@@ -3,7 +3,6 @@ package com.github.ahhoefel.ast;
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +24,12 @@ public class AssignmentStatement implements Statement {
     expression.setSymbolCatalog(symbols);
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add(lvalue.toString());
-    out.add(" = ");
-    expression.toIndentedString(out);
-    out.endLine();
+  public LValue getLValue() {
+    return lvalue;
+  }
+
+  public Expression getExpression() {
+    return expression;
   }
 
   @Override
@@ -55,7 +54,13 @@ public class AssignmentStatement implements Statement {
       return;
     }
     if (!type.get().equals(exprType.get())) {
-      log.add(new ParseError(lvalue.getLocation(), "Type mismatch: " + lvalue.getType() + " = " + expression.getType()));
+      log.add(
+          new ParseError(lvalue.getLocation(), "Type mismatch: " + lvalue.getType() + " = " + expression.getType()));
     }
+  }
+
+  @Override
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 }

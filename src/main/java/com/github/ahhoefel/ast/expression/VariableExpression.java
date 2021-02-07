@@ -4,7 +4,7 @@ import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.parser.Token;
-import com.github.ahhoefel.util.IndentedString;
+import com.github.ahhoefel.ast.Visitor;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,12 +28,12 @@ public class VariableExpression implements LValueExpression {
   public Register getRegister() {
     VariableDeclaration variable = symbols.getVariable(identifier).get();
     return variable.getRegister();
-    //return register;
+    // return register;
   }
 
   @Override
-  public void toIndentedString(IndentedString out) {
-    out.add(identifier);
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override
@@ -43,9 +43,10 @@ public class VariableExpression implements LValueExpression {
 
   @Override
   public void addToRepresentation(Representation rep, List<Register> liveRegisters) {
-    //VariableDeclaration variable = symbols.getVariable(identifier).get();
-    //rep.add(new SetOp(variable.getRegister(), register, 0, 0, variable.getType().width()));
-    //liveRegisters.add(register);
+    // VariableDeclaration variable = symbols.getVariable(identifier).get();
+    // rep.add(new SetOp(variable.getRegister(), register, 0, 0,
+    // variable.getType().width()));
+    // liveRegisters.add(register);
   }
 
   @Override
@@ -70,7 +71,7 @@ public class VariableExpression implements LValueExpression {
     }
     type = var.get().getType(log);
     register.setWidth(type.width());
-    //System.out.println(register + " " + type.width());
+    // System.out.println(register + " " + type.width());
     return Optional.of(type);
   }
 
@@ -90,7 +91,8 @@ public class VariableExpression implements LValueExpression {
 
   @Override
   public void addToRepresentationAsLValue(Representation rep, List<Register> liveRegisters, Expression value) {
-    //VariableDeclaration variable = symbols.getVariable(identifier).get();
-    // rep.add(new SetOp(value.getRegister(), variable.getRegister(), 0, 0, value.getType().width()));
+    // VariableDeclaration variable = symbols.getVariable(identifier).get();
+    // rep.add(new SetOp(value.getRegister(), variable.getRegister(), 0, 0,
+    // value.getType().width()));
   }
 }

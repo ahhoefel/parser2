@@ -6,7 +6,6 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.CommentOp;
 import com.github.ahhoefel.ir.operation.SetOp;
 import com.github.ahhoefel.parser.Token;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,11 +29,16 @@ public class MemberAccessExpression implements LValueExpression {
     return register;
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    expression.toIndentedString(out);
-    out.add(".");
-    out.add(member.getValue());
+  public Expression getExpression() {
+    return expression;
+  }
+
+  public Token getMember() {
+    return member;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

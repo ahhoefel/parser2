@@ -7,33 +7,39 @@ import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.OrOp;
-import com.github.ahhoefel.util.IndentedString;
+import com.github.ahhoefel.ast.Visitor;
 
 import java.util.List;
 import java.util.Optional;
 
-public class OrExpression implements Expression {
+public class OrExpression extends ExpressionAdapter {
 
   private Expression a;
   private Expression b;
   private Register register;
 
   public OrExpression(Expression a, Expression b) {
+    super(1);
     this.a = a;
     this.b = b;
     this.register = new Register(1);
   }
 
-  @Override
-  public Register getRegister() {
-    return register;
+  public Expression getLeft() {
+    return a;
+  }
+
+  public Expression getRight() {
+    return b;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override
-  public void toIndentedString(IndentedString out) {
-    a.toIndentedString(out);
-    out.add(" || ");
-    b.toIndentedString(out);
+  public Register getRegister() {
+    return register;
   }
 
   @Override

@@ -4,7 +4,7 @@ import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.SetOp;
-import com.github.ahhoefel.util.IndentedString;
+import com.github.ahhoefel.ast.Visitor;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +24,10 @@ public class StructLiteralExpression implements Expression {
     this.register = new Register();
   }
 
+  public Map<String, Expression> getValues() {
+    return values;
+  }
+
   public void add(String identifier, Expression value) {
     assert !values.containsKey(identifier);
     values.put(identifier, value);
@@ -34,17 +38,8 @@ public class StructLiteralExpression implements Expression {
     return register;
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add(type.toString()).add("{");
-    out.endLine();
-    out.indent();
-    for (Map.Entry<String, Expression> entry : values.entrySet()) {
-      out.add(entry.getKey()).add(": ");
-      entry.getValue().toIndentedString(out);
-      out.endLine();
-    }
-    out.endLine();
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override
@@ -92,7 +87,8 @@ public class StructLiteralExpression implements Expression {
         return Optional.empty();
       }
       if (!memberType.equals(exprType.get())) {
-        log.add(new ParseError(null, "Struct literal member " + entry.getKey() + " expected to be type " + memberType + ". Got " + exprType + "."));
+        log.add(new ParseError(null, "Struct literal member " + entry.getKey() + " expected to be type " + memberType
+            + ". Got " + exprType + "."));
         return Optional.empty();
       }
       width += memberType.width();
@@ -110,4 +106,5 @@ public class StructLiteralExpression implements Expression {
   public boolean isLValue() {
     return false;
   }
+
 }

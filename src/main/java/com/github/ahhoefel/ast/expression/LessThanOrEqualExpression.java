@@ -4,11 +4,10 @@ import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.ParseError;
 import com.github.ahhoefel.ast.SymbolCatalog;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LessThanOrEqualOp;
-import com.github.ahhoefel.util.IndentedString;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -23,11 +22,16 @@ public class LessThanOrEqualExpression extends ExpressionAdapter {
     this.b = b;
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    a.toIndentedString(out);
-    out.add(" <= ");
-    b.toIndentedString(out);
+  public Expression getLeft() {
+    return a;
+  }
+
+  public Expression getRight() {
+    return b;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

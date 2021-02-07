@@ -3,11 +3,10 @@ package com.github.ahhoefel.ast.expression;
 import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.SymbolCatalog;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
-import com.github.ahhoefel.util.IndentedString;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -20,12 +19,16 @@ public class BooleanLiteralExpression extends ExpressionAdapter {
     this.value = value;
   }
 
-  public void toIndentedString(IndentedString out) {
-    out.add(Boolean.toString(value));
+  public boolean getValue() {
+    return value;
   }
 
   @Override
   public void setSymbolCatalog(SymbolCatalog symbols) {
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

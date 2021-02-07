@@ -3,17 +3,15 @@ package com.github.ahhoefel.ast.expression;
 import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.SymbolCatalog;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.Visitable;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface Expression {
+public interface Expression extends Visitable {
   Register getRegister();
-
-  void toIndentedString(IndentedString out);
 
   void setSymbolCatalog(SymbolCatalog symbols);
 
@@ -26,5 +24,6 @@ public interface Expression {
   boolean isLValue();
 
   Optional<Type> checkType(ErrorLog log);
+
   Type getType();
 }

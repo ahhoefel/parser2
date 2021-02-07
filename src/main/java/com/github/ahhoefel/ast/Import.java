@@ -1,7 +1,5 @@
 package com.github.ahhoefel.ast;
 
-import com.github.ahhoefel.util.IndentedString;
-
 public class Import implements Declaration {
 
   private String shortName;
@@ -19,12 +17,12 @@ public class Import implements Declaration {
     this.path = path;
   }
 
-  public void toIndentedString(IndentedString out) {
-    out.add("import ").add(shortName).add(path).endLine();
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override
-  public RaeFile addToFile(RaeFile file) {
+  public File addToFile(File file) {
     file.addImport(this);
     return file;
   }
@@ -38,7 +36,7 @@ public class Import implements Declaration {
   }
 
   public void link(FileTree.TargetMap map) {
-    RaeFile f = map.get(path);
+    File f = map.get(path);
     symbols = f.getSymbols();
   }
 

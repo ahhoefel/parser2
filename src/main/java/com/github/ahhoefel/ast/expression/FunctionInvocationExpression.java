@@ -6,7 +6,6 @@ import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;
 import com.github.ahhoefel.parser.Token;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.Iterator;
 import java.util.List;
@@ -38,6 +37,22 @@ public class FunctionInvocationExpression implements Expression {
     this.implicitArg = Optional.of(implicitArg);
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
+  public Optional<Expression> getImplicitArg() {
+    return implicitArg;
+  }
+
+  public List<Expression> getArgs() {
+    return args;
+  }
+
   @Override
   public Register getRegister() {
     return register;
@@ -49,19 +64,6 @@ public class FunctionInvocationExpression implements Expression {
     for (Expression arg : args) {
       arg.setSymbolCatalog(symbols);
     }
-  }
-
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add(identifier);
-    out.add("(");
-    for (int i = 0; i < args.size(); i++) {
-      args.get(i).toIndentedString(out);
-      if (i != args.size() - 1) {
-        out.add(", ");
-      }
-    }
-    out.add(")");
   }
 
   @Override

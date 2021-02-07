@@ -7,7 +7,7 @@ import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.AddOp;
-import com.github.ahhoefel.util.IndentedString;
+import com.github.ahhoefel.ast.Visitor;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,11 +23,16 @@ public class SumExpression extends ExpressionAdapter {
     this.b = b;
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    a.toIndentedString(out);
-    out.add(" + ");
-    b.toIndentedString(out);
+  public Expression getLeft() {
+    return a;
+  }
+
+  public Expression getRight() {
+    return b;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

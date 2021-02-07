@@ -7,7 +7,7 @@ import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
 import com.github.ahhoefel.ir.operation.SubtractOp;
-import com.github.ahhoefel.util.IndentedString;
+import com.github.ahhoefel.ast.Visitor;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +23,17 @@ public class UnaryMinusExpression extends ExpressionAdapter {
     this.zeroRegister = new Register();
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add("-");
-    a.toIndentedString(out);
+  public Expression getExpression() {
+    return a;
   }
 
   @Override
   public void setSymbolCatalog(SymbolCatalog symbols) {
     a.setSymbolCatalog(symbols);
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

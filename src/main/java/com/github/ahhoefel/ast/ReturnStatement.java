@@ -4,7 +4,6 @@ import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 
@@ -25,11 +24,12 @@ public class ReturnStatement implements Statement {
     expression.setSymbolCatalog(symbols);
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add("return ");
-    expression.toIndentedString(out);
-    out.endLine();
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
+  public Expression getExpression() {
+    return expression;
   }
 
   @Override
@@ -45,8 +45,9 @@ public class ReturnStatement implements Statement {
   @Override
   public void typeCheck(ErrorLog log) {
     if (!functionDeclaration.getReturnType().equals(expression.checkType(log).get())) {
-      log.add(new ParseError(null, "Type mismatch. Return type " + functionDeclaration.getReturnType() + ", return statement " + expression.getType()));
+      log.add(new ParseError(null, "Type mismatch. Return type " + functionDeclaration.getReturnType()
+          + ", return statement " + expression.getType()));
     }
-    //returnDestination.setWidth(functionDeclaration.getReturnType().width());
+    // returnDestination.setWidth(functionDeclaration.getReturnType().width());
   }
 }

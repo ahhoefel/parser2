@@ -1,12 +1,9 @@
 package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.util.IndentedString;
 
-public interface Statement {
+public interface Statement extends Visitable {
   void addToSymbolCatalog(SymbolCatalog symbols);
-
-  void toIndentedString(IndentedString out);
 
   void addToRepresentation(Representation rep);
 

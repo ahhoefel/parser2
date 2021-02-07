@@ -16,7 +16,7 @@ import java.util.Stack;
 public class FileTree {
 
   public String base;
-  public Map<String, RaeFile> files;
+  public Map<String, File> files;
   public Register mainFnReturnRegister;
 
   public FileTree(String base) {
@@ -27,7 +27,7 @@ public class FileTree {
 
   public Representation representation(Target target) {
     Representation rep = new Representation();
-    RaeFile main = files.get(target.getSuffix());
+    File main = files.get(target.getSuffix());
     if (main == null) {
       throw new RuntimeException("Target not in tree: " + target);
     }
@@ -49,7 +49,7 @@ public class FileTree {
     } else {
       rep.add(new StopOp("No main."));
     }
-    for (RaeFile file : files.values()) {
+    for (File file : files.values()) {
       file.addToRepresentation(rep);
     }
     return rep;
@@ -66,10 +66,10 @@ public class FileTree {
     while (!paths.isEmpty()) {
       String p = paths.pop();
       Target t = new Target(target.getSource(), base, p);
-      RaeFile file = lang.parse(t, log);
+      File file = lang.parse(t, log);
       file.setTarget(t);
       tree.files.put(p, file);
-      for (Import im : file.getImports().toList()) {
+      for (Import im : file.getImports().getImports()) {
         String next = im.getPath();
         if (!tree.files.containsKey(next)) {
           paths.add(next);
@@ -90,25 +90,25 @@ public class FileTree {
 
   private void linkImports() {
     TargetMap map = new TargetMap();
-    for (RaeFile file : this.files.values()) {
+    for (File file : this.files.values()) {
       file.linkImports(map);
     }
   }
 
   private void linkSymbols(ErrorLog log) {
-    for (Map.Entry<String, RaeFile> entry : this.files.entrySet()) {
+    for (Map.Entry<String, File> entry : this.files.entrySet()) {
       entry.getValue().linkSymbols(log);
     }
   }
 
   private void typeCheck(ErrorLog log) {
-    for (RaeFile file : this.files.values()) {
+    for (File file : this.files.values()) {
       file.typeCheck(log);
     }
   }
 
   public class TargetMap {
-    public RaeFile get(String p) {
+    public File get(String p) {
       return files.get(p);
     }
   }

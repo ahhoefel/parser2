@@ -2,7 +2,7 @@ package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.ast.Declaration;
 import com.github.ahhoefel.ast.ErrorLog;
-import com.github.ahhoefel.ast.RaeFile;
+import com.github.ahhoefel.ast.File;
 import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.parser.*;
 
@@ -48,7 +48,7 @@ public class Language {
     rules.add(nonTerminals.getStart(), declarationList).setAction(e -> e[1]);
 
     rules.add(declarationList, declarationList, declaration)
-        .setAction(e -> ((Declaration) e[1]).addToFile((RaeFile) e[2]));
+        .setAction(e -> ((Declaration) e[1]).addToFile((File) e[2]));
     rules.add(declarationList).setAction(e -> e[0]);
     rules.add(declaration, function.declaration).setAction(e -> e[0]);
     rules.add(declaration, imp0rt.imp0rt).setAction(e -> e[0]);
@@ -65,8 +65,8 @@ public class Language {
     table = LRParser.getCanonicalLRTable(grammar, resolver);
   }
 
-  public RaeFile parse(Target target, ErrorLog log) throws IOException {
-    RaeFile file = new RaeFile();
+  public File parse(Target target, ErrorLog log) throws IOException {
+    File file = new File();
     List<Token> tokens = lex.parse(target, log);
     tokens.add(new Token(terminals.getEof(), "eof", null));
     // System.out.println("Parsing...");

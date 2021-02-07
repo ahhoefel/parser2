@@ -2,8 +2,6 @@ package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.util.IndentedString;
-
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -19,14 +17,12 @@ public class ExpressionStatement implements Statement {
     return expression;
   }
 
-  public void addToSymbolCatalog(SymbolCatalog symbolCatalog) {
-    expression.setSymbolCatalog(symbolCatalog);
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
-  @Override
-  public void toIndentedString(IndentedString out) {
-    expression.toIndentedString(out);
-    out.endLine();
+  public void addToSymbolCatalog(SymbolCatalog symbolCatalog) {
+    expression.setSymbolCatalog(symbolCatalog);
   }
 
   @Override

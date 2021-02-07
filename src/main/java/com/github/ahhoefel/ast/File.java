@@ -7,13 +7,12 @@ import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoOp;
 import com.github.ahhoefel.ir.operation.LiteralLabelOp;
 import com.github.ahhoefel.ir.operation.PushOp;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class RaeFile {
+public class File implements Visitable {
 
   private Target target;
   private ImportCatalog imports;
@@ -24,7 +23,7 @@ public class RaeFile {
   private Register endLabelRegister;
   private Label endLabel;
 
-  public RaeFile() {
+  public File() {
     imports = new ImportCatalog();
     functions = new ArrayList<>();
     types = new ArrayList<>();
@@ -32,6 +31,14 @@ public class RaeFile {
     symbols = new SymbolCatalog("file", imports, Optional.empty());
     endLabelRegister = new Register();
     endLabel = new Label();
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
+  public List<FunctionDeclaration> getFunctions() {
+    return functions;
   }
 
   public void setTarget(Target target) {
@@ -75,21 +82,6 @@ public class RaeFile {
   public void addToRepresentation(Representation rep) {
     for (FunctionDeclaration f : functions) {
       f.addToRepresentation(rep);
-    }
-  }
-
-  public String toString() {
-    IndentedString s = new IndentedString();
-    toIndentedString(s);
-    return s.toString();
-  }
-
-  public void toIndentedString(IndentedString s) {
-    imports.toIndentedString(s);
-    s.endLine();
-    for (FunctionDeclaration f : functions) {
-      f.toIndentedString(s);
-      s.endLine();
     }
   }
 

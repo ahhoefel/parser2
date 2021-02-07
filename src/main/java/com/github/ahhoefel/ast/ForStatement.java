@@ -6,7 +6,6 @@ import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.ConditionalGotoOp;
 import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoOp;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 
@@ -24,19 +23,22 @@ public class ForStatement implements Statement {
     this.blockLabel = new Label();
   }
 
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
+  public Expression getCondition() {
+    return condition;
+  }
+
+  public Block getBlock() {
+    return block;
+  }
+
   @Override
   public void addToSymbolCatalog(SymbolCatalog symbols) {
     condition.setSymbolCatalog(symbols);
     block.addToSymbolCatalog(symbols);
-  }
-
-  @Override
-  public void toIndentedString(IndentedString out) {
-    out.add("for ");
-    condition.toIndentedString(out);
-    out.add(" {").endLine();
-    block.toIndentedString(out.indent());
-    out.addLine("}");
   }
 
   @Override

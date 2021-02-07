@@ -9,7 +9,6 @@ import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoRegisterOp;
 import com.github.ahhoefel.ir.operation.PopOp;
 import com.github.ahhoefel.parser.Token;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,20 +17,13 @@ import java.util.Optional;
 /**
  * Calling conventions.
  * <p>
- * FunctionInvocation:
- * - store all local variables to the stack.
- * - put return pointer on the stack
- * - put all parameters on the stack.
+ * FunctionInvocation: - store all local variables to the stack. - put return
+ * pointer on the stack - put all parameters on the stack.
  * <p>
- * FunctionDeclaration:
- * - pop all parameters into registers
- * - execute body
- * Return statement:
- * - pop return pointer
- * - push return values
+ * FunctionDeclaration: - pop all parameters into registers - execute body
+ * Return statement: - pop return pointer - push return values
  * <p>
- * FunctionInvocation at return pointer:
- * - pop return values into registers
+ * FunctionInvocation at return pointer: - pop return values into registers
  */
 public class FunctionDeclaration implements Declaration {
 
@@ -43,7 +35,8 @@ public class FunctionDeclaration implements Declaration {
   private Optional<Type> returnType;
   private Register returnLabelRegister;
 
-  public FunctionDeclaration(Token name, List<VariableDeclaration> parameters, Optional<Type> returnType, Block statements) {
+  public FunctionDeclaration(Token name, List<VariableDeclaration> parameters, Optional<Type> returnType,
+      Block statements) {
     this.name = name.getValue();
     this.parameters = parameters;
     this.statements = statements;
@@ -52,12 +45,20 @@ public class FunctionDeclaration implements Declaration {
     this.returnLabelRegister = new Register();
   }
 
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
   public String getName() {
     return name;
   }
 
   public Label getLabel() {
     return label;
+  }
+
+  public Block getBlock() {
+    return statements;
   }
 
   public Type getReturnType() {
@@ -108,30 +109,14 @@ public class FunctionDeclaration implements Declaration {
       rep.add(new PopOp(parameters.get(i).getRegister()));
     }
     statements.addToRepresentation(rep);
-    //if (!returnType.isPresent() && returnType.get().equals(Type.VOID)) {
+    // if (!returnType.isPresent() && returnType.get().equals(Type.VOID)) {
     rep.add(new PopOp(returnLabelRegister));
     rep.add(new GotoRegisterOp(returnLabelRegister));
     rep.add(new CommentOp("end func " + name));
   }
 
-  public void toIndentedString(IndentedString out) {
-    out.add("func ");
-    out.add(name);
-    out.add("(");
-    for (int i = 0; i < parameters.size(); i++) {
-      out.add(parameters.get(i).toString());
-      if (i != parameters.size() - 1) {
-        out.add(", ");
-      }
-    }
-    out.add(") {");
-    out.endLine();
-    statements.toIndentedString(out.indent());
-    out.addLine("}");
-  }
-
   @Override
-  public RaeFile addToFile(RaeFile file) {
+  public File addToFile(File file) {
     file.addFunction(this);
     return file;
   }

@@ -3,13 +3,12 @@ package com.github.ahhoefel.ast.expression;
 import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.SymbolCatalog;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.LiteralOp;
 import com.github.ahhoefel.parser.Token;
-import com.github.ahhoefel.util.IndentedString;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +31,12 @@ public class IntegerLiteralExpression extends ExpressionAdapter {
     return register;
   }
 
-  public void toIndentedString(IndentedString out) {
-    out.add(Integer.toString(value));
+  public int getValue() {
+    return value;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   @Override

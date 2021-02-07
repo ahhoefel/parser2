@@ -34,12 +34,12 @@ public class TypeRules {
         .setAction(e -> new UnionType((List<Member>) e[2]));
     rules.add(type, lex.identifier).setAction(e -> {
       NamedType type = new NamedType(((Token) e[0]).getValue());
-      ((RaeFile) e[1]).deferResolution(type);
+      ((File) e[1]).deferResolution(type);
       return type;
     });
     rules.add(type, lex.identifier, lex.period, lex.identifier).setAction(e -> {
       NamedType type = new NamedType(((Token) e[0]).getValue(), ((Token) e[2]).getValue());
-      ((RaeFile) e[3]).deferResolution(type);
+      ((File) e[3]).deferResolution(type);
       return type;
     });
     rules.add(type, type, lex.lBracket, lex.rBracket).setAction(e -> new ArrayType((Type) e[0]));

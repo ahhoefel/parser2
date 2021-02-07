@@ -1,12 +1,11 @@
 package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.util.IndentedString;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Block {
+public class Block implements Visitable {
 
   public List<Statement> statements;
   public SymbolCatalog symbols;
@@ -21,6 +20,10 @@ public class Block {
 
   public int size() {
     return statements.size();
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   public void add(Statement statement) {
@@ -43,12 +46,6 @@ public class Block {
   public void addToSymbolCatalog(SymbolCatalog symbols) {
     for (Statement statement : statements) {
       statement.addToSymbolCatalog(symbols);
-    }
-  }
-
-  public void toIndentedString(IndentedString out) {
-    for (Statement statement : statements) {
-      statement.toIndentedString(out);
     }
   }
 

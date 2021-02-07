@@ -9,6 +9,10 @@ public class TypeDeclaration implements Declaration {
     this.type = type;
   }
 
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
+
   public String getIdentifier() {
     return identifier;
   }
@@ -18,12 +22,8 @@ public class TypeDeclaration implements Declaration {
   }
 
   @Override
-  public RaeFile addToFile(RaeFile file) {
+  public File addToFile(File file) {
     file.addType(this);
     return file;
-  }
-
-  public String toString() {
-    return "type " + identifier + " " + type;
   }
 }

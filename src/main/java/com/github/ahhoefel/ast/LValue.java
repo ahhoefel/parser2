@@ -10,7 +10,7 @@ import com.github.ahhoefel.parser.Token;
 import java.util.List;
 import java.util.Optional;
 
-public class LValue {
+public class LValue implements Visitable {
   private boolean declaration;
   private String identifier;
   private Type type;
@@ -19,7 +19,6 @@ public class LValue {
 
   private SymbolCatalog symbols;
   private CodeLocation location;
-
 
   public static LValue withDeclaration(Token identifer, Type type) {
     return new LValue(identifer, type);
@@ -30,6 +29,10 @@ public class LValue {
     this.identifier = token.getValue();
     this.location = token.getLocation();
     this.type = type;
+  }
+
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 
   public static LValue fromExpression(Expression e, CodeLocation location) {
@@ -51,6 +54,10 @@ public class LValue {
 
   public boolean isDeclaration() {
     return declaration;
+  }
+
+  public Expression getExpression() {
+    return expression;
   }
 
   public CodeLocation getLocation() {
@@ -98,14 +105,6 @@ public class LValue {
       symbols.addVariable(new VariableDeclaration(this));
     } else {
       expression.setSymbolCatalog(symbols);
-    }
-  }
-
-  public String toString() {
-    if (isDeclaration()) {
-      return String.format("var %s %s", identifier, type.toString());
-    } else {
-      return expression.toString();
     }
   }
 }
