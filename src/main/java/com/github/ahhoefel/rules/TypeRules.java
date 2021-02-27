@@ -5,25 +5,27 @@ import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
 import com.github.ahhoefel.parser.Token;
+import com.github.ahhoefel.parser.LanguageBuilder;
+import com.github.ahhoefel.parser.LanguageComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class TypeRules {
+public class TypeRules implements LanguageComponent {
 
-  Symbol type;
-  Symbol typeParams;
-  Symbol members;
+  // Provides
+  private Symbol type;
 
-  public TypeRules(SymbolTable.NonTerminalTable nonTerminals) {
-    type = nonTerminals.newSymbol("type");
-    typeParams = nonTerminals.newSymbol("typeParams");
-    members = nonTerminals.newSymbol("members");
-  }
+  // Internal
+  private Symbol typeParams;
+  private Symbol members;
 
+  @Override
   @SuppressWarnings("unchecked")
-  public void provideRules(Rule.Builder rules, Language lang) {
-    Lexicon lex = lang.lex;
+  public void provideRules(LanguageBuilder lang) {
+    Lexicon lex = lang.getLexicon();
+    Rule.Builder rules = lang.getRules();
 
     rules.add(type, lex.intKeyword).setAction(e -> Type.INT);
     rules.add(type, lex.boolKeyword).setAction(e -> Type.BOOL);
@@ -62,5 +64,22 @@ public class TypeRules {
       return m;
     });
     rules.add(members).setAction(e -> new ArrayList<>());
+  }
+
+  @Override
+  public List<Symbol> provides(SymbolTable nonTerminals) {
+    type = nonTerminals.newSymbol("type");
+    typeParams = nonTerminals.newSymbol("typeParams");
+    members = nonTerminals.newSymbol("members");
+    return List.of(type);
+  }
+
+  @Override
+  public List<String> requires() {
+    return List.of();
+  }
+
+  @Override
+  public void acceptExternalSymbols(Map<String, Symbol> external) {
   }
 }

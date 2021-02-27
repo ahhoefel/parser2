@@ -3,17 +3,27 @@ package com.github.ahhoefel.rules;
 import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ast.expression.StructLiteralExpression;
+import com.github.ahhoefel.parser.LanguageBuilder;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
 import com.github.ahhoefel.parser.Token;
+import com.github.ahhoefel.parser.LanguageComponent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-public class StructLiteralRules {
+public class StructLiteralRules implements LanguageComponent {
 
-  Symbol structLiteral;
+  // Provides
+  private Symbol structLiteral;
+
+  // Requires
+  private Symbol expression;
+  private Symbol type;
+
+  // Internal
   private Symbol structLiteralArgs;
   private Symbol structLiteralArg;
 
@@ -27,17 +37,14 @@ public class StructLiteralRules {
     }
   }
 
-  public StructLiteralRules(SymbolTable nonTerminals) {
-    structLiteral = nonTerminals.newSymbol("structLiteral");
-    structLiteralArgs = nonTerminals.newSymbol("structLiteralArgs");
-    structLiteralArg = nonTerminals.newSymbol("structLiteralArg");
-  }
-
+  @Override
   @SuppressWarnings("unchecked")
-  public void provideRules(Rule.Builder rules, Language lang) {
+  public void provideRules(LanguageBuilder lang) {
+    Rule.Builder rules = lang.getRules();
+
     // Do we need the new keyword here? Why is grammar not LR(1)?
-    rules.add(structLiteral, lang.lex.newKeyword, lang.type.type, lang.lex.lBrace, structLiteralArgs, lang.lex.rBrace)
-        .setAction(e -> {
+    rules.add(structLiteral, lang.getLexicon().newKeyword, type, lang.getLexicon().lBrace, structLiteralArgs,
+        lang.getLexicon().rBrace).setAction(e -> {
           StructLiteralExpression expr = new StructLiteralExpression((Type) e[1]);
           for (Pair p : (List<Pair>) e[3]) {
             expr.add(p.identifier, p.expression);
@@ -50,7 +57,26 @@ public class StructLiteralRules {
       args.add((Pair) e[1]);
       return args;
     });
-    rules.add(structLiteralArg, lang.lex.identifier, lang.lex.colon, lang.expression.expression, lang.lex.comma)
-        .setAction(e -> new Pair(((Token) e[0]).getValue(), (Expression) e[2]));
+    rules.add(structLiteralArg, lang.getLexicon().identifier, lang.getLexicon().colon, expression,
+        lang.getLexicon().comma).setAction(e -> new Pair(((Token) e[0]).getValue(), (Expression) e[2]));
+  }
+
+  @Override
+  public List<Symbol> provides(SymbolTable nonTerminals) {
+    structLiteral = nonTerminals.newSymbol("structLiteral");
+    structLiteralArgs = nonTerminals.newSymbol("structLiteralArgs");
+    structLiteralArg = nonTerminals.newSymbol("structLiteralArg");
+    return List.of(structLiteral);
+  }
+
+  @Override
+  public List<String> requires() {
+    return List.of("expression", "type");
+  }
+
+  @Override
+  public void acceptExternalSymbols(Map<String, Symbol> external) {
+    this.expression = external.get("expression");
+    this.type = external.get("type");
   }
 }
