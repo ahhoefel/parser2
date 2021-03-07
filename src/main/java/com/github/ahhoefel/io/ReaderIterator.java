@@ -4,6 +4,7 @@ import com.github.ahhoefel.ast.Target;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.Iterator;
 
@@ -14,7 +15,15 @@ public class ReaderIterator implements Iterator<Integer> {
   private boolean done;
 
   public ReaderIterator(Target target) throws IOException {
-    this.r = Files.newBufferedReader(target.getFilePath());
+    this(Files.newBufferedReader(target.getFilePath()));
+  }
+
+  public ReaderIterator(String s) {
+    this(new StringReader(s));
+  }
+
+  public ReaderIterator(Reader r) {
+    this.r = r;
     this.done = false;
   }
 

@@ -2,7 +2,26 @@ package com.github.ahhoefel.parser;
 
 import java.util.*;
 
+import com.github.ahhoefel.ast.ErrorLog;
+
 public class LRParser {
+
+  private LanguageBuilder lang;
+  private LRTable table;
+  private Grammar grammar;
+
+  public LRParser(LanguageBuilder lang) {
+    this.lang = lang;
+    this.grammar = new Grammar(lang.getLexicon().getTerminals(), lang.getNonTerminals(), lang.getRules().build());
+    this.table = getCanonicalLRTable(grammar, lang.getResolver());
+  }
+
+  public Object parse(String s) {
+    ErrorLog log = new ErrorLog();
+    List<Token> tokens = lang.getLexicon().parse(s, log);
+    tokens.add(new Token(lang.getLexicon().getTerminals().getEof(), "eof", null));
+    return Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), log);
+  }
 
   public static LRTable getSLRTable(Grammar g) {
     Grammar.FirstSymbols first = g.first();
@@ -11,7 +30,7 @@ public class LRParser {
     for (LRItem item : items) {
       states.add(item.toState(g, new ShiftReduceResolver()));
     }
-    return new LRTable(states);
+    return new LRTable(states, g.getTerminals().getEof(), g.getAugmentedStartRule().getSource());
   }
 
   public static LRTable getCanonicalLRTable(Grammar g) {
@@ -25,7 +44,7 @@ public class LRParser {
     for (LRItem item : items) {
       states.add(item.toState(g, r));
     }
-    return new LRTable(states);
+    return new LRTable(states, g.getTerminals().getEof(), g.getAugmentedStartRule().getSource());
   }
 
   private static List<LRItem> getLRItems(Grammar g, Grammar.FirstSymbols first, int lookAhead) {

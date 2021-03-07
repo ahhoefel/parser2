@@ -4,7 +4,7 @@ import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;
-import com.github.ahhoefel.rules.Language;
+import com.github.ahhoefel.rules.LanguageRules;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ public class FileTree {
     ErrorLog log = new ErrorLog();
     String base = target.getBase();
     FileTree tree = new FileTree(base);
-    Language lang = new Language();
+    LanguageRules lang = new LanguageRules();
     Stack<String> paths = new Stack<>();
     List<Target> targets = new ArrayList<>();
     paths.push(target.getSuffix());

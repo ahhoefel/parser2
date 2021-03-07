@@ -31,7 +31,8 @@ public class Parser<T> {
     return parseTokens(table, iter, start, Optional.empty(), log);
   }
 
-  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context, ErrorLog log) {
+  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context,
+      ErrorLog log) {
     Stack<SymbolState> stack = new Stack<>();
     Stack<Object> result = new Stack<>();
     Token nextToken = iter.next();
@@ -39,8 +40,9 @@ public class Parser<T> {
     SymbolState symbolState = new SymbolState(start, 0);
     while (true) {
       LRTable.State state = table.state.get(symbolState.stateIndex);
-      //System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken, symbolState.stateIndex, stack));
-      //System.out.println(result);
+      // System.out.println(String.format("next: %s, state: %d, stack: %s", nextToken,
+      // symbolState.stateIndex, stack));
+      // System.out.println(result);
       if (state.shift.containsKey(nextSymbol)) {
         stack.push(new SymbolState(nextSymbol, state.shift.get(nextSymbol)));
         result.push(nextToken);
@@ -63,7 +65,8 @@ public class Parser<T> {
         if (context.isPresent()) {
           children[numParameters - 1] = context.get();
         }
-        stack.push(new SymbolState(rule.getSource(), table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
+        stack.push(new SymbolState(rule.getSource(),
+            table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
         try {
           result.push(rule.getAction().apply(children));
         } catch (Exception e) {

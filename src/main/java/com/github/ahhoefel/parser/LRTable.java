@@ -5,9 +5,13 @@ import java.util.Map;
 
 public class LRTable {
   public List<State> state;
+  public Symbol eof;
+  public Symbol augmentedStart;
 
-  public LRTable(List<State> state) {
+  public LRTable(List<State> state, Symbol eof, Symbol augmentedStart) {
     this.state = state;
+    this.eof = eof;
+    this.augmentedStart = augmentedStart;
   }
 
   public static class State {
@@ -22,9 +26,7 @@ public class LRTable {
     }
 
     public String toString() {
-      return "Reduce: " + reduce + '\n' +
-          "Shift: " + shift + '\n' +
-          "State: " + state + '\n';
+      return "Reduce: " + reduce + '\n' + "Shift: " + shift + '\n' + "State: " + state + '\n';
     }
   }
 

@@ -72,4 +72,11 @@ public class CharacterSet {
     TokenIterator tokens = new TokenIterator(rangeTokenizer, target);
     return tokens;
   }
+
+  public Iterator<Token> parse(String s) {
+    RangeTokenizer rangeTokenizer = new RangeTokenizer(this);
+    TokenIterator tokens = new TokenIterator(rangeTokenizer, s);
+    return tokens;
+  }
+
 }

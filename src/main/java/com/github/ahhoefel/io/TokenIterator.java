@@ -17,13 +17,24 @@ public class TokenIterator implements Iterator<Token> {
   private int character = 0;
   private int position = 0;
 
-
   public TokenIterator(RangeTokenizer tokenizer, Target target) throws IOException {
     this.iter = new ReaderIterator(target);
     this.target = target;
     this.tokenizer = tokenizer;
     if (!this.iter.hasNext()) {
       this.iter.close();
+    }
+  }
+
+  public TokenIterator(RangeTokenizer tokenizer, String s) {
+    this.iter = new ReaderIterator(s);
+    this.tokenizer = tokenizer;
+    if (!this.iter.hasNext()) {
+      try {
+        this.iter.close();
+      } catch (IOException e) {
+        // ignore.
+      }
     }
   }
 

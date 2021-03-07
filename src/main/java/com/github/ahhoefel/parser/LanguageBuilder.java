@@ -57,7 +57,7 @@ public class LanguageBuilder {
         if (startSymbol == null) {
             throw new RuntimeException(String.format("Start symbol %s not provided.", start));
         }
-        lang.rules.add(lang.nonTerminals.getStart(), symbols.get(start)).setAction(e -> e[1]);
+        lang.rules.add(lang.nonTerminals.getStart(), symbols.get(start)).setAction(e -> e[0]);
         return lang;
     }
 }

@@ -182,6 +182,12 @@ public class Lexicon {
     return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
   }
 
+  @SuppressWarnings("unchecked")
+  public List<Token> parse(String s, ErrorLog log) {
+    Iterator<Token> tokens = chars.parse(s);
+    return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
+  }
+
   public SymbolTable.TerminalTable getTerminals() {
     return resultSymbols;
   }
