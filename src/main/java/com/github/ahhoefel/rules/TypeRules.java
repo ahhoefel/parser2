@@ -1,6 +1,12 @@
 package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.ast.*;
+import com.github.ahhoefel.ast.type.ArrayType;
+import com.github.ahhoefel.ast.type.NamedType;
+import com.github.ahhoefel.ast.type.ParameterizedType;
+import com.github.ahhoefel.ast.type.StructType;
+import com.github.ahhoefel.ast.type.Type;
+import com.github.ahhoefel.ast.type.UnionType;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;

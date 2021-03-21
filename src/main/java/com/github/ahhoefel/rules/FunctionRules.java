@@ -2,8 +2,8 @@ package com.github.ahhoefel.rules;
 
 import com.github.ahhoefel.ast.Block;
 import com.github.ahhoefel.ast.FunctionDeclaration;
-import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ast.VariableDeclaration;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;

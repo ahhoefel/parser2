@@ -1,6 +1,8 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.statements.Statement;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.parser.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;

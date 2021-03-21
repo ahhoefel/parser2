@@ -1,11 +1,17 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.statements;
 
+import com.github.ahhoefel.ast.Block;
+import com.github.ahhoefel.ast.ParseError;
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.Expression;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.ConditionalGotoOp;
 import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoOp;
+import com.github.ahhoefel.parser.ErrorLog;
 
 import java.util.ArrayList;
 

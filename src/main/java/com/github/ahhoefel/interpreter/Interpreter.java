@@ -1,10 +1,10 @@
 package com.github.ahhoefel.interpreter;
 
-import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.FileTree;
 import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.parser.ErrorLog;
 
 import java.io.IOException;
 import java.nio.file.Path;

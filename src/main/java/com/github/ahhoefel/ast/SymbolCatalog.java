@@ -3,6 +3,9 @@ package com.github.ahhoefel.ast;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.github.ahhoefel.ast.type.Type;
+import com.github.ahhoefel.parser.ErrorLog;
+
 public class SymbolCatalog {
 
   private Optional<SymbolCatalog> parent;
@@ -31,7 +34,7 @@ public class SymbolCatalog {
   }
 
   public void addVariable(VariableDeclaration variable) {
-    //System.out.println("Variable added to symbol table: " + variable);
+    // System.out.println("Variable added to symbol table: " + variable);
     variables.put(variable.getName(), variable);
     orderedVariables.add(variable);
   }

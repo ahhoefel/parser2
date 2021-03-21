@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
@@ -8,6 +9,7 @@ import com.github.ahhoefel.ir.operation.CommentOp;
 import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoRegisterOp;
 import com.github.ahhoefel.ir.operation.PopOp;
+import com.github.ahhoefel.parser.ErrorLog;
 import com.github.ahhoefel.parser.Token;
 
 import java.util.ArrayList;

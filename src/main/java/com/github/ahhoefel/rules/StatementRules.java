@@ -5,6 +5,13 @@ import java.util.Map;
 
 import com.github.ahhoefel.ast.*;
 import com.github.ahhoefel.ast.expression.Expression;
+import com.github.ahhoefel.ast.statements.AssignmentStatement;
+import com.github.ahhoefel.ast.statements.ExpressionStatement;
+import com.github.ahhoefel.ast.statements.ForStatement;
+import com.github.ahhoefel.ast.statements.IfStatement;
+import com.github.ahhoefel.ast.statements.ReturnStatement;
+import com.github.ahhoefel.ast.statements.Statement;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;

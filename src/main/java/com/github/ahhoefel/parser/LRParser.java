@@ -2,8 +2,6 @@ package com.github.ahhoefel.parser;
 
 import java.util.*;
 
-import com.github.ahhoefel.ast.ErrorLog;
-
 public class LRParser {
 
   private LanguageBuilder lang;

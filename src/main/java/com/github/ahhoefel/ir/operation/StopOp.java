@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ir.operation;
 
-import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Register;

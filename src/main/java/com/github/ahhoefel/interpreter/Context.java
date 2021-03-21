@@ -1,6 +1,6 @@
 package com.github.ahhoefel.interpreter;
 
-import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
 
 import java.util.*;
@@ -27,7 +27,7 @@ public class Context {
       registers.put(r, r.createAlloc());
     }
     Alloc value = registers.get(r);
-    //System.out.print(String.format("get %d; ", value));
+    // System.out.print(String.format("get %d; ", value));
     return value;
   }
 
@@ -38,7 +38,7 @@ public class Context {
       registers.put(r, alloc);
     }
     alloc.copyFrom(value);
-    //System.out.println(r + " " + alloc);
+    // System.out.println(r + " " + alloc);
   }
 
   public void copyToRegister(Register r, Alloc value, int inputOffsetBits, int outputOffsetBits, int lenBits) {
@@ -53,13 +53,14 @@ public class Context {
   public void push(Register r) {
     Alloc value = getRegister(r);
     stack.add(value.copy());
-    //System.out.print(String.format("push %d; ", value));
+    // System.out.print(String.format("push %d; ", value));
   }
 
   public void pop(Register r) {
     Alloc value = stack.remove(stack.size() - 1);
     copyToRegister(r, value);
-    //System.out.print(String.format("pop %d; remaining stack: %s;\n", value, stack));
+    // System.out.print(String.format("pop %d; remaining stack: %s;\n", value,
+    // stack));
   }
 
   public void setIndex(long index) {

@@ -1,6 +1,5 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.ParseError;
 import com.github.ahhoefel.util.Stack;
 

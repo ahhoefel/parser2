@@ -3,8 +3,8 @@ package com.github.ahhoefel.rules;
 import java.util.List;
 import java.util.Map;
 
-import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ast.TypeDeclaration;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
 import com.github.ahhoefel.parser.Token;

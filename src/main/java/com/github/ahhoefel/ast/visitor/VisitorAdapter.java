@@ -1,24 +1,12 @@
 package com.github.ahhoefel.ast.visitor;
 
-import com.github.ahhoefel.ast.AssignmentStatement;
 import com.github.ahhoefel.ast.Block;
-import com.github.ahhoefel.ast.ExpressionStatement;
 import com.github.ahhoefel.ast.File;
-import com.github.ahhoefel.ast.ForStatement;
 import com.github.ahhoefel.ast.FunctionDeclaration;
-import com.github.ahhoefel.ast.IfStatement;
 import com.github.ahhoefel.ast.Import;
 import com.github.ahhoefel.ast.ImportCatalog;
 import com.github.ahhoefel.ast.LValue;
-import com.github.ahhoefel.ast.NamedType;
-import com.github.ahhoefel.ast.ReturnStatement;
-import com.github.ahhoefel.ast.StructType;
-import com.github.ahhoefel.ast.Type.BooleanType;
-import com.github.ahhoefel.ast.Type.IntType;
-import com.github.ahhoefel.ast.Type.StringType;
-import com.github.ahhoefel.ast.Type.VoidType;
 import com.github.ahhoefel.ast.TypeDeclaration;
-import com.github.ahhoefel.ast.UnionType;
 import com.github.ahhoefel.ast.VariableDeclaration;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.AndExpression;
@@ -39,6 +27,18 @@ import com.github.ahhoefel.ast.expression.SubtractExpression;
 import com.github.ahhoefel.ast.expression.SumExpression;
 import com.github.ahhoefel.ast.expression.UnaryMinusExpression;
 import com.github.ahhoefel.ast.expression.VariableExpression;
+import com.github.ahhoefel.ast.statements.AssignmentStatement;
+import com.github.ahhoefel.ast.statements.ExpressionStatement;
+import com.github.ahhoefel.ast.statements.ForStatement;
+import com.github.ahhoefel.ast.statements.IfStatement;
+import com.github.ahhoefel.ast.statements.ReturnStatement;
+import com.github.ahhoefel.ast.type.NamedType;
+import com.github.ahhoefel.ast.type.StructType;
+import com.github.ahhoefel.ast.type.UnionType;
+import com.github.ahhoefel.ast.type.Type.BooleanType;
+import com.github.ahhoefel.ast.type.Type.IntType;
+import com.github.ahhoefel.ast.type.Type.StringType;
+import com.github.ahhoefel.ast.type.Type.VoidType;
 
 public class VisitorAdapter implements Visitor {
 

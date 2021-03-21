@@ -1,6 +1,8 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
+import com.github.ahhoefel.parser.ErrorLog;
 
 public class VariableDeclaration {
 

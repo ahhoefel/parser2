@@ -13,10 +13,10 @@ import com.github.ahhoefel.rules.ExpressionRules;
 import com.github.ahhoefel.rules.LanguageRules;
 import com.github.ahhoefel.rules.StructLiteralRules;
 import com.github.ahhoefel.rules.TypeRules;
-
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.ArgumentsSource;
+import org.junit.jupiter.params.ParameterizedTest;
 
 public class FormatVisitorTest {
 
@@ -51,7 +51,7 @@ public class FormatVisitorTest {
                 Assert.assertEquals("3 * (4 + x)", v.toString());
         }
 
-        @org.junit.jupiter.params.ParameterizedTest(name = "{index} => path=''{0}''")
+        @ParameterizedTest(name = "{0} {1}")
         @ArgumentsSource(FileArgumentProvider.class)
         public void testCorrectlyFormatted(Path path) throws Exception {
                 String s = Files.readString(path);

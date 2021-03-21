@@ -1,6 +1,5 @@
 package com.github.ahhoefel.rules;
 
-import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.File;
 import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.parser.*;

@@ -1,10 +1,13 @@
 package com.github.ahhoefel.ast.expression;
 
 import com.github.ahhoefel.ast.*;
+import com.github.ahhoefel.ast.type.StructType;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.CommentOp;
 import com.github.ahhoefel.ir.operation.SetOp;
+import com.github.ahhoefel.parser.ErrorLog;
 import com.github.ahhoefel.parser.Token;
 
 import java.util.List;

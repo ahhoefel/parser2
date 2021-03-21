@@ -1,6 +1,10 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.type;
 
 import java.util.Optional;
+
+import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.Visitor;
+import com.github.ahhoefel.parser.ErrorLog;
 
 public class NamedType implements Type {
   private String identifier;

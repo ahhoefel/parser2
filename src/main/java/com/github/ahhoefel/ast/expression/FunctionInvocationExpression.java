@@ -1,10 +1,12 @@
 package com.github.ahhoefel.ast.expression;
 
 import com.github.ahhoefel.ast.*;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.*;
+import com.github.ahhoefel.parser.ErrorLog;
 import com.github.ahhoefel.parser.Token;
 
 import java.util.Iterator;

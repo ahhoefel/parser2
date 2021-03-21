@@ -1,4 +1,4 @@
-package com.github.ahhoefel.ast;
+package com.github.ahhoefel.ast.type;
 
 public class ArrayType {
 

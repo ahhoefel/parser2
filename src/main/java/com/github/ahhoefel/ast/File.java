@@ -1,5 +1,6 @@
 package com.github.ahhoefel.ast;
 
+import com.github.ahhoefel.ast.type.NamedType;
 import com.github.ahhoefel.ir.Label;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
@@ -7,6 +8,7 @@ import com.github.ahhoefel.ir.operation.DestinationOp;
 import com.github.ahhoefel.ir.operation.GotoOp;
 import com.github.ahhoefel.ir.operation.LiteralLabelOp;
 import com.github.ahhoefel.ir.operation.PushOp;
+import com.github.ahhoefel.parser.ErrorLog;
 
 import java.util.ArrayList;
 import java.util.List;

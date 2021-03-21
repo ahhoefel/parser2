@@ -1,11 +1,11 @@
 package com.github.ahhoefel.ast.expression;
 
-import com.github.ahhoefel.ast.ErrorLog;
 import com.github.ahhoefel.ast.SymbolCatalog;
-import com.github.ahhoefel.ast.Type;
 import com.github.ahhoefel.ast.Visitable;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.parser.ErrorLog;
 
 import java.util.List;
 import java.util.Optional;

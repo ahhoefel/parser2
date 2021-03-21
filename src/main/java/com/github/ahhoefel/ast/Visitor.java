@@ -1,6 +1,15 @@
 package com.github.ahhoefel.ast;
 
 import com.github.ahhoefel.ast.expression.*;
+import com.github.ahhoefel.ast.statements.AssignmentStatement;
+import com.github.ahhoefel.ast.statements.ExpressionStatement;
+import com.github.ahhoefel.ast.statements.ForStatement;
+import com.github.ahhoefel.ast.statements.IfStatement;
+import com.github.ahhoefel.ast.statements.ReturnStatement;
+import com.github.ahhoefel.ast.type.NamedType;
+import com.github.ahhoefel.ast.type.StructType;
+import com.github.ahhoefel.ast.type.Type;
+import com.github.ahhoefel.ast.type.UnionType;
 
 public interface Visitor {
     void visit(AndExpression expr);
