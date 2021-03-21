@@ -1,4 +1,3 @@
-
 func main() bool {
   if intReturn() != 3 {
     return false
@@ -15,10 +14,10 @@ func main() bool {
   if boolParameters(true, true) != true {
     return false
   }
-  if projectX(3,4) != 3 {
+  if projectX(3, 4) != 3 {
     return false
   }
-  if projectY(3,4) != 4 {
+  if projectY(3, 4) != 4 {
     return false
   }
   return true

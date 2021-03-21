@@ -17,6 +17,7 @@ public class File implements Visitable {
   private Target target;
   private ImportCatalog imports;
   private SymbolCatalog symbols;
+  private List<Declaration> declarations;
   private List<FunctionDeclaration> functions;
   private List<TypeDeclaration> types;
   private List<NamedType> unresolvedTypes;
@@ -25,6 +26,7 @@ public class File implements Visitable {
 
   public File() {
     imports = new ImportCatalog();
+    declarations = new ArrayList<>();
     functions = new ArrayList<>();
     types = new ArrayList<>();
     unresolvedTypes = new ArrayList<>();
@@ -50,17 +52,23 @@ public class File implements Visitable {
   }
 
   public void addFunction(FunctionDeclaration f) {
+    declarations.add(f);
     functions.add(f);
     f.setSymbolCatalog(symbols);
   }
 
   public void addType(TypeDeclaration t) {
+    declarations.add(t);
     types.add(t);
     symbols.addType(t);
   }
 
   public void addImport(Import imp0rt) {
     imports.add(imp0rt);
+  }
+
+  public List<Declaration> getDeclarations() {
+    return declarations;
   }
 
   public SymbolCatalog getSymbols() {

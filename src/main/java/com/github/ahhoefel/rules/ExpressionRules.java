@@ -64,7 +64,8 @@ public class ExpressionRules implements LanguageComponent {
                                 .setAction(e -> new UnaryMinusExpression((Expression) e[1]));
                 Rule times = rules.add(expression, expression, lex.times, expression)
                                 .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
-                rules.add(expression, lex.lParen, expression, lex.rParen).setAction(e -> e[1]);
+                rules.add(expression, lex.lParen, expression, lex.rParen)
+                                .setAction(e -> new ParenthesesExpression((Expression) e[1]));
                 Rule doubleAmpersand = rules.add(expression, expression, lex.doubleAmpersand, expression)
                                 .setAction(e -> new AndExpression((Expression) e[0], (Expression) e[2]));
                 Rule doublePipe = rules.add(expression, expression, lex.doublePipe, expression)
@@ -79,8 +80,8 @@ public class ExpressionRules implements LanguageComponent {
                                 .setAction(e -> new LessThanExpression((Expression) e[2], (Expression) e[0]));
                 Rule greaterThanOrEqual = rules.add(expression, expression, lex.greaterThanOrEqual, expression)
                                 .setAction(e -> new LessThanOrEqualExpression((Expression) e[2], (Expression) e[0]));
-                Rule notEqual = rules.add(expression, expression, lex.notEqual, expression).setAction(
-                                e -> new NotExpression(new EqualExpression((Expression) e[2], (Expression) e[0])));
+                Rule notEqual = rules.add(expression, expression, lex.notEqual, expression)
+                                .setAction(e -> new NotEqualExpression((Expression) e[0], (Expression) e[2]));
 
                 rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen).setAction(
                                 e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>()));

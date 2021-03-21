@@ -34,11 +34,7 @@ public class TypeRules implements LanguageComponent {
         .setAction(e -> new StructType((List<Member>) e[2]));
     rules.add(type, lex.unionKeyword, lex.lBrace, members, lex.rBrace)
         .setAction(e -> new UnionType((List<Member>) e[2]));
-    rules.add(type, lex.identifier).setAction(e -> {
-      NamedType type = new NamedType(((Token) e[0]).getValue());
-      ((File) e[1]).deferResolution(type);
-      return type;
-    });
+    rules.add(type, lex.identifier).setAction(e -> new NamedType(((Token) e[0]).getValue()));
     rules.add(type, lex.identifier, lex.period, lex.identifier).setAction(e -> {
       NamedType type = new NamedType(((Token) e[0]).getValue(), ((Token) e[2]).getValue());
       ((File) e[3]).deferResolution(type);

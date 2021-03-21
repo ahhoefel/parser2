@@ -10,8 +10,15 @@ import com.github.ahhoefel.ast.IfStatement;
 import com.github.ahhoefel.ast.Import;
 import com.github.ahhoefel.ast.ImportCatalog;
 import com.github.ahhoefel.ast.LValue;
+import com.github.ahhoefel.ast.NamedType;
 import com.github.ahhoefel.ast.ReturnStatement;
+import com.github.ahhoefel.ast.StructType;
+import com.github.ahhoefel.ast.Type.BooleanType;
+import com.github.ahhoefel.ast.Type.IntType;
+import com.github.ahhoefel.ast.Type.StringType;
+import com.github.ahhoefel.ast.Type.VoidType;
 import com.github.ahhoefel.ast.TypeDeclaration;
+import com.github.ahhoefel.ast.UnionType;
 import com.github.ahhoefel.ast.VariableDeclaration;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.AndExpression;
@@ -22,8 +29,10 @@ import com.github.ahhoefel.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.ast.expression.LessThanExpression;
 import com.github.ahhoefel.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.ast.expression.NotExpression;
 import com.github.ahhoefel.ast.expression.OrExpression;
+import com.github.ahhoefel.ast.expression.ParenthesesExpression;
 import com.github.ahhoefel.ast.expression.ProductExpression;
 import com.github.ahhoefel.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.ast.expression.SubtractExpression;
@@ -175,6 +184,51 @@ public class VisitorAdapter implements Visitor {
 
     @Override
     public void visit(File file) {
+
+    }
+
+    @Override
+    public void visit(NotEqualExpression expr) {
+
+    }
+
+    @Override
+    public void visit(ParenthesesExpression expr) {
+
+    }
+
+    @Override
+    public void visit(IntType type) {
+
+    }
+
+    @Override
+    public void visit(BooleanType type) {
+
+    }
+
+    @Override
+    public void visit(StringType type) {
+
+    }
+
+    @Override
+    public void visit(VoidType type) {
+
+    }
+
+    @Override
+    public void visit(UnionType type) {
+
+    }
+
+    @Override
+    public void visit(StructType type) {
+
+    }
+
+    @Override
+    public void visit(NamedType type) {
 
     }
 

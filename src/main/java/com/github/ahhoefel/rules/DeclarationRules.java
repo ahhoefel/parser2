@@ -46,9 +46,12 @@ public class DeclarationRules implements LanguageComponent {
     @Override
     public void provideRules(LanguageBuilder builder) {
         Rule.Builder rules = builder.getRules();
-        rules.add(declarationList, declarationList, declaration)
-                .setAction(e -> ((Declaration) e[1]).addToFile((File) e[2]));
-        rules.add(declarationList).setAction(e -> e[0]);
+        rules.add(declarationList, declarationList, declaration).setAction(e -> {
+            File f = (File) e[0];
+            ((Declaration) e[1]).addToFile(f);
+            return f;
+        });
+        rules.add(declarationList).setAction(e -> new File());
         rules.add(declaration, functionDeclaration).setAction(e -> e[0]);
         rules.add(declaration, imp0rt).setAction(e -> e[0]);
         rules.add(declaration, typeDeclaration).setAction(e -> e[0]);

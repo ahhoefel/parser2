@@ -31,6 +31,10 @@ public class LValue implements Visitable {
     this.type = type;
   }
 
+  public String toString() {
+    return "var " + identifier;
+  }
+
   public void accept(Visitor v) {
     v.visit(this);
   }

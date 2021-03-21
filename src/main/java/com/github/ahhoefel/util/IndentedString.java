@@ -12,17 +12,17 @@ public class IndentedString {
     this.startOfLine = true;
   }
 
-  private IndentedString(IndentedString parent) {
-    this.builder = parent.builder;
-    this.indent = parent.indent + "  ";
-    this.startOfLine = true;
-  }
-
   public IndentedString indent() {
     if (!startOfLine) {
       this.endLine();
     }
-    return new IndentedString(this);
+    this.indent += "  ";
+    return this;
+  }
+
+  public IndentedString unindent() {
+    this.indent = this.indent.substring(2);
+    return this;
   }
 
   public IndentedString addLine(String line) {

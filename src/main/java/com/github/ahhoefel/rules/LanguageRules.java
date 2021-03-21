@@ -14,10 +14,13 @@ public class LanguageRules {
   private Grammar grammar;
   private LRTable table;
 
-  public LanguageRules() {
-    lang = LanguageBuilder.build("declarationList", new DeclarationRules(), new ExpressionRules(), new StatementRules(),
+  public static LanguageBuilder getLanguage() {
+    return LanguageBuilder.build("declarationList", new DeclarationRules(), new ExpressionRules(), new StatementRules(),
         new FunctionRules(), new TypeRules(), new TypeDeclarationRules(), new ImportRules(), new StructLiteralRules());
+  }
 
+  public LanguageRules() {
+    lang = getLanguage();
     grammar = new Grammar(lang.getLexicon().getTerminals(), lang.getNonTerminals(), lang.getRules().build());
     table = LRParser.getCanonicalLRTable(grammar, lang.getResolver());
   }

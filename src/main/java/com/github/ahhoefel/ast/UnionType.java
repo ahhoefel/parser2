@@ -32,4 +32,9 @@ public class UnionType implements Type {
     width = Optional.of(1 + maxMemberWidth);
     return width.get();
   }
+
+  @Override
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
 }

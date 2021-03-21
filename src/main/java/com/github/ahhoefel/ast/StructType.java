@@ -67,9 +67,14 @@ public class StructType implements Type {
       t = ((NamedType) t).getType();
     }
     if (!(t instanceof StructType)) {
-      throw new RuntimeException("Only struct type can be used for struct literal expressions: " + t + " from named type " + type);
+      throw new RuntimeException(
+          "Only struct type can be used for struct literal expressions: " + t + " from named type " + type);
     }
     return (StructType) t;
   }
 
+  @Override
+  public void accept(Visitor v) {
+    v.visit(this);
+  }
 }

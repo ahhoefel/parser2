@@ -1,5 +1,5 @@
 func main() bool {
- if true == false {
+  if true == false {
     return false
   }
   if true != true {

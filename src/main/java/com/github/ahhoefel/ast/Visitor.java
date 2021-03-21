@@ -21,6 +21,8 @@ public interface Visitor {
 
     void visit(NotExpression expr);
 
+    void visit(NotEqualExpression expr);
+
     void visit(OrExpression expr);
 
     void visit(ProductExpression expr);
@@ -34,6 +36,8 @@ public interface Visitor {
     void visit(UnaryMinusExpression expr);
 
     void visit(VariableExpression expr);
+
+    void visit(ParenthesesExpression expr);
 
     void visit(AssignmentStatement stmt);
 
@@ -60,4 +64,19 @@ public interface Visitor {
     void visit(VariableDeclaration decl);
 
     void visit(File file);
+
+    void visit(Type.IntType type);
+
+    void visit(Type.BooleanType type);
+
+    void visit(Type.StringType type);
+
+    void visit(Type.VoidType type);
+
+    void visit(UnionType type);
+
+    void visit(StructType type);
+
+    void visit(NamedType type);
+
 }

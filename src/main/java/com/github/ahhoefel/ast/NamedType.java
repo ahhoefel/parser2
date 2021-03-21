@@ -19,6 +19,10 @@ public class NamedType implements Type {
     type = Optional.empty();
   }
 
+  public String getIdentifier() {
+    return identifier;
+  }
+
   public Optional<String> getPackage() {
     return packagePrefix;
   }
@@ -44,22 +48,25 @@ public class NamedType implements Type {
   }
 
   public boolean equals(Object o) {
-    // Order matters here so we recursively descend into named types, flipping sides.
+    // Order matters here so we recursively descend into named types, flipping
+    // sides.
     return o.equals(type.get());
   }
 
   public String toString() {
-    String out = "type ";
+    String out = "";
     if (packagePrefix.isPresent()) {
       out += packagePrefix.get() + ".";
     }
-    out += identifier + " ";
+    out += identifier;
     if (type.isPresent()) {
-      out += type.get().toString();
-      //out += "size:" + width();
-    } else {
-      out += "unresolved";
+      out += " " + type.get().toString();
     }
     return out;
+  }
+
+  @Override
+  public void accept(Visitor v) {
+    v.visit(this);
   }
 }

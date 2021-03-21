@@ -39,7 +39,7 @@ public class ExampleA {
                 new LRTable.State(Map.of(times, r3, plus, r3, eof, r3), Map.of(), Map.of()),
                 new LRTable.State(Map.of(times, r4, plus, r4, eof, r4), Map.of(), Map.of()),
                 new LRTable.State(Map.of(times, r5, plus, r5, eof, r5), Map.of(), Map.of()),
-                new LRTable.State(Map.of(times, r6, plus, r6, eof, r6), Map.of(), Map.of())));
+                new LRTable.State(Map.of(times, r6, plus, r6, eof, r6), Map.of(), Map.of())), eof, sums);
 
         // List<Symbol> input = Arrays.asList(id, times, id, plus, num, eof);
         System.out.println(table);

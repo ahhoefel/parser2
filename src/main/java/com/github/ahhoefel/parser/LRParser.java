@@ -20,7 +20,11 @@ public class LRParser {
     ErrorLog log = new ErrorLog();
     List<Token> tokens = lang.getLexicon().parse(s, log);
     tokens.add(new Token(lang.getLexicon().getTerminals().getEof(), "eof", null));
-    return Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), log);
+    Object o = Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), log);
+    if (!log.isEmpty()) {
+      throw new ParseException(log);
+    }
+    return o;
   }
 
   public static LRTable getSLRTable(Grammar g) {

@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ast;
 
-public interface Type {
+public interface Type extends Visitable {
 
   class IntType implements Type {
     @Override
@@ -19,6 +19,11 @@ public interface Type {
 
     public boolean equals(Object o) {
       return o == INT;
+    }
+
+    @Override
+    public void accept(Visitor v) {
+      v.visit(this);
     }
   }
 
@@ -40,6 +45,11 @@ public interface Type {
     public boolean equals(Object o) {
       return o == BOOL;
     }
+
+    @Override
+    public void accept(Visitor v) {
+      v.visit(this);
+    }
   }
 
   class StringType implements Type {
@@ -59,6 +69,11 @@ public interface Type {
     public boolean equals(Object o) {
       return o == STRING;
     }
+
+    @Override
+    public void accept(Visitor v) {
+      v.visit(this);
+    }
   }
 
   class VoidType implements Type {
@@ -77,6 +92,11 @@ public interface Type {
 
     public boolean equals(Object o) {
       return o == VOID;
+    }
+
+    @Override
+    public void accept(Visitor v) {
+      v.visit(this);
     }
   }
 

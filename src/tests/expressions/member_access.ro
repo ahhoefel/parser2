@@ -1,4 +1,3 @@
-
 func main() bool {
   var x Foo = getFoo()
   if x.a != 3 {

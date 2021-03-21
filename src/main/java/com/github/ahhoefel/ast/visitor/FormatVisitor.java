@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.github.ahhoefel.ast.AssignmentStatement;
 import com.github.ahhoefel.ast.Block;
+import com.github.ahhoefel.ast.Declaration;
 import com.github.ahhoefel.ast.ExpressionStatement;
 import com.github.ahhoefel.ast.File;
 import com.github.ahhoefel.ast.ForStatement;
@@ -13,9 +14,16 @@ import com.github.ahhoefel.ast.IfStatement;
 import com.github.ahhoefel.ast.Import;
 import com.github.ahhoefel.ast.ImportCatalog;
 import com.github.ahhoefel.ast.LValue;
+import com.github.ahhoefel.ast.NamedType;
 import com.github.ahhoefel.ast.ReturnStatement;
+import com.github.ahhoefel.ast.StructType;
 import com.github.ahhoefel.ast.Type;
+import com.github.ahhoefel.ast.Type.BooleanType;
+import com.github.ahhoefel.ast.Type.IntType;
+import com.github.ahhoefel.ast.Type.StringType;
+import com.github.ahhoefel.ast.Type.VoidType;
 import com.github.ahhoefel.ast.TypeDeclaration;
+import com.github.ahhoefel.ast.UnionType;
 import com.github.ahhoefel.ast.VariableDeclaration;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.AndExpression;
@@ -27,8 +35,10 @@ import com.github.ahhoefel.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.ast.expression.LessThanExpression;
 import com.github.ahhoefel.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.ast.expression.NotExpression;
 import com.github.ahhoefel.ast.expression.OrExpression;
+import com.github.ahhoefel.ast.expression.ParenthesesExpression;
 import com.github.ahhoefel.ast.expression.ProductExpression;
 import com.github.ahhoefel.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.ast.expression.SubtractExpression;
@@ -65,6 +75,13 @@ public class FormatVisitor implements Visitor {
     public void visit(EqualExpression expr) {
         expr.getLeft().accept(this);
         out.add(" == ");
+        expr.getRight().accept(this);
+    }
+
+    @Override
+    public void visit(NotEqualExpression expr) {
+        expr.getLeft().accept(this);
+        out.add(" != ");
         expr.getRight().accept(this);
     }
 
@@ -110,7 +127,7 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(NotExpression expr) {
-        out.add(".");
+        out.add("!");
         expr.getExpression().accept(this);
     }
 
@@ -130,15 +147,17 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(StructLiteralExpression expr) {
-        out.add(expr.getType().toString()).add("{");
+        out.add("new ");
+        out.add(expr.getType().toString()).add(" {");
         out.endLine();
         out.indent();
         for (Map.Entry<String, Expression> entry : expr.getValues().entrySet()) {
             out.add(entry.getKey()).add(": ");
             entry.getValue().accept(this);
-            out.endLine();
+            out.add(",").endLine();
         }
-        out.endLine();
+        out.unindent();
+        out.add("}");
     }
 
     @Override
@@ -167,8 +186,15 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
+    public void visit(ParenthesesExpression expr) {
+        out.add("(");
+        expr.getExpression().accept(this);
+        out.add(")");
+    }
+
+    @Override
     public void visit(AssignmentStatement stmt) {
-        out.add(stmt.getLValue().toString());
+        stmt.getLValue().accept(this);
         out.add(" = ");
         stmt.getExpression().accept(this);
         out.endLine();
@@ -203,14 +229,22 @@ public class FormatVisitor implements Visitor {
         out.add("(");
         List<Type> paramTypes = fn.getParameterTypes();
         for (int i = 0; i < paramTypes.size(); i++) {
-            out.add(fn.getParameterName(i));
+            out.add(fn.getParameterName(i)).add(" ");
+            paramTypes.get(i).accept(this);
             if (i != paramTypes.size() - 1) {
                 out.add(", ");
             }
         }
-        out.add(") {");
+        out.add(")");
+        if (fn.getReturnType() != null && fn.getReturnType() != Type.VOID) {
+            out.add(" ");
+            out.add(fn.getReturnType().toString());
+        }
+        out.add(" {");
         out.endLine();
+        out.indent();
         fn.getBlock().accept(this);
+        out.unindent();
         out.addLine("}");
     }
 
@@ -218,9 +252,9 @@ public class FormatVisitor implements Visitor {
     public void visit(IfStatement stmt) {
         out.add("if ");
         stmt.getCondition().accept(this);
-        out.add(" {").endLine();
+        out.add(" {").endLine().indent();
         stmt.getBlock().accept(this);
-        out.addLine("}");
+        out.unindent().addLine("}");
     }
 
     @Override
@@ -240,6 +274,7 @@ public class FormatVisitor implements Visitor {
         if (stmt.isDeclaration()) {
             out.add("var ");
             out.add(stmt.getIdentifier());
+            out.add(" ");
             out.add(stmt.getType().toString());
         } else {
             stmt.getExpression().accept(this);
@@ -254,7 +289,8 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(TypeDeclaration decl) {
-        out.add("type ").add(decl.getIdentifier()).add(" ").add(decl.getType().toString());
+        out.add("type ").add(decl.getIdentifier()).add(" ");
+        decl.getType().accept(this);
     }
 
     @Override
@@ -267,10 +303,55 @@ public class FormatVisitor implements Visitor {
     @Override
     public void visit(File file) {
         file.getImports().accept(this);
-        out.endLine();
-        for (FunctionDeclaration f : file.getFunctions()) {
-            f.accept(this);
+        List<Declaration> declarations = file.getDeclarations();
+        for (int i = 0; i < declarations.size(); i++) {
+            declarations.get(i).accept(this);
+            if (i != declarations.size() - 1) {
+                out.endLine();
+            }
+        }
+    }
+
+    @Override
+    public void visit(IntType type) {
+        out.add("int");
+    }
+
+    @Override
+    public void visit(BooleanType type) {
+        out.add("bool");
+    }
+
+    @Override
+    public void visit(StringType type) {
+        out.add("string");
+    }
+
+    @Override
+    public void visit(VoidType type) {
+        out.add("void");
+    }
+
+    @Override
+    public void visit(UnionType type) {
+        out.add("???");
+    }
+
+    @Override
+    public void visit(StructType type) {
+        out.add("struct {").endLine().indent();
+
+        for (String memberName : type.memberNames()) {
+            Type t = type.getMember(memberName);
+            out.add(memberName).add(" ");
+            t.accept(this);
             out.endLine();
         }
+        out.unindent().add("}").endLine();
+    }
+
+    @Override
+    public void visit(NamedType type) {
+        out.add(type.getIdentifier());
     }
 }

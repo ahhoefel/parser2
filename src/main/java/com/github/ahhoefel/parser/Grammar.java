@@ -13,7 +13,8 @@ public class Grammar {
   public Grammar(SymbolTable.TerminalTable terminals, SymbolTable.NonTerminalTable nonTerminals, List<Rule> rules) {
     this.terminals = terminals;
     this.nonTerminals = nonTerminals;
-    this.augmentedStart = new Rule(nonTerminals.getAugmentedStart(), List.of(nonTerminals.getStart()));
+    this.augmentedStart = new Rule(nonTerminals.getAugmentedStart(), List.of(nonTerminals.getStart()))
+        .setAction(e -> e[0]);
     this.rules = new ArrayList<>();
     this.rules.add(augmentedStart);
     this.rules.addAll(rules);
