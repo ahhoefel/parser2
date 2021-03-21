@@ -48,7 +48,7 @@ public class FormatVisitorTest {
                 e.accept(v);
                 // This is wrong. Parentheses should be included
                 // in the output, even if they aren't needed in the AST.
-                Assert.assertEquals("3 * 4 + x", v.toString());
+                Assert.assertEquals("3 * (4 + x)", v.toString());
         }
 
         @org.junit.jupiter.params.ParameterizedTest(name = "{index} => path=''{0}''")
