@@ -43,191 +43,191 @@ import com.github.ahhoefel.ast.type.Type.VoidType;
 public class SymbolVisitor implements Visitor {
 
     @Override
-    public void visit(AndExpression expr) {
+    public void visit(AndExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(BooleanLiteralExpression expr) {
+    public void visit(BooleanLiteralExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(EqualExpression expr) {
+    public void visit(EqualExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(FunctionInvocationExpression expr) {
+    public void visit(FunctionInvocationExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(IntegerLiteralExpression expr) {
+    public void visit(IntegerLiteralExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(LessThanExpression expr) {
+    public void visit(LessThanExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(LessThanOrEqualExpression expr) {
+    public void visit(LessThanOrEqualExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(MemberAccessExpression expr) {
+    public void visit(MemberAccessExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(NotExpression expr) {
+    public void visit(NotExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(OrExpression expr) {
+    public void visit(OrExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(ProductExpression expr) {
+    public void visit(ProductExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(StructLiteralExpression expr) {
+    public void visit(StructLiteralExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(SubtractExpression expr) {
+    public void visit(SubtractExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(SumExpression expr) {
+    public void visit(SumExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(UnaryMinusExpression expr) {
+    public void visit(UnaryMinusExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(VariableExpression expr) {
+    public void visit(VariableExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(AssignmentStatement stmt) {
+    public void visit(AssignmentStatement stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(Block block) {
+    public void visit(Block block, Object... objs) {
 
     }
 
     @Override
-    public void visit(ExpressionStatement stmt) {
+    public void visit(ExpressionStatement stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(ForStatement stmt) {
+    public void visit(ForStatement stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(FunctionDeclaration fn) {
+    public void visit(FunctionDeclaration fn, Object... objs) {
 
     }
 
     @Override
-    public void visit(IfStatement stmt) {
+    public void visit(IfStatement stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(Import stmt) {
+    public void visit(Import stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(ImportCatalog imports) {
+    public void visit(ImportCatalog imports, Object... objs) {
 
     }
 
     @Override
-    public void visit(LValue stmt) {
+    public void visit(LValue stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(ReturnStatement stmt) {
+    public void visit(ReturnStatement stmt, Object... objs) {
 
     }
 
     @Override
-    public void visit(TypeDeclaration decl) {
+    public void visit(TypeDeclaration decl, Object... objs) {
 
     }
 
     @Override
-    public void visit(VariableDeclaration decl) {
+    public void visit(VariableDeclaration decl, Object... objs) {
 
     }
 
     @Override
-    public void visit(File file) {
+    public void visit(File file, Object... objs) {
     }
 
     @Override
-    public void visit(NotEqualExpression expr) {
-
-    }
-
-    @Override
-    public void visit(ParenthesesExpression expr) {
+    public void visit(NotEqualExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(IntType type) {
+    public void visit(ParenthesesExpression expr, Object... objs) {
 
     }
 
     @Override
-    public void visit(BooleanType type) {
+    public void visit(IntType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(StringType type) {
+    public void visit(BooleanType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(VoidType type) {
+    public void visit(StringType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(UnionType type) {
+    public void visit(VoidType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(StructType type) {
+    public void visit(UnionType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(NamedType type) {
+    public void visit(StructType type, Object... objs) {
+
+    }
+
+    @Override
+    public void visit(NamedType type, Object... objs) {
 
     }
 

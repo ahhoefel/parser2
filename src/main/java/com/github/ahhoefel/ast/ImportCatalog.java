@@ -15,8 +15,8 @@ public class ImportCatalog implements Visitable {
     importsByName = new HashMap<>();
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public void add(Import imp0rt) {

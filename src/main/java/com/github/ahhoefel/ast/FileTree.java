@@ -83,7 +83,6 @@ public class FileTree {
     // This is what should be replaced with the visitor pattern.
     tree.linkImports();
     tree.linkSymbols(log);
-    tree.typeCheck(log);
     if (log.isEmpty()) {
       return new Result(targets, tree);
     }
@@ -100,12 +99,6 @@ public class FileTree {
   private void linkSymbols(ErrorLog log) {
     for (Map.Entry<String, File> entry : this.files.entrySet()) {
       entry.getValue().linkSymbols(log);
-    }
-  }
-
-  private void typeCheck(ErrorLog log) {
-    for (File file : this.files.values()) {
-      file.typeCheck(log);
     }
   }
 

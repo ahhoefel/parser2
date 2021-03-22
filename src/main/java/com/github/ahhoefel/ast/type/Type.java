@@ -27,8 +27,8 @@ public interface Type extends Visitable {
     }
 
     @Override
-    public void accept(Visitor v) {
-      v.visit(this);
+    public void accept(Visitor v, Object... objs) {
+      v.visit(this, objs);
     }
   }
 
@@ -52,8 +52,8 @@ public interface Type extends Visitable {
     }
 
     @Override
-    public void accept(Visitor v) {
-      v.visit(this);
+    public void accept(Visitor v, Object... objs) {
+      v.visit(this, objs);
     }
   }
 
@@ -76,8 +76,8 @@ public interface Type extends Visitable {
     }
 
     @Override
-    public void accept(Visitor v) {
-      v.visit(this);
+    public void accept(Visitor v, Object... objs) {
+      v.visit(this, objs);
     }
   }
 
@@ -100,8 +100,8 @@ public interface Type extends Visitable {
     }
 
     @Override
-    public void accept(Visitor v) {
-      v.visit(this);
+    public void accept(Visitor v, Object... objs) {
+      v.visit(this, objs);
     }
   }
 

@@ -43,8 +43,8 @@ public class FunctionInvocationExpression implements Expression {
     return identifier;
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public Optional<Expression> getImplicitArg() {

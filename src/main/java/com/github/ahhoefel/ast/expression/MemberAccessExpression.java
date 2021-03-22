@@ -40,8 +40,8 @@ public class MemberAccessExpression implements LValueExpression {
     return member;
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   @Override

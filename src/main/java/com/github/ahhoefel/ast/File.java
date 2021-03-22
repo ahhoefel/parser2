@@ -11,7 +11,9 @@ import com.github.ahhoefel.ir.operation.PushOp;
 import com.github.ahhoefel.parser.ErrorLog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class File implements Visitable {
@@ -20,7 +22,7 @@ public class File implements Visitable {
   private ImportCatalog imports;
   private SymbolCatalog symbols;
   private List<Declaration> declarations;
-  private List<FunctionDeclaration> functions;
+  private Map<String, FunctionDeclaration> functions;
   private List<TypeDeclaration> types;
   private List<NamedType> unresolvedTypes;
   private Register endLabelRegister;
@@ -29,7 +31,7 @@ public class File implements Visitable {
   public File() {
     imports = new ImportCatalog();
     declarations = new ArrayList<>();
-    functions = new ArrayList<>();
+    functions = new HashMap<>();
     types = new ArrayList<>();
     unresolvedTypes = new ArrayList<>();
     symbols = new SymbolCatalog("file", imports, Optional.empty());
@@ -37,12 +39,12 @@ public class File implements Visitable {
     endLabel = new Label();
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
-  public List<FunctionDeclaration> getFunctions() {
-    return functions;
+  public Optional<FunctionDeclaration> getFunction(String name) {
+    return Optional.ofNullable(functions.get(name));
   }
 
   public void setTarget(Target target) {
@@ -55,7 +57,7 @@ public class File implements Visitable {
 
   public void addFunction(FunctionDeclaration f) {
     declarations.add(f);
-    functions.add(f);
+    functions.put(f.getName(), f);
     f.setSymbolCatalog(symbols);
   }
 
@@ -82,7 +84,7 @@ public class File implements Visitable {
     rep.add(new LiteralLabelOp(endLabel, endLabelRegister));
     rep.add(new PushOp(endLabelRegister));
     rep.add(new GotoOp(symbols.getFunction("main").getLabel()));
-    for (FunctionDeclaration f : functions) {
+    for (FunctionDeclaration f : functions.values()) {
       f.addToRepresentation(rep);
     }
     rep.add(new DestinationOp(endLabel));
@@ -90,7 +92,7 @@ public class File implements Visitable {
   }
 
   public void addToRepresentation(Representation rep) {
-    for (FunctionDeclaration f : functions) {
+    for (FunctionDeclaration f : functions.values()) {
       f.addToRepresentation(rep);
     }
   }
@@ -113,11 +115,5 @@ public class File implements Visitable {
 
   public void deferResolution(NamedType type) {
     unresolvedTypes.add(type);
-  }
-
-  public void typeCheck(ErrorLog log) {
-    for (FunctionDeclaration fn : functions) {
-      fn.typeCheck(log);
-    }
   }
 }

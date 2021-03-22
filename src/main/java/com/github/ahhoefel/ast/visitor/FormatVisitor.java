@@ -60,33 +60,33 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(AndExpression expr) {
+    public void visit(AndExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" && ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(BooleanLiteralExpression expr) {
+    public void visit(BooleanLiteralExpression expr, Object... objs) {
         out.add(Boolean.toString(expr.getValue()));
     }
 
     @Override
-    public void visit(EqualExpression expr) {
+    public void visit(EqualExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" == ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(NotEqualExpression expr) {
+    public void visit(NotEqualExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" != ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(FunctionInvocationExpression expr) {
+    public void visit(FunctionInvocationExpression expr, Object... objs) {
         out.add(expr.getIdentifier());
         out.add("(");
         List<Expression> args = expr.getArgs();
@@ -100,53 +100,53 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(IntegerLiteralExpression expr) {
+    public void visit(IntegerLiteralExpression expr, Object... objs) {
         out.add(Integer.toString(expr.getValue()));
     }
 
     @Override
-    public void visit(LessThanExpression expr) {
+    public void visit(LessThanExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" < ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(LessThanOrEqualExpression expr) {
+    public void visit(LessThanOrEqualExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" <= ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(MemberAccessExpression expr) {
+    public void visit(MemberAccessExpression expr, Object... objs) {
         expr.getExpression().accept(this);
         out.add(".");
         out.add(expr.getMember().getValue());
     }
 
     @Override
-    public void visit(NotExpression expr) {
+    public void visit(NotExpression expr, Object... objs) {
         out.add("!");
         expr.getExpression().accept(this);
     }
 
     @Override
-    public void visit(OrExpression expr) {
+    public void visit(OrExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" || ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(ProductExpression expr) {
+    public void visit(ProductExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" * ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(StructLiteralExpression expr) {
+    public void visit(StructLiteralExpression expr, Object... objs) {
         out.add("new ");
         out.add(expr.getType().toString()).add(" {");
         out.endLine();
@@ -161,39 +161,39 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(SubtractExpression expr) {
+    public void visit(SubtractExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" - ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(SumExpression expr) {
+    public void visit(SumExpression expr, Object... objs) {
         expr.getLeft().accept(this);
         out.add(" + ");
         expr.getRight().accept(this);
     }
 
     @Override
-    public void visit(UnaryMinusExpression expr) {
+    public void visit(UnaryMinusExpression expr, Object... objs) {
         out.add("-");
         expr.getExpression().accept(this);
     }
 
     @Override
-    public void visit(VariableExpression expr) {
+    public void visit(VariableExpression expr, Object... objs) {
         out.add(expr.getIdentifier());
     }
 
     @Override
-    public void visit(ParenthesesExpression expr) {
+    public void visit(ParenthesesExpression expr, Object... objs) {
         out.add("(");
         expr.getExpression().accept(this);
         out.add(")");
     }
 
     @Override
-    public void visit(AssignmentStatement stmt) {
+    public void visit(AssignmentStatement stmt, Object... objs) {
         stmt.getLValue().accept(this);
         out.add(" = ");
         stmt.getExpression().accept(this);
@@ -201,20 +201,20 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(Block block) {
+    public void visit(Block block, Object... objs) {
         for (int i = 0; i < block.size(); i++) {
             block.get(i).accept(this);
         }
     }
 
     @Override
-    public void visit(ExpressionStatement stmt) {
+    public void visit(ExpressionStatement stmt, Object... objs) {
         stmt.getExpression().accept(this);
         out.endLine();
     }
 
     @Override
-    public void visit(ForStatement stmt) {
+    public void visit(ForStatement stmt, Object... objs) {
         out.add("for ");
         stmt.getCondition().accept(this);
         out.add(" {").endLine();
@@ -223,7 +223,7 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(FunctionDeclaration fn) {
+    public void visit(FunctionDeclaration fn, Object... objs) {
         out.add("func ");
         out.add(fn.getName());
         out.add("(");
@@ -249,7 +249,7 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(IfStatement stmt) {
+    public void visit(IfStatement stmt, Object... objs) {
         out.add("if ");
         stmt.getCondition().accept(this);
         out.add(" {").endLine().indent();
@@ -258,19 +258,19 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(Import stmt) {
+    public void visit(Import stmt, Object... objs) {
         out.add("import ").add(stmt.getShortName()).add(stmt.getPath()).endLine();
     }
 
     @Override
-    public void visit(ImportCatalog imports) {
+    public void visit(ImportCatalog imports, Object... objs) {
         for (Import i : imports.getImports()) {
             i.accept(this);
         }
     }
 
     @Override
-    public void visit(LValue stmt) {
+    public void visit(LValue stmt, Object... objs) {
         if (stmt.isDeclaration()) {
             out.add("var ");
             out.add(stmt.getIdentifier());
@@ -282,26 +282,26 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(ReturnStatement stmt) {
+    public void visit(ReturnStatement stmt, Object... objs) {
         out.add("return ");
         stmt.getExpression().accept(this);
     }
 
     @Override
-    public void visit(TypeDeclaration decl) {
+    public void visit(TypeDeclaration decl, Object... objs) {
         out.add("type ").add(decl.getIdentifier()).add(" ");
         decl.getType().accept(this);
     }
 
     @Override
-    public void visit(VariableDeclaration decl) {
+    public void visit(VariableDeclaration decl, Object... objs) {
         out.add("var ");
         out.add(decl.getName());
         out.add(decl.getType().toString());
     }
 
     @Override
-    public void visit(File file) {
+    public void visit(File file, Object... objs) {
         file.getImports().accept(this);
         List<Declaration> declarations = file.getDeclarations();
         for (int i = 0; i < declarations.size(); i++) {
@@ -313,32 +313,32 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(IntType type) {
+    public void visit(IntType type, Object... objs) {
         out.add("int");
     }
 
     @Override
-    public void visit(BooleanType type) {
+    public void visit(BooleanType type, Object... objs) {
         out.add("bool");
     }
 
     @Override
-    public void visit(StringType type) {
+    public void visit(StringType type, Object... objs) {
         out.add("string");
     }
 
     @Override
-    public void visit(VoidType type) {
+    public void visit(VoidType type, Object... objs) {
         out.add("void");
     }
 
     @Override
-    public void visit(UnionType type) {
+    public void visit(UnionType type, Object... objs) {
         out.add("???");
     }
 
     @Override
-    public void visit(StructType type) {
+    public void visit(StructType type, Object... objs) {
         out.add("struct {").endLine().indent();
 
         for (String memberName : type.memberNames()) {
@@ -351,7 +351,7 @@ public class FormatVisitor implements Visitor {
     }
 
     @Override
-    public void visit(NamedType type) {
+    public void visit(NamedType type, Object... objs) {
         out.add(type.getIdentifier());
     }
 }

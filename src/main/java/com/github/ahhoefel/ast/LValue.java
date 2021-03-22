@@ -37,8 +37,8 @@ public class LValue implements Visitable {
     return "var " + identifier;
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public static LValue fromExpression(Expression e, CodeLocation location) {

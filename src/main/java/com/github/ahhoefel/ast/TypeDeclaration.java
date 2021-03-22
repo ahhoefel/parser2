@@ -11,8 +11,8 @@ public class TypeDeclaration implements Declaration {
     this.type = type;
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public String getIdentifier() {

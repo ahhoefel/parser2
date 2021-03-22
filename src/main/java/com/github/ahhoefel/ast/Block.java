@@ -24,8 +24,8 @@ public class Block implements Visitable {
     return statements.size();
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public void add(Statement statement) {

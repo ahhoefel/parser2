@@ -1,5 +1,7 @@
 package com.github.ahhoefel.ast.visitor;
 
+import java.util.Optional;
+
 import com.github.ahhoefel.ast.Block;
 import com.github.ahhoefel.ast.File;
 import com.github.ahhoefel.ast.FunctionDeclaration;
@@ -40,7 +42,40 @@ import com.github.ahhoefel.ast.type.Type.IntType;
 import com.github.ahhoefel.ast.type.Type.StringType;
 import com.github.ahhoefel.ast.type.Type.VoidType;
 
-public class VisitorAdapter implements Visitor {
+import org.bytedeco.llvm.LLVM.LLVMModuleRef;
+import org.bytedeco.llvm.LLVM.LLVMValueRef;
+import org.bytedeco.llvm.global.LLVM;
+
+public class LLVMVisitor implements Visitor {
+
+    public String error;
+    private LLVMModuleRef module;
+
+    @Override
+    public void visit(File file, Object... objs) {
+        // BytePointer error = new BytePointer(); // Used to retrieve messages from
+        // functions
+        LLVM.LLVMLinkInMCJIT();
+        LLVM.LLVMInitializeNativeAsmPrinter();
+        LLVM.LLVMInitializeNativeAsmParser();
+        LLVM.LLVMInitializeNativeDisassembler();
+        LLVM.LLVMInitializeNativeTarget();
+        module = LLVM.LLVMModuleCreateWithName("main_module");
+        Optional<FunctionDeclaration> main = file.getFunction("main");
+        if (!main.isPresent()) {
+            this.error = "No main function";
+        }
+        main.get().accept(this);
+    }
+
+    @Override
+    public void visit(FunctionDeclaration fn, Object... objs) {
+
+        LLVMValueRef fnRef = LLVM.LLVMAddFunction(module, fn.getName(),
+                LLVM.LLVMFunctionType(LLVM.LLVMVoidType(), LLVM.LLVMVoidType(), 0, 0));
+        LLVM.LLVMSetFunctionCallConv(fnRef, LLVM.LLVMCCallConv);
+
+    }
 
     @Override
     public void visit(AndExpression expr, Object... objs) {
@@ -143,11 +178,6 @@ public class VisitorAdapter implements Visitor {
     }
 
     @Override
-    public void visit(FunctionDeclaration fn, Object... objs) {
-
-    }
-
-    @Override
     public void visit(IfStatement stmt, Object... objs) {
 
     }
@@ -179,11 +209,6 @@ public class VisitorAdapter implements Visitor {
 
     @Override
     public void visit(VariableDeclaration decl, Object... objs) {
-
-    }
-
-    @Override
-    public void visit(File file, Object... objs) {
 
     }
 

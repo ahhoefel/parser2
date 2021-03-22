@@ -47,8 +47,8 @@ public class FunctionDeclaration implements Declaration {
     this.returnLabelRegister = new Register();
   }
 
-  public void accept(Visitor v) {
-    v.visit(this);
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public String getName() {
