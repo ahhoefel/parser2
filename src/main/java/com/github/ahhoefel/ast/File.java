@@ -20,7 +20,7 @@ public class File implements Visitable {
 
   private Target target;
   private ImportCatalog imports;
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
   private List<Declaration> declarations;
   private Map<String, FunctionDeclaration> functions;
   private List<TypeDeclaration> types;
@@ -34,7 +34,7 @@ public class File implements Visitable {
     functions = new HashMap<>();
     types = new ArrayList<>();
     unresolvedTypes = new ArrayList<>();
-    symbols = new SymbolCatalog("file", imports, Optional.empty());
+    symbols = new SymbolCatalogOld("file", imports, Optional.empty());
     endLabelRegister = new Register();
     endLabel = new Label();
   }
@@ -75,7 +75,7 @@ public class File implements Visitable {
     return declarations;
   }
 
-  public SymbolCatalog getSymbols() {
+  public SymbolCatalogOld getSymbols() {
     return symbols;
   }
 

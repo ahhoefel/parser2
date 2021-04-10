@@ -10,7 +10,7 @@ import java.util.List;
 public class Block implements Visitable {
 
   public List<Statement> statements;
-  public SymbolCatalog symbols;
+  public SymbolCatalogOld symbols;
 
   public Block() {
     this.statements = new ArrayList<>();
@@ -32,7 +32,7 @@ public class Block implements Visitable {
     this.statements.add(statement);
   }
 
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     this.symbols = symbols;
     for (Statement statement : statements) {
       statement.addToSymbolCatalog(symbols);
@@ -45,7 +45,7 @@ public class Block implements Visitable {
     }
   }
 
-  public void addToSymbolCatalog(SymbolCatalog symbols) {
+  public void addToSymbolCatalog(SymbolCatalogOld symbols) {
     for (Statement statement : statements) {
       statement.addToSymbolCatalog(symbols);
     }

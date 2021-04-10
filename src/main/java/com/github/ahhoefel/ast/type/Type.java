@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ast.type;
 
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitable;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.parser.ErrorLog;
@@ -9,7 +9,7 @@ public interface Type extends Visitable {
 
   class IntType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+    public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
 
     }
 
@@ -34,7 +34,7 @@ public interface Type extends Visitable {
 
   class BooleanType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+    public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
 
     }
 
@@ -59,7 +59,7 @@ public interface Type extends Visitable {
 
   class StringType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+    public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
     }
 
     @Override
@@ -83,7 +83,7 @@ public interface Type extends Visitable {
 
   class VoidType implements Type {
     @Override
-    public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+    public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
     }
 
     @Override
@@ -105,7 +105,7 @@ public interface Type extends Visitable {
     }
   }
 
-  void linkTypes(SymbolCatalog catalog, ErrorLog log);
+  void linkTypes(SymbolCatalogOld catalog, ErrorLog log);
 
   int width();
 

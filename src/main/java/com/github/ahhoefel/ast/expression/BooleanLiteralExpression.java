@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ast.expression;
 
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
@@ -25,7 +25,7 @@ public class BooleanLiteralExpression extends ExpressionAdapter {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
   }
 
   public void accept(Visitor v, Object... objs) {

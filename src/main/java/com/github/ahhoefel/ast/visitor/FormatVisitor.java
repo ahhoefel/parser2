@@ -2,6 +2,7 @@ package com.github.ahhoefel.ast.visitor;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.ahhoefel.ast.Block;
 import com.github.ahhoefel.ast.Declaration;
@@ -87,6 +88,11 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(FunctionInvocationExpression expr, Object... objs) {
+        Optional<Expression> implicitArg = expr.getImplicitArg();
+        if (implicitArg.isPresent()) {
+            implicitArg.get().accept(this, objs);
+            out.add(".");
+        }
         out.add(expr.getIdentifier());
         out.add("(");
         List<Expression> args = expr.getArgs();
@@ -259,13 +265,20 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(Import stmt, Object... objs) {
-        out.add("import ").add(stmt.getShortName()).add(stmt.getPath()).endLine();
+        if (stmt.hasExplicitShortName()) {
+            out.add("import ").add(stmt.getShortName()).add(" ").add(stmt.getPath()).endLine();
+        } else {
+            out.add("import ").add(stmt.getPath()).endLine();
+        }
     }
 
     @Override
     public void visit(ImportCatalog imports, Object... objs) {
         for (Import i : imports.getImports()) {
             i.accept(this);
+        }
+        if (!imports.getImports().isEmpty()) {
+            out.endLine();
         }
     }
 

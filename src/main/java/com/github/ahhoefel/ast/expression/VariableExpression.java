@@ -14,7 +14,7 @@ import java.util.Optional;
 public class VariableExpression implements LValueExpression {
 
   private final String identifier;
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
   private Type type;
   private CodeLocation location;
 
@@ -39,7 +39,7 @@ public class VariableExpression implements LValueExpression {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     this.symbols = symbols;
   }
 

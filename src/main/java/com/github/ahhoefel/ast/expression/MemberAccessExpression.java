@@ -45,7 +45,7 @@ public class MemberAccessExpression implements LValueExpression {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     expression.setSymbolCatalog(symbols);
   }
 

@@ -19,7 +19,7 @@ public class FunctionInvocationExpression implements Expression {
   private List<Expression> args;
   private String identifier;
   private Register register;
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
   private Register returnLabelRegister;
   private Label returnLabel;
   private Type type;
@@ -61,7 +61,7 @@ public class FunctionInvocationExpression implements Expression {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     this.symbols = symbols;
     for (Expression arg : args) {
       arg.setSymbolCatalog(symbols);
@@ -143,7 +143,7 @@ public class FunctionInvocationExpression implements Expression {
   }
 
   private FunctionDeclaration getDeclaration() {
-    SymbolCatalog catalog = symbols;
+    SymbolCatalogOld catalog = symbols;
     if (implicitArg.isPresent()) {
       if (!(implicitArg.get() instanceof VariableExpression)) {
         throw new RuntimeException("Calling functions on expression not implemented.");

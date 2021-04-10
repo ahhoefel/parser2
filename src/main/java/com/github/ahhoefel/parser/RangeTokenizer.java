@@ -29,6 +29,7 @@ public class RangeTokenizer {
     }
     charTerminalMap[91] = chars.lbracket;
     charTerminalMap[93] = chars.rbracket;
+    charTerminalMap[95] = chars.underscore;
     charTerminalMap[123] = chars.lbrace;
     charTerminalMap[125] = chars.rbrace;
     charTerminalMap[32] = chars.space;

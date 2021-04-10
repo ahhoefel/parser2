@@ -3,7 +3,7 @@ package com.github.ahhoefel.ast.type;
 import java.util.*;
 
 import com.github.ahhoefel.ast.Member;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.parser.ErrorLog;
 
@@ -33,7 +33,7 @@ public class StructType implements Type {
   }
 
   @Override
-  public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+  public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
     for (Type type : members.values()) {
       type.linkTypes(catalog, log);
     }

@@ -6,9 +6,9 @@ import java.util.stream.Collectors;
 import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.parser.ErrorLog;
 
-public class SymbolCatalog {
+public class SymbolCatalogOld {
 
-  private Optional<SymbolCatalog> parent;
+  private Optional<SymbolCatalogOld> parent;
   private ImportCatalog imports;
   private Map<String, FunctionDeclaration> functions;
   private Map<String, VariableDeclaration> variables;
@@ -17,7 +17,7 @@ public class SymbolCatalog {
   private String scopeName;
   private Optional<FunctionDeclaration> functionDeclaration;
 
-  public SymbolCatalog(String scopeName, ImportCatalog imports, Optional<FunctionDeclaration> functionDeclaration) {
+  public SymbolCatalogOld(String scopeName, ImportCatalog imports, Optional<FunctionDeclaration> functionDeclaration) {
     this.scopeName = scopeName;
     this.functionDeclaration = functionDeclaration;
     functions = new HashMap<>();
@@ -28,7 +28,8 @@ public class SymbolCatalog {
     orderedVariables = new ArrayList<>();
   }
 
-  public SymbolCatalog(String scopeName, SymbolCatalog parent, Optional<FunctionDeclaration> functionDeclaration) {
+  public SymbolCatalogOld(String scopeName, SymbolCatalogOld parent,
+      Optional<FunctionDeclaration> functionDeclaration) {
     this(scopeName, parent.imports, functionDeclaration);
     this.parent = Optional.ofNullable(parent);
   }
@@ -132,12 +133,12 @@ public class SymbolCatalog {
     return null;
   }
 
-  public SymbolCatalog getImport(String shortName) {
+  public SymbolCatalogOld getImport(String shortName) {
     return this.imports.get(shortName).getSymbols();
   }
 
   public Type getType(Optional<String> packageName, String typeName, ErrorLog log) {
-    SymbolCatalog symbols = this;
+    SymbolCatalogOld symbols = this;
     if (packageName.isPresent()) {
       symbols = imports.get(packageName.get()).getSymbols();
     }
@@ -187,7 +188,7 @@ public class SymbolCatalog {
   }
 
   public Optional<FunctionDeclaration> getContainingFunction() {
-    Optional<SymbolCatalog> catalog = Optional.of(this);
+    Optional<SymbolCatalogOld> catalog = Optional.of(this);
     while (catalog.isPresent() && !catalog.get().functionDeclaration.isPresent()) {
       catalog = catalog.get().parent;
     }

@@ -19,7 +19,7 @@ public class LValue implements Visitable {
 
   private LValueExpression expression;
 
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
   private CodeLocation location;
 
   public static LValue withDeclaration(Token identifer, Type type) {
@@ -33,14 +33,6 @@ public class LValue implements Visitable {
     this.type = type;
   }
 
-  public String toString() {
-    return "var " + identifier;
-  }
-
-  public void accept(Visitor v, Object... objs) {
-    v.visit(this, objs);
-  }
-
   public static LValue fromExpression(Expression e, CodeLocation location) {
     if (!(e instanceof LValueExpression)) {
       throw new RuntimeException("Not an lvalue expression");
@@ -52,6 +44,14 @@ public class LValue implements Visitable {
     this.declaration = false;
     this.expression = e;
     this.location = location;
+  }
+
+  public String toString() {
+    return "var " + identifier;
+  }
+
+  public void accept(Visitor v, Object... objs) {
+    v.visit(this, objs);
   }
 
   public String getIdentifier() {
@@ -105,7 +105,7 @@ public class LValue implements Visitable {
     }
   }
 
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     this.symbols = symbols;
     if (declaration) {
       symbols.addVariable(new VariableDeclaration(this));

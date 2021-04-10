@@ -61,8 +61,8 @@ public class FormatVisitorTest {
                         f.accept(v);
                         Assert.assertEquals(path.toString(), s, v.toString());
                 } catch (ParseException e) {
-                        // System.out.println("Ignoring error.");
+                        System.out.println("Ignoring error on path: " + path);
+                        System.out.println(e);
                 }
-
         }
 }

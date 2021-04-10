@@ -16,6 +16,13 @@ public class Target {
     file = target.substring(index + 1);
   }
 
+  public Target(Path source, Path target) {
+    this.source = source;
+    Path relative = source.relativize(target);
+    base = relative.getParent().toString();
+    file = relative.getFileName().toString();
+  }
+
   public Target(Path source, String base, String file) {
     this.source = source;
     this.base = base;

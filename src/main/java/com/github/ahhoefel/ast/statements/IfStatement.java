@@ -3,7 +3,7 @@ package com.github.ahhoefel.ast.statements;
 import com.github.ahhoefel.ast.Block;
 import com.github.ahhoefel.ast.CodeLocation;
 import com.github.ahhoefel.ast.ParseError;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ast.type.Type;
@@ -48,7 +48,7 @@ public class IfStatement implements Statement {
   }
 
   @Override
-  public void addToSymbolCatalog(SymbolCatalog symbols) {
+  public void addToSymbolCatalog(SymbolCatalogOld symbols) {
     condition.setSymbolCatalog(symbols);
     block.addToSymbolCatalog(symbols);
   }

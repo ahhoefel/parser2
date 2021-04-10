@@ -2,7 +2,7 @@ package com.github.ahhoefel.ast.type;
 
 import java.util.Optional;
 
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.parser.ErrorLog;
 
@@ -31,7 +31,7 @@ public class NamedType implements Type {
     return packagePrefix;
   }
 
-  public void linkTypes(SymbolCatalog symbols, ErrorLog log) {
+  public void linkTypes(SymbolCatalogOld symbols, ErrorLog log) {
     Type t = symbols.getType(packagePrefix, identifier, log);
     type = Optional.ofNullable(t);
   }

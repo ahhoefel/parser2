@@ -22,6 +22,7 @@ public class Identifier {
     rules.add(identifierHeadChar, chars.letter).setAction(concat);
     rules.add(identifierTailChar, chars.letter).setAction(concat);
     rules.add(identifierTailChar, chars.number).setAction(concat);
+    rules.add(identifierTailChar, chars.underscore).setAction(concat);
 
     resolver.addShiftPreference(identifierTailToChar, chars.letter);
     resolver.addShiftPreference(identifierTailToChar, chars.number);

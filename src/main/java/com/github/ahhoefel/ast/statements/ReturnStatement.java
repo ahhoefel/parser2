@@ -2,7 +2,7 @@ package com.github.ahhoefel.ast.statements;
 
 import com.github.ahhoefel.ast.FunctionDeclaration;
 import com.github.ahhoefel.ast.ParseError;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ir.Register;
@@ -24,7 +24,7 @@ public class ReturnStatement implements Statement {
   }
 
   @Override
-  public void addToSymbolCatalog(SymbolCatalog symbols) {
+  public void addToSymbolCatalog(SymbolCatalogOld symbols) {
     functionDeclaration = symbols.getContainingFunction().get();
     expression.setSymbolCatalog(symbols);
   }

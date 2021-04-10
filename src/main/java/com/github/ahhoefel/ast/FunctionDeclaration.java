@@ -33,7 +33,7 @@ public class FunctionDeclaration implements Declaration {
   private List<VariableDeclaration> parameters;
   private Block statements;
   private Label label;
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
   private Optional<Type> returnType;
   private Register returnLabelRegister;
 
@@ -82,9 +82,9 @@ public class FunctionDeclaration implements Declaration {
     return parameters.get(i).getName();
   }
 
-  public void setSymbolCatalog(SymbolCatalog parent) {
+  public void setSymbolCatalog(SymbolCatalogOld parent) {
     parent.addFunction(this);
-    this.symbols = new SymbolCatalog(name, parent, Optional.of(this));
+    this.symbols = new SymbolCatalogOld(name, parent, Optional.of(this));
     for (VariableDeclaration param : parameters) {
       symbols.addVariable(param);
     }

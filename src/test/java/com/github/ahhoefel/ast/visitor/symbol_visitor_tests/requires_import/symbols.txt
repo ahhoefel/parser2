@@ -1,0 +1,14 @@
+Global Symbols:
+
+  File: requires_import:provides_import
+    Imports:
+    Functions:
+      foo
+
+  File: requires_import:requires_import.ro
+    Imports:
+      requires_import:provides_import
+    Functions:
+      main
+
+Unresolved Imports:

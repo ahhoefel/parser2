@@ -1,6 +1,6 @@
 package com.github.ahhoefel.ast.expression;
 
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitable;
 import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface Expression extends Visitable {
   Register getRegister();
 
-  void setSymbolCatalog(SymbolCatalog symbols);
+  void setSymbolCatalog(SymbolCatalogOld symbols);
 
   void addToRepresentation(Representation rep, List<Register> liveRegisters);
 

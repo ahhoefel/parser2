@@ -1,7 +1,7 @@
 package com.github.ahhoefel.ast.expression;
 
 import com.github.ahhoefel.ast.ParseError;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.ir.Representation;
 import com.github.ahhoefel.ir.operation.MultiplyOp;
@@ -41,7 +41,7 @@ public class ProductExpression extends ExpressionAdapter {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     a.setSymbolCatalog(symbols);
     b.setSymbolCatalog(symbols);
   }

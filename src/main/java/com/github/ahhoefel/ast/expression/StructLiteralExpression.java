@@ -46,7 +46,7 @@ public class StructLiteralExpression implements Expression {
   }
 
   @Override
-  public void setSymbolCatalog(SymbolCatalog symbols) {
+  public void setSymbolCatalog(SymbolCatalogOld symbols) {
     for (Expression e : values.values()) {
       e.setSymbolCatalog(symbols);
     }

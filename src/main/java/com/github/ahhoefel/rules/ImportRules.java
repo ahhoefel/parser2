@@ -27,7 +27,7 @@ public class ImportRules implements LanguageComponent {
     rules.add(imp0rt, lex.importKeyword, lex.identifier, path)
         .setAction(e -> new Import(((Token) e[1]).getValue(), (String) e[2]));
     rules.add(path, lex.identifier).setAction(e -> ((Token) e[0]).getValue());
-    rules.add(path, path, lex.forwardSlash, lex.identifier).setAction(e -> e[0] + "/" + ((Token) e[0]).getValue());
+    rules.add(path, path, lex.forwardSlash, lex.identifier).setAction(e -> e[0] + "/" + ((Token) e[2]).getValue());
   }
 
   @Override

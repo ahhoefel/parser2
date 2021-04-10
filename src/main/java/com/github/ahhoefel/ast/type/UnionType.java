@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.github.ahhoefel.ast.Member;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.parser.ErrorLog;
 
@@ -19,7 +19,7 @@ public class UnionType implements Type {
   }
 
   @Override
-  public void linkTypes(SymbolCatalog catalog, ErrorLog log) {
+  public void linkTypes(SymbolCatalogOld catalog, ErrorLog log) {
     for (Member member : members) {
       member.getType().linkTypes(catalog, log);
     }

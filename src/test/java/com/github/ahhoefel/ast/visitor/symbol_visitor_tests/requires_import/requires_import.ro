@@ -1,0 +1,5 @@
+import requires_import/provides_import
+
+func main() int {
+  var x int = provides_import.foo()
+}

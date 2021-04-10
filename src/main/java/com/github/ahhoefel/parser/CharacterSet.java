@@ -12,6 +12,7 @@ public class CharacterSet {
   public final Symbol letter;
   public final Symbol number;
   public final Symbol hypen;
+  public final Symbol underscore;
   public final Symbol space;
   public final Symbol tab;
   public final Symbol lparen;
@@ -42,6 +43,7 @@ public class CharacterSet {
     letter = symbols.newSymbol("letter");
     number = symbols.newSymbol("number");
     hypen = symbols.newSymbol("hypen");
+    underscore = symbols.newSymbol("underscore");
     space = symbols.newSymbol("space");
     tab = symbols.newSymbol("tab");
     lparen = symbols.newSymbol("lparen");

@@ -2,19 +2,22 @@ package com.github.ahhoefel.ast;
 
 public class Import implements Declaration {
 
+  private boolean explicitShortName;
   private String shortName;
   private String path;
-  private SymbolCatalog symbols;
+  private SymbolCatalogOld symbols;
 
   public Import(String shortName, String path) {
     this.shortName = shortName;
     this.path = path;
+    this.explicitShortName = true;
   }
 
   public Import(String path) {
-    int index = path.lastIndexOf('/');
-    shortName = index == -1 ? path : path.substring(index);
     this.path = path;
+    int index = path.lastIndexOf('/');
+    shortName = index == -1 ? path : path.substring(index + 1);
+    this.explicitShortName = false;
   }
 
   public void accept(Visitor v, Object... objs) {
@@ -27,6 +30,10 @@ public class Import implements Declaration {
     return file;
   }
 
+  public boolean hasExplicitShortName() {
+    return explicitShortName;
+  }
+
   public String getShortName() {
     return shortName;
   }
@@ -35,16 +42,24 @@ public class Import implements Declaration {
     return path;
   }
 
+  public String getTargetString() {
+    int index = path.lastIndexOf('/');
+    return path.substring(0, index) + ":" + path.substring(index + 1, path.length());
+  }
+
   public void link(FileTree.TargetMap map) {
     File f = map.get(path);
     symbols = f.getSymbols();
   }
 
-  public SymbolCatalog getSymbols() {
+  public SymbolCatalogOld getSymbols() {
     return symbols;
   }
 
   public String toString() {
-    return String.format("import %s %s", shortName, path);
+    if (explicitShortName) {
+      return String.format("import %s %s", shortName, path);
+    }
+    return String.format("import %s", path);
   }
 }

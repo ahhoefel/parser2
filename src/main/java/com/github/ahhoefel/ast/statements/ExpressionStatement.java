@@ -1,7 +1,7 @@
 package com.github.ahhoefel.ast.statements;
 
 import com.github.ahhoefel.ast.ParseError;
-import com.github.ahhoefel.ast.SymbolCatalog;
+import com.github.ahhoefel.ast.SymbolCatalogOld;
 import com.github.ahhoefel.ast.Visitor;
 import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.ast.type.Type;
@@ -27,7 +27,7 @@ public class ExpressionStatement implements Statement {
     v.visit(this, objs);
   }
 
-  public void addToSymbolCatalog(SymbolCatalog symbolCatalog) {
+  public void addToSymbolCatalog(SymbolCatalogOld symbolCatalog) {
     expression.setSymbolCatalog(symbolCatalog);
   }
 
