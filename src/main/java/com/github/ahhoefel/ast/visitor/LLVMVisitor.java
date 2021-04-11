@@ -36,6 +36,7 @@ import com.github.ahhoefel.ast.statements.ForStatement;
 import com.github.ahhoefel.ast.statements.IfStatement;
 import com.github.ahhoefel.ast.statements.ReturnStatement;
 import com.github.ahhoefel.ast.statements.Statement;
+import com.github.ahhoefel.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.ast.symbols.LocalSymbols;
 import com.github.ahhoefel.ast.type.NamedType;
 import com.github.ahhoefel.ast.type.StructType;
@@ -48,17 +49,23 @@ import com.github.ahhoefel.ast.type.Type.VoidType;
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.llvm.LLVM.LLVMBasicBlockRef;
 import org.bytedeco.llvm.LLVM.LLVMBuilderRef;
+import org.bytedeco.llvm.LLVM.LLVMMemoryBufferRef;
 import org.bytedeco.llvm.LLVM.LLVMModuleRef;
 import org.bytedeco.llvm.LLVM.LLVMValueRef;
 import org.bytedeco.llvm.global.LLVM;
 
 public class LLVMVisitor implements Visitor {
 
-    private static class Value<T> {
+    public static class Value<T> {
         T value;
     }
 
     public String error;
+    private GlobalSymbols symbols;
+
+    public LLVMVisitor(GlobalSymbols symbols) {
+        this.symbols = symbols;
+    }
 
     @Override
     public void visit(File file, Object... objs) {
@@ -76,7 +83,11 @@ public class LLVMVisitor implements Visitor {
         }
         Value<LLVMValueRef> fnRef = new Value<>();
         main.get().accept(this, module, fnRef);
-        LLVM.LLVMDumpValue(fnRef.value);
+        @SuppressWarnings("unchecked")
+        Value<LLVMMemoryBufferRef> out = (Value<LLVMMemoryBufferRef>) objs[0];
+        out.value = LLVM.LLVMWriteBitcodeToMemoryBuffer(module);
+
+        // LLVM.LLVMDumpValue(fnRef.value);
     }
 
     @Override

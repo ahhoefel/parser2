@@ -1,0 +1,8 @@
+func main() bool {
+  var x int = 3
+  var y int = 2
+  if true {
+    x = y + 5
+  }
+  y = x + 4
+}
