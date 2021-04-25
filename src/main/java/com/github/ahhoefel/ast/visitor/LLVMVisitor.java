@@ -57,7 +57,7 @@ import org.bytedeco.llvm.global.LLVM;
 public class LLVMVisitor implements Visitor {
 
     public static class Value<T> {
-        T value;
+        public T value;
     }
 
     public String error;
@@ -86,8 +86,7 @@ public class LLVMVisitor implements Visitor {
         @SuppressWarnings("unchecked")
         Value<LLVMMemoryBufferRef> out = (Value<LLVMMemoryBufferRef>) objs[0];
         out.value = LLVM.LLVMWriteBitcodeToMemoryBuffer(module);
-
-        // LLVM.LLVMDumpValue(fnRef.value);
+        LLVM.LLVMDumpValue(fnRef.value);
     }
 
     @Override
@@ -96,7 +95,7 @@ public class LLVMVisitor implements Visitor {
         @SuppressWarnings("unchecked")
         Value<LLVMValueRef> fnRefValue = (Value<LLVMValueRef>) objs[1];
         LLVMValueRef fnRef = LLVM.LLVMAddFunction(module, fn.getName(),
-                LLVM.LLVMFunctionType(LLVM.LLVMVoidType(), LLVM.LLVMVoidType(), 0, 0));
+                LLVM.LLVMFunctionType(LLVM.LLVMInt1Type(), LLVM.LLVMVoidType(), 0, 0));
         fnRefValue.value = fnRef;
         LLVM.LLVMSetFunctionCallConv(fnRef, LLVM.LLVMCCallConv);
         LLVMBasicBlockRef block = LLVM.LLVMAppendBasicBlock(fnRef, "start");
@@ -357,7 +356,14 @@ public class LLVMVisitor implements Visitor {
 
     @Override
     public void visit(ReturnStatement stmt, Object... objs) {
-
+        // LLVMValueRef fn = (LLVMValueRef) objs[0];
+        // LLVMBasicBlockRef block = (LLVMBasicBlockRef) objs[1];
+        LLVMBuilderRef builder = (LLVMBuilderRef) objs[2];
+        LocalSymbols symbols = (LocalSymbols) objs[3];
+        Expression expression = stmt.getExpression();
+        Value<LLVMValueRef> val = new Value<>();
+        expression.accept(this, val, builder, symbols);
+        LLVM.LLVMBuildRet(builder, val.value);
     }
 
     @Override

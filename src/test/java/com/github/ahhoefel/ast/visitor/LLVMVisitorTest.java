@@ -26,11 +26,14 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class LLVMVisitorTest {
+        private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/ast/visitor/llvm_visitor_tests";
+
         private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
 
+        /** Compares llvm_visitor_tests to their expected llvm. */
         @ParameterizedTest(name = "{0} {1}")
         @ArgumentsSource(FileArgumentProvider.class)
-        public void testCorrectlyFormatted(Path source, Path entry, Path expected) throws Exception {
+        public void testCorrectBitCode(Path source, Path entry, Path expected) throws Exception {
                 String s = Files.readString(entry);
                 System.out.println(s);
                 try {
@@ -54,6 +57,7 @@ public class LLVMVisitorTest {
                 }
         }
 
+        /** Used to writeBitCode when an expected output needs to be updated. */
         @SuppressWarnings("unused")
         private static void writeBitCode(Path file, LLVMMemoryBufferRef memoryBuffer) throws IOException {
                 try (FileOutputStream stream = new FileOutputStream(file.toString(), false)) {
@@ -77,11 +81,10 @@ public class LLVMVisitorTest {
         }
 
         private static class FileArgumentProvider implements ArgumentsProvider {
-                private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/ast/visitor/llvm_visitor_tests";
 
                 @Override
                 public Stream<? extends Arguments> provideArguments(ExtensionContext arg0) throws Exception {
-                        Path source = Paths.get(BASE_PATH);
+                        Path source = Paths.get(LLVMVisitorTest.BASE_PATH);
                         Stream<Path> dirs = Files.list(source).filter(f -> f.toFile().isDirectory());
                         return dirs.map(p -> {
                                 Path entry = p.resolve(p.getFileName().toString() + ".ro");
