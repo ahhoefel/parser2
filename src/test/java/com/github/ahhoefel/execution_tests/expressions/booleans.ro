@@ -1,0 +1,45 @@
+func main() bool {
+  if true == false {
+    return false
+  }
+  if true != true {
+    return false
+  }
+  if (false && false) != false {
+    return false
+  }
+  if (true && false) != false {
+    return false
+  }
+  if (false && true) != false {
+    return false
+  }
+  if (true && true) != true {
+    return false
+  }
+  if (false || false) != false {
+    return false
+  }
+  if (true || false) != true {
+    return false
+  }
+  if (false || true) != true {
+    return false
+  }
+  if (true || true) != true {
+    return false
+  }
+  if true == false {
+    return false
+  }
+  if false == true {
+    return false
+  }
+  if true != true {
+    return false
+  }
+  if false != false {
+    return false
+  }
+  return true
+}

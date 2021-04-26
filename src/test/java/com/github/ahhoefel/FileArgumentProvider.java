@@ -10,11 +10,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class FileArgumentProvider implements ArgumentsProvider {
-        private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/tests/";
+        private String path;
+
+        public FileArgumentProvider(String path) {
+                this.path = path;
+        }
 
         @Override
         public Stream<? extends Arguments> provideArguments(ExtensionContext arg0) throws Exception {
-                Stream<Arguments> files = Files.walk(Paths.get(BASE_PATH)).filter(Files::isRegularFile)
+                Stream<Arguments> files = Files.walk(Paths.get(path)).filter(Files::isRegularFile)
                                 .filter(f -> f.toString().endsWith(".ro")).map(f -> Arguments.of(f));
                 return files;
         }

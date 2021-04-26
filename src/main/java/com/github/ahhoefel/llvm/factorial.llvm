@@ -1,0 +1,19 @@
+; ModuleID = 'fac_module'
+source_filename = "fac_module"
+target datalayout = "e-m:o-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
+
+define i32 @fac(i32 %0) {
+entry:
+  %"n == 0" = icmp eq i32 %0, 0
+  br i1 %"n == 0", label %end, label %iffalse
+
+iffalse:                                          ; preds = %entry
+  %"n - 1" = add i32 %0, -1
+  %"fac(n - 1)" = call i32 @fac(i32 %"n - 1")
+  %"n * fac(n - 1)" = mul i32 %"fac(n - 1)", %0
+  br label %end
+
+end:                                              ; preds = %entry, %iffalse
+  %result = phi i32 [ %"n * fac(n - 1)", %iffalse ], [ 1, %entry ]
+  ret i32 %result
+}

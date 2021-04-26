@@ -46,13 +46,17 @@ public class FormatVisitorTest {
                 Expression e = (Expression) parser.parse("3*(4+x)");
                 FormatVisitor v = new FormatVisitor();
                 e.accept(v);
-                // This is wrong. Parentheses should be included
-                // in the output, even if they aren't needed in the AST.
                 Assert.assertEquals("3 * (4 + x)", v.toString());
         }
 
+        private class RoFiles extends FileArgumentProvider {
+                private RoFiles() {
+                        super("/Users/hoefel/dev/parser2/src/tests/");
+                }
+        }
+
         @ParameterizedTest(name = "{0} {1}")
-        @ArgumentsSource(FileArgumentProvider.class)
+        @ArgumentsSource(RoFiles.class)
         public void testCorrectlyFormatted(Path path) throws Exception {
                 String s = Files.readString(path);
                 try {

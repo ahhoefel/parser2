@@ -40,6 +40,7 @@ import com.github.ahhoefel.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.ast.symbols.LocalSymbols;
 import com.github.ahhoefel.ast.type.NamedType;
 import com.github.ahhoefel.ast.type.StructType;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ast.type.UnionType;
 import com.github.ahhoefel.ast.type.Type.BooleanType;
 import com.github.ahhoefel.ast.type.Type.IntType;
@@ -51,10 +52,15 @@ import org.bytedeco.llvm.LLVM.LLVMBasicBlockRef;
 import org.bytedeco.llvm.LLVM.LLVMBuilderRef;
 import org.bytedeco.llvm.LLVM.LLVMMemoryBufferRef;
 import org.bytedeco.llvm.LLVM.LLVMModuleRef;
+import org.bytedeco.llvm.LLVM.LLVMTypeRef;
 import org.bytedeco.llvm.LLVM.LLVMValueRef;
 import org.bytedeco.llvm.global.LLVM;
 
 public class LLVMVisitor implements Visitor {
+
+    private enum ExpressionType {
+        LVALUE, RVALUE
+    }
 
     public static class Value<T> {
         public T value;
@@ -85,8 +91,8 @@ public class LLVMVisitor implements Visitor {
         main.get().accept(this, module, fnRef);
         @SuppressWarnings("unchecked")
         Value<LLVMMemoryBufferRef> out = (Value<LLVMMemoryBufferRef>) objs[0];
-        out.value = LLVM.LLVMWriteBitcodeToMemoryBuffer(module);
         LLVM.LLVMDumpValue(fnRef.value);
+        out.value = LLVM.LLVMWriteBitcodeToMemoryBuffer(module);
     }
 
     @Override
@@ -94,19 +100,35 @@ public class LLVMVisitor implements Visitor {
         LLVMModuleRef module = (LLVMModuleRef) objs[0];
         @SuppressWarnings("unchecked")
         Value<LLVMValueRef> fnRefValue = (Value<LLVMValueRef>) objs[1];
+        Value<LLVMTypeRef> returnType = new Value<>();
+        fn.getReturnType().accept(this, returnType);
         LLVMValueRef fnRef = LLVM.LLVMAddFunction(module, fn.getName(),
-                LLVM.LLVMFunctionType(LLVM.LLVMInt1Type(), LLVM.LLVMVoidType(), 0, 0));
+                LLVM.LLVMFunctionType(returnType.value, LLVM.LLVMVoidType(), 0, 0));
         fnRefValue.value = fnRef;
         LLVM.LLVMSetFunctionCallConv(fnRef, LLVM.LLVMCCallConv);
         LLVMBasicBlockRef block = LLVM.LLVMAppendBasicBlock(fnRef, "start");
         LLVMBuilderRef builder = LLVM.LLVMCreateBuilder();
         LLVM.LLVMPositionBuilderAtEnd(builder, block);
         LocalSymbols symbols = new LocalSymbols();
-        fn.getBlock().accept(this, fnRef, block, builder, symbols);
+        Value<Boolean> selfTerminates = new Value<>();
+        fn.getBlock().accept(this, fnRef, block, builder, symbols, selfTerminates);
+        if (selfTerminates.value && (fn.getReturnType() == Type.VOID)) {
+            throw new RuntimeException(
+                    "Function with void return type should not end in return statement: " + fn.getName());
+        }
+        if (!selfTerminates.value && (fn.getReturnType() != Type.VOID)) {
+            throw new RuntimeException("Non-void function needs return statement: " + fn.getName());
+        }
     }
 
     @Override
     public void visit(Block block, Object... objs) {
+        // LLVMValueRef fn = (LLVMValueRef) objs[0];
+        // LLVMBasicBlockRef block = (LLVMBasicBlockRef) objs[1];
+        // LLVMBuilderRef builder = (LLVMBuilderRef) objs[2];
+        // LocalSymbols symbols = (LocalSymbols) objs[3];
+        // @SuppressWarnings("unchecked")
+        // Value<Boolean> selfTerminates = (Value<Boolean>) objs[4];
         for (Statement statement : block.statements) {
             statement.accept(this, objs);
         }
@@ -118,6 +140,9 @@ public class LLVMVisitor implements Visitor {
         // LLVMBasicBlockRef block = (LLVMBasicBlockRef) objs[1];
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[2];
         LocalSymbols symbols = (LocalSymbols) objs[3];
+        @SuppressWarnings("unchecked")
+        Value<Boolean> selfTerminates = (Value<Boolean>) objs[4];
+        selfTerminates.value = false;
         LValue lValue = stmt.getLValue();
         LLVMValueRef ref;
         if (lValue.isDeclaration()) {
@@ -125,12 +150,12 @@ public class LLVMVisitor implements Visitor {
         } else {
             // Lookup ref.
             Value<LLVMValueRef> refVal = new Value<>();
-            lValue.getExpression().accept(this, refVal, builder, symbols);
+            lValue.getExpression().accept(this, refVal, builder, symbols, ExpressionType.LVALUE);
             ref = refVal.value;
         }
         Expression expression = stmt.getExpression();
         Value<LLVMValueRef> val = new Value<>();
-        expression.accept(this, val, builder, symbols);
+        expression.accept(this, val, builder, symbols, ExpressionType.RVALUE);
         if (lValue.isDeclaration()) {
             symbols.put(stmt.getLValue(), LLVM.LLVMInt64Type(), ref);
         }
@@ -143,15 +168,23 @@ public class LLVMVisitor implements Visitor {
         // LLVMBasicBlockRef block = (LLVMBasicBlockRef) objs[1];
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[2];
         LocalSymbols symbols = (LocalSymbols) objs[3];
+        @SuppressWarnings("unchecked")
+        Value<Boolean> selfTerminates = (Value<Boolean>) objs[4];
+        selfTerminates.value = false;
+
         LocalSymbols innerSymbols = new LocalSymbols(symbols);
         LLVMBasicBlockRef ifBlock = LLVM.LLVMAppendBasicBlock(fn, "ifBlock");
         LLVMBasicBlockRef nextBlock = LLVM.LLVMAppendBasicBlock(fn, "nextBlock");
         Value<LLVMValueRef> condition = new Value<>();
-        stmt.getCondition().accept(this, condition, builder, symbols);
+        stmt.getCondition().accept(this, condition, builder, symbols, ExpressionType.RVALUE);
         LLVM.LLVMBuildCondBr(builder, condition.value, ifBlock, nextBlock);
         LLVM.LLVMPositionBuilderAtEnd(builder, ifBlock);
-        stmt.getBlock().accept(this, fn, ifBlock, builder, innerSymbols);
-        LLVM.LLVMBuildBr(builder, nextBlock);
+
+        Value<Boolean> blockSelfTerminates = new Value<>();
+        stmt.getBlock().accept(this, fn, ifBlock, builder, innerSymbols, blockSelfTerminates);
+        if (!blockSelfTerminates.value) {
+            LLVM.LLVMBuildBr(builder, nextBlock);
+        }
         LLVM.LLVMPositionBuilderAtEnd(builder, nextBlock);
     }
 
@@ -176,10 +209,11 @@ public class LLVMVisitor implements Visitor {
         Value<LLVMValueRef> ref = (Value<LLVMValueRef>) objs[0];
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
         LocalSymbols symbols = (LocalSymbols) objs[2];
+        ExpressionType type = (ExpressionType) objs[3];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, type);
+        expr.getRight().accept(this, right, builder, symbols, type);
         ref.value = LLVM.LLVMBuildAdd(builder, left.value, right.value, "sum");
     }
 
@@ -204,8 +238,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildICmp(builder, LLVM.LLVMIntEQ, left.value, right.value, "eq");
     }
 
@@ -217,8 +251,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildICmp(builder, LLVM.LLVMIntSLT, left.value, right.value, "signedLessThan");
 
     }
@@ -231,8 +265,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildICmp(builder, LLVM.LLVMIntSLE, left.value, right.value, "signedLessThanEqual");
     }
 
@@ -243,7 +277,7 @@ public class LLVMVisitor implements Visitor {
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> value = new Value<>();
-        expr.getExpression().accept(this, value, builder, symbols);
+        expr.getExpression().accept(this, value, builder, symbols, ExpressionType.RVALUE);
         LLVMValueRef one = LLVM.LLVMConstInt(LLVM.LLVMInt1Type(), 1, 0);
         ref.value = LLVM.LLVMBuildXor(builder, value.value, one, "not");
     }
@@ -256,8 +290,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildOr(builder, left.value, right.value, "or");
     }
 
@@ -269,8 +303,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildMul(builder, left.value, right.value, "mult");
     }
 
@@ -282,8 +316,8 @@ public class LLVMVisitor implements Visitor {
         LocalSymbols symbols = (LocalSymbols) objs[2];
         Value<LLVMValueRef> left = new Value<>();
         Value<LLVMValueRef> right = new Value<>();
-        expr.getLeft().accept(this, left, builder, symbols);
-        expr.getRight().accept(this, right, builder, symbols);
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
         ref.value = LLVM.LLVMBuildSub(builder, left.value, right.value, "sub");
     }
 
@@ -291,12 +325,18 @@ public class LLVMVisitor implements Visitor {
     public void visit(VariableExpression expr, Object... objs) {
         @SuppressWarnings("unchecked")
         Value<LLVMValueRef> ref = (Value<LLVMValueRef>) objs[0];
+        LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
         LocalSymbols symbols = (LocalSymbols) objs[2];
+        ExpressionType type = (ExpressionType) objs[3];
         Optional<LocalSymbols.LocalSymbol> symbol = symbols.get(expr.getIdentifier());
         if (!symbol.isPresent()) {
             throw new RuntimeException("Unknown variable: " + expr.getIdentifier());
         }
-        ref.value = symbol.get().value;
+        if (type == ExpressionType.LVALUE) {
+            ref.value = symbol.get().value;
+        } else {
+            ref.value = LLVM.LLVMBuildLoad(builder, symbol.get().value, expr.getIdentifier());
+        }
     }
 
     @Override
@@ -308,7 +348,7 @@ public class LLVMVisitor implements Visitor {
         LLVMValueRef[] args = new LLVMValueRef[expr.getArgs().size()];
         for (int i = 0; i < expr.getArgs().size(); i++) {
             Value<LLVMValueRef> argValue = new Value<>();
-            expr.getArgs().get(i).accept(this, argValue, builder, symbols);
+            expr.getArgs().get(i).accept(this, argValue, builder, symbols, ExpressionType.RVALUE);
             args[i] = argValue.value;
         }
         ref.value = LLVM.LLVMBuildCall(builder, null, new PointerPointer<>(args), 1, "fac(n - 1)");
@@ -360,9 +400,12 @@ public class LLVMVisitor implements Visitor {
         // LLVMBasicBlockRef block = (LLVMBasicBlockRef) objs[1];
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[2];
         LocalSymbols symbols = (LocalSymbols) objs[3];
+        @SuppressWarnings("unchecked")
+        Value<Boolean> selfTerminates = (Value<Boolean>) objs[4];
+        selfTerminates.value = true;
         Expression expression = stmt.getExpression();
         Value<LLVMValueRef> val = new Value<>();
-        expression.accept(this, val, builder, symbols);
+        expression.accept(this, val, builder, symbols, ExpressionType.RVALUE);
         LLVM.LLVMBuildRet(builder, val.value);
     }
 
@@ -378,22 +421,36 @@ public class LLVMVisitor implements Visitor {
 
     @Override
     public void visit(NotEqualExpression expr, Object... objs) {
+        @SuppressWarnings("unchecked")
+        Value<LLVMValueRef> ref = (Value<LLVMValueRef>) objs[0];
+        LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
+        LocalSymbols symbols = (LocalSymbols) objs[2];
+        // ExpressionType type = (ExpressionType) objs[3];
 
+        Value<LLVMValueRef> left = new Value<>();
+        Value<LLVMValueRef> right = new Value<>();
+        expr.getLeft().accept(this, left, builder, symbols, ExpressionType.RVALUE);
+        expr.getRight().accept(this, right, builder, symbols, ExpressionType.RVALUE);
+        ref.value = LLVM.LLVMBuildICmp(builder, LLVM.LLVMIntNE, left.value, right.value, "neq");
     }
 
     @Override
     public void visit(ParenthesesExpression expr, Object... objs) {
-
+        expr.getExpression().accept(this, objs);
     }
 
     @Override
     public void visit(IntType type, Object... objs) {
-
+        @SuppressWarnings("unchecked")
+        Value<LLVMTypeRef> out = (Value<LLVMTypeRef>) objs[0];
+        out.value = LLVM.LLVMInt64Type();
     }
 
     @Override
     public void visit(BooleanType type, Object... objs) {
-
+        @SuppressWarnings("unchecked")
+        Value<LLVMTypeRef> out = (Value<LLVMTypeRef>) objs[0];
+        out.value = LLVM.LLVMInt1Type();
     }
 
     @Override
@@ -403,7 +460,9 @@ public class LLVMVisitor implements Visitor {
 
     @Override
     public void visit(VoidType type, Object... objs) {
-
+        @SuppressWarnings("unchecked")
+        Value<LLVMTypeRef> out = (Value<LLVMTypeRef>) objs[0];
+        out.value = LLVM.LLVMVoidType();
     }
 
     @Override

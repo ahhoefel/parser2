@@ -229,7 +229,9 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(TypeDeclaration decl, Object... objs) {
-
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        symbols.addType(decl.getIdentifier(), decl.getType());
     }
 
     @Override

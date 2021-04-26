@@ -8,12 +8,14 @@ import java.util.Map;
 
 import com.github.ahhoefel.ast.FunctionDeclaration;
 import com.github.ahhoefel.ast.Target;
+import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.util.IndentedString;
 
 public class FileSymbols {
 
     private Target target;
     private Map<Target, FileSymbols> imports;
+    private Map<String, Type> types;
     private Map<String, FunctionDefinition> functions;
 
     public FileSymbols(Target target) {
@@ -28,6 +30,10 @@ public class FileSymbols {
 
     public void addFunction(FunctionDeclaration function) {
         functions.put(function.getName(), new FunctionDefinition(function));
+    }
+
+    public void addType(String identifier, Type type) {
+        this.types.put(identifier, type);
     }
 
     public Target getTarget() {
