@@ -1,10 +1,10 @@
 package com.github.ahhoefel.ir.operation;
 
-import com.github.ahhoefel.ast.FunctionDeclaration;
-import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.interpreter.Alloc;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
+import com.github.ahhoefel.lang.ast.FunctionDeclaration;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 
 import java.util.ArrayList;
 import java.util.List;

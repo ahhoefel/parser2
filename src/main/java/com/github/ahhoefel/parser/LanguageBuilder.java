@@ -1,9 +1,9 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.rules.Lexicon;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.github.ahhoefel.lang.rules.Lexicon;
 
 public class LanguageBuilder {
     private Lexicon lex;

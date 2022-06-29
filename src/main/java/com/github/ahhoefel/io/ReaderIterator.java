@@ -1,12 +1,12 @@
 package com.github.ahhoefel.io;
 
-import com.github.ahhoefel.ast.Target;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.Iterator;
+
+import com.github.ahhoefel.lang.ast.Target;
 
 public class ReaderIterator implements Iterator<Integer> {
   private Reader r;

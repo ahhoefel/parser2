@@ -1,7 +1,7 @@
 package com.github.ahhoefel.io;
 
-import com.github.ahhoefel.ast.CodeLocation;
-import com.github.ahhoefel.ast.Target;
+import com.github.ahhoefel.lang.ast.CodeLocation;
+import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.parser.RangeTokenizer;
 import com.github.ahhoefel.parser.Token;
 

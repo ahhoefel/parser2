@@ -1,7 +1,7 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.io.TokenIterator;
+import com.github.ahhoefel.lang.ast.Target;
 
 import java.io.IOException;
 import java.util.Iterator;

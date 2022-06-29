@@ -5,9 +5,9 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.github.ahhoefel.ast.CodeLocation;
-import com.github.ahhoefel.ast.ParseError;
-import com.github.ahhoefel.ast.Target;
+import com.github.ahhoefel.lang.ast.CodeLocation;
+import com.github.ahhoefel.lang.ast.ParseError;
+import com.github.ahhoefel.lang.ast.Target;
 
 public class ErrorLog {
 

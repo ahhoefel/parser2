@@ -7,12 +7,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Stream;
 
-import com.github.ahhoefel.ast.File;
-import com.github.ahhoefel.ast.symbols.GlobalSymbols;
-import com.github.ahhoefel.ast.visitor.LLVMVisitor;
-import com.github.ahhoefel.ast.visitor.SymbolVisitor;
+import com.github.ahhoefel.lang.ast.File;
+import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
+import com.github.ahhoefel.lang.ast.visitor.LLVMVisitor;
+import com.github.ahhoefel.lang.ast.visitor.SymbolVisitor;
+import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.parser.LRParser;
-import com.github.ahhoefel.rules.LanguageRules;
 
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;

@@ -1,9 +1,9 @@
 package com.github.ahhoefel;
 
+import com.github.ahhoefel.lang.rules.Identifier;
+import com.github.ahhoefel.lang.rules.Number;
+import com.github.ahhoefel.lang.rules.Whitespace;
 import com.github.ahhoefel.parser.*;
-import com.github.ahhoefel.rules.Identifier;
-import com.github.ahhoefel.rules.Number;
-import com.github.ahhoefel.rules.Whitespace;
 
 public class ExampleC {
 
@@ -19,7 +19,6 @@ public class ExampleC {
 
   Rule statements;
   Rule noStatements;
-
 
   public ExampleC() {
     ch = new CharacterSet();

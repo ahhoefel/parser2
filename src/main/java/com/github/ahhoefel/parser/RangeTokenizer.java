@@ -1,6 +1,6 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.ast.CodeLocation;
+import com.github.ahhoefel.lang.ast.CodeLocation;
 
 public class RangeTokenizer {
 

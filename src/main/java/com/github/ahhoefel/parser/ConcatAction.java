@@ -1,8 +1,8 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.ast.CodeLocation;
-
 import java.util.function.Function;
+
+import com.github.ahhoefel.lang.ast.CodeLocation;
 
 public class ConcatAction implements Function<Object[], Object> {
   @Override

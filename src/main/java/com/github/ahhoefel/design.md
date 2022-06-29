@@ -1,3 +1,26 @@
+Code Layout
+- Key classes:
+  - LanguageRules. Contains all the specific rules for parsing the ro language. Contains the parse method for parsing a file.
+    - See com.github.ahhoefel.rules.
+    - The resulting AST is in com.github.ahhoefel.ast.{expression,statements,symbols,type}
+    - A better organization is probably language.rules, language.ast, language.visitors and simply parser. 
+  - FileTree. Contains logic for reading in multiple files based on their imports. This may be a bit backwards or need refactoring.
+  - Visitors. The logic of going up and down the AST is done by visitors. Contained in com.github.ahhoefel.ast.visitor.
+
+- Interpreter
+  - There's an old interpreter which predates the vistor model and runs the code on a stack machine. This should be removed and replaced with LLVM visitor to improve cleanliness.
+
+- Testing
+  - Format visitor is used in the LangaugeRulesTest to ensure that input and output for well formed files are equal. This tests the AST's coverage.
+  - There's a TestHarness in com.github.ahhoefel.interpreter
+
+- TODOS:
+  - Kill dead code.
+  - Separate the generic parser from the language specific code. 
+  - Improve testing.
+  - Implement LLVM visitor.
+  - Remove interpretor and IR.
+
 
 Language ideas.
 - go like syntax

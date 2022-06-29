@@ -1,8 +1,8 @@
 package com.github.ahhoefel.ir.operation;
 
-import com.github.ahhoefel.ast.expression.Expression;
 import com.github.ahhoefel.interpreter.Context;
 import com.github.ahhoefel.ir.Operation;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 
 public class DebugFunctionReturnOp implements Operation {
 
@@ -14,9 +14,11 @@ public class DebugFunctionReturnOp implements Operation {
 
   @Override
   public void run(Context context) {
-    //System.out.println(context.getStackIndent() + "return " + expression.getRegister() + ": " + context.getRegister(expression.getRegister()));
+    // System.out.println(context.getStackIndent() + "return " +
+    // expression.getRegister() + ": " +
+    // context.getRegister(expression.getRegister()));
     context.decrementStackDepth();
-    //System.out.println(context);
+    // System.out.println(context);
   }
 
   public String toString() {

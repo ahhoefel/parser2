@@ -1,9 +1,9 @@
 package com.github.ahhoefel.interpreter;
 
-import com.github.ahhoefel.ast.FileTree;
-import com.github.ahhoefel.ast.Target;
 import com.github.ahhoefel.ir.Operation;
 import com.github.ahhoefel.ir.Representation;
+import com.github.ahhoefel.lang.ast.FileTree;
+import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.parser.ErrorLog;
 
 import java.io.IOException;
@@ -79,7 +79,8 @@ public class Interpreter {
     Representation rep = tree.representation(target);
     Context ctx = runRepresentation(rep);
     if (ctx.getStopType() == null || ctx.getStopType().width() != 1) {
-      System.out.println("FAIL: expected boolean result");
+      System.out.println("FAIL: expected boolean result. Got type " + ctx.getStopType());
+      System.out.println(rep);
       return false;
     }
     if (ctx.getStopResult().getWord(0) == 0) {

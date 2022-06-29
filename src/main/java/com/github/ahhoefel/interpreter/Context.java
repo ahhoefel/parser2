@@ -1,7 +1,7 @@
 package com.github.ahhoefel.interpreter;
 
-import com.github.ahhoefel.ast.type.Type;
 import com.github.ahhoefel.ir.Register;
+import com.github.ahhoefel.lang.ast.type.Type;
 
 import java.util.*;
 

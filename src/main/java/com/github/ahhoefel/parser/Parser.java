@@ -1,6 +1,6 @@
 package com.github.ahhoefel.parser;
 
-import com.github.ahhoefel.ast.ParseError;
+import com.github.ahhoefel.lang.ast.ParseError;
 import com.github.ahhoefel.util.Stack;
 
 import java.util.Iterator;
@@ -93,6 +93,7 @@ public class Parser<T> {
       }
       symbolState = stack.peek();
     }
+    // System.out.println("POP! " + result.peek());
     return result.pop();
   }
 }
