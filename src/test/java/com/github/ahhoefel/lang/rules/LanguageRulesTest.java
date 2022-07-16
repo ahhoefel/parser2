@@ -3,7 +3,6 @@ package com.github.ahhoefel.lang.rules;
 import com.github.ahhoefel.lang.ast.File;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.visitor.FormatVisitor;
-import com.github.ahhoefel.lang.rules.LanguageRules;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;

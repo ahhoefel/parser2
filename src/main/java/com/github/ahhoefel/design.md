@@ -1,3 +1,11 @@
+Install process for LLVM:
+- install xcode
+- install cmake
+- install llvm: https://llvm.org/docs/GettingStarted.html
+- install maven
+- install javacpp
+-
+
 Code Layout
 - Key classes:
   - LanguageRules. Contains all the specific rules for parsing the ro language. Contains the parse method for parsing a file.

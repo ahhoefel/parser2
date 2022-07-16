@@ -88,7 +88,11 @@ public class LLVMVisitor implements Visitor {
             this.error = "No main function";
         }
         Value<LLVMValueRef> fnRef = new Value<>();
-        main.get().accept(this, module, fnRef);
+        try {
+            main.get().accept(this, module, fnRef);
+        } catch (RuntimeException e) {
+            throw new RuntimeException("File " + file.getTarget(), e);
+        }
         @SuppressWarnings("unchecked")
         Value<LLVMMemoryBufferRef> out = (Value<LLVMMemoryBufferRef>) objs[0];
         LLVM.LLVMDumpValue(fnRef.value);

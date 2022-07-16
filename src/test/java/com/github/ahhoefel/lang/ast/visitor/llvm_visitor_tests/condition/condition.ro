@@ -5,4 +5,5 @@ func main() bool {
     x = y + 5
   }
   y = x + 4
+  return y == 7
 }

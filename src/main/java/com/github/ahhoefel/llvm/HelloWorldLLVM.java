@@ -1,11 +1,62 @@
 package com.github.ahhoefel.llvm;
 
-// General stuff
-import org.bytedeco.javacpp.*;
+import static org.bytedeco.llvm.global.LLVM.LLVMAbortProcessAction;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddCFGSimplificationPass;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddFunction;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddGVNPass;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddIncoming;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddInstructionCombiningPass;
+import static org.bytedeco.llvm.global.LLVM.LLVMAddPromoteMemoryToRegisterPass;
+import static org.bytedeco.llvm.global.LLVM.LLVMAppendBasicBlock;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildBr;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildCall;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildCondBr;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildICmp;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildMul;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildPhi;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildRet;
+import static org.bytedeco.llvm.global.LLVM.LLVMBuildSub;
+import static org.bytedeco.llvm.global.LLVM.LLVMCCallConv;
+import static org.bytedeco.llvm.global.LLVM.LLVMConstInt;
+import static org.bytedeco.llvm.global.LLVM.LLVMCreateBuilder;
+import static org.bytedeco.llvm.global.LLVM.LLVMCreateGenericValueOfInt;
+import static org.bytedeco.llvm.global.LLVM.LLVMCreateJITCompilerForModule;
+import static org.bytedeco.llvm.global.LLVM.LLVMCreatePassManager;
+import static org.bytedeco.llvm.global.LLVM.LLVMDisposeBuilder;
+import static org.bytedeco.llvm.global.LLVM.LLVMDisposeExecutionEngine;
+import static org.bytedeco.llvm.global.LLVM.LLVMDisposeMessage;
+import static org.bytedeco.llvm.global.LLVM.LLVMDisposePassManager;
+import static org.bytedeco.llvm.global.LLVM.LLVMDumpModule;
+import static org.bytedeco.llvm.global.LLVM.LLVMFunctionType;
+import static org.bytedeco.llvm.global.LLVM.LLVMGenericValueToInt;
+import static org.bytedeco.llvm.global.LLVM.LLVMGetParam;
+import static org.bytedeco.llvm.global.LLVM.LLVMInitializeNativeAsmParser;
+import static org.bytedeco.llvm.global.LLVM.LLVMInitializeNativeAsmPrinter;
+import static org.bytedeco.llvm.global.LLVM.LLVMInitializeNativeDisassembler;
+import static org.bytedeco.llvm.global.LLVM.LLVMInitializeNativeTarget;
+import static org.bytedeco.llvm.global.LLVM.LLVMInt32Type;
+import static org.bytedeco.llvm.global.LLVM.LLVMIntEQ;
+import static org.bytedeco.llvm.global.LLVM.LLVMLinkInMCJIT;
+import static org.bytedeco.llvm.global.LLVM.LLVMModuleCreateWithName;
+import static org.bytedeco.llvm.global.LLVM.LLVMPositionBuilderAtEnd;
+import static org.bytedeco.llvm.global.LLVM.LLVMRunFunction;
+import static org.bytedeco.llvm.global.LLVM.LLVMRunPassManager;
+import static org.bytedeco.llvm.global.LLVM.LLVMSetFunctionCallConv;
+import static org.bytedeco.llvm.global.LLVM.LLVMVerifyModule;
 
+// General stuff
+import org.bytedeco.javacpp.BytePointer;
+import org.bytedeco.javacpp.Pointer;
+import org.bytedeco.javacpp.PointerPointer;
 // Headers required by LLVM
-import org.bytedeco.llvm.LLVM.*;
-import static org.bytedeco.llvm.global.LLVM.*;
+import org.bytedeco.llvm.LLVM.LLVMBasicBlockRef;
+import org.bytedeco.llvm.LLVM.LLVMBuilderRef;
+import org.bytedeco.llvm.LLVM.LLVMExecutionEngineRef;
+import org.bytedeco.llvm.LLVM.LLVMGenericValueRef;
+import org.bytedeco.llvm.LLVM.LLVMModuleRef;
+import org.bytedeco.llvm.LLVM.LLVMPassManagerRef;
+import org.bytedeco.llvm.LLVM.LLVMTypeRef;
+import org.bytedeco.llvm.LLVM.LLVMValueRef;
 
 public class HelloWorldLLVM {
     public static void main(String[] args) {
@@ -60,7 +111,7 @@ public class HelloWorldLLVM {
         }
 
         LLVMPassManagerRef pass = LLVMCreatePassManager();
-        LLVMAddConstantPropagationPass(pass);
+        // LLVMAddConstantPropagationPass(pass);
         LLVMAddInstructionCombiningPass(pass);
         LLVMAddPromoteMemoryToRegisterPass(pass);
         // LLVMAddDemoteMemoryToRegisterPass(pass); // Demotes every possible value to

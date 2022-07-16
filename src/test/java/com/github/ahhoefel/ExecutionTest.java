@@ -96,7 +96,7 @@ public class ExecutionTest {
 
     private static void applyDefaultPass(LLVMModuleRef module) {
         LLVMPassManagerRef pass = LLVM.LLVMCreatePassManager();
-        LLVM.LLVMAddConstantPropagationPass(pass);
+        // LLVM.LLVMAddConstantPropagationPass(pass);
         // LLVM.LLVMAddInstructionCombiningPass(pass);
         // LLVM.LLVMAddPromoteMemoryToRegisterPass(pass);
         //// LLVMAddDemoteMemoryToRegisterPass(pass); // Demotes every possible value to
