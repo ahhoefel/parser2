@@ -1,59 +1,25 @@
 package com.github.ahhoefel.lang.ast;
 
-import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.lang.ast.statements.Statement;
-import com.github.ahhoefel.parser.ErrorLog;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Block implements Visitable {
 
-  public List<Statement> statements;
-  public SymbolCatalogOld symbols;
+    private List<Visitable> statements;
 
-  public Block() {
-    this.statements = new ArrayList<>();
-  }
-
-  public Statement get(int i) {
-    return statements.get(i);
-  }
-
-  public int size() {
-    return statements.size();
-  }
-
-  public void accept(Visitor v, Object... objs) {
-    v.visit(this, objs);
-  }
-
-  public void add(Statement statement) {
-    this.statements.add(statement);
-  }
-
-  public void setSymbolCatalog(SymbolCatalogOld symbols) {
-    this.symbols = symbols;
-    for (Statement statement : statements) {
-      statement.addToSymbolCatalog(symbols);
+    public Block() {
+        this.statements = new ArrayList<>();
     }
-  }
 
-  public void addToRepresentation(Representation rep) {
-    for (Statement statement : statements) {
-      statement.addToRepresentation(rep);
+    public List<Visitable> getStatements() {
+        return statements;
     }
-  }
 
-  public void addToSymbolCatalog(SymbolCatalogOld symbols) {
-    for (Statement statement : statements) {
-      statement.addToSymbolCatalog(symbols);
+    public void accept(Visitor v, Object... objs) {
+        v.visit(this, objs);
     }
-  }
 
-  public void typeCheck(ErrorLog log) {
-    for (Statement statement : statements) {
-      statement.typeCheck(log);
+    public void add(Visitable statement) {
+        this.statements.add(statement);
     }
-  }
 }

@@ -5,8 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.bytedeco.llvm.LLVM.LLVMValueRef;
-
-import com.github.ahhoefel.lang.ast.LValue;
+import com.github.ahhoefel.lang.ast.VariableDeclaration;
 
 import org.bytedeco.llvm.LLVM.LLVMTypeRef;
 
@@ -16,7 +15,7 @@ public class LocalSymbols {
     private Map<String, LocalSymbol> variables;
 
     public LocalSymbols() {
-        parent = Optional.empty();
+        this.parent = Optional.empty();
         variables = new HashMap<>();
     }
 
@@ -36,16 +35,16 @@ public class LocalSymbols {
         return Optional.empty();
     }
 
-    public void put(LValue declaration, LLVMTypeRef type, LLVMValueRef value) {
+    public void put(VariableDeclaration declaration, LLVMTypeRef type, LLVMValueRef value) {
         LocalSymbol s = new LocalSymbol();
         s.declaration = declaration;
         s.type = type;
         s.value = value;
-        variables.put(declaration.getIdentifier(), s);
+        variables.put(declaration.getName(), s);
     }
 
     public static class LocalSymbol {
-        public LValue declaration;
+        public VariableDeclaration declaration;
         public LLVMTypeRef type;
         public LLVMValueRef value;
     }

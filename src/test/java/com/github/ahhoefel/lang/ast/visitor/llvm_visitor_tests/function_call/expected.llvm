@@ -1,0 +1,9 @@
+; ModuleID = 'function_call:function_call.ro'
+source_filename = "function_call:function_call.ro"
+
+define void @main() {
+start:
+  %x = alloca i64, align 8
+  %fnReturnValueName = call i64 @foo()
+  store i64 %fnReturnValueName, i64* %x, align 4
+}

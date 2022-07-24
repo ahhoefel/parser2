@@ -1,48 +1,35 @@
 package com.github.ahhoefel.lang.ast;
 
-import com.github.ahhoefel.ir.Register;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.ErrorLog;
 
-public class VariableDeclaration {
+public class VariableDeclaration implements Visitable {
 
-  private String name;
-  private Type type;
-  private Register register;
+    private String name;
+    private Type type;
 
-  public VariableDeclaration(String name, Type type) {
-    this.name = name;
-    this.type = type;
-    this.register = new Register();
-  }
-
-  public VariableDeclaration(LValue value) {
-    if (!value.isDeclaration()) {
-      throw new RuntimeException("Variable declarations can only be made from LValues that are declarations.");
+    public VariableDeclaration(String name, Type type) {
+        this.name = name;
+        this.type = type;
     }
-    this.name = value.getIdentifier();
-    this.type = value.getType();
-    this.register = new Register();
-  }
 
-  public String getName() {
-    return name;
-  }
+    public void accept(Visitor v, Object... objs) {
+        v.visit(this, objs);
+    }
 
-  public Register getRegister() {
-    return register;
-  }
+    public String getName() {
+        return name;
+    }
 
-  public Type getType(ErrorLog log) {
-    register.setWidth(type.width());
-    return type;
-  }
+    public Type getType(ErrorLog log) {
+        return type;
+    }
 
-  public Type getType() {
-    return type;
-  }
+    public Type getType() {
+        return type;
+    }
 
-  public String toString() {
-    return String.format("var %s %s: %s", name, type, register);
-  }
+    public String toString() {
+        return String.format("var %s %s", name, type);
+    }
 }

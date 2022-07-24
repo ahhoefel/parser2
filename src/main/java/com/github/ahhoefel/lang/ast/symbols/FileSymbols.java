@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
 import com.github.ahhoefel.lang.ast.Target;
@@ -22,6 +23,7 @@ public class FileSymbols {
         this.target = target;
         imports = new HashMap<>();
         functions = new HashMap<>();
+        types = new HashMap<>();
     }
 
     public void addImport(Target target, FileSymbols symbols) {
@@ -30,6 +32,10 @@ public class FileSymbols {
 
     public void addFunction(FunctionDeclaration function) {
         functions.put(function.getName(), new FunctionDefinition(function));
+    }
+
+    public Optional<FunctionDefinition> getFunction(String name) {
+        return Optional.ofNullable(functions.get(name));
     }
 
     public void addType(String identifier, Type type) {

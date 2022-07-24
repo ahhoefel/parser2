@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.stream.Stream;
 
 import com.github.ahhoefel.lang.ast.File;
@@ -21,6 +22,7 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.llvm.LLVM.LLVMMemoryBufferRef;
+import org.bytedeco.llvm.LLVM.LLVMModuleRef;
 import org.bytedeco.llvm.global.LLVM;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -48,11 +50,14 @@ public class LLVMVisitorTest {
             symbols.resolve(source, symbolVistor, fileParser);
 
             LLVMVisitor v = new LLVMVisitor(symbols);
-            LLVMVisitor.Value<LLVMMemoryBufferRef> result = new LLVMVisitor.Value<>();
+            LLVMVisitor.Value<LLVMModuleRef> result = new LLVMVisitor.Value<>();
             f.accept(v, result);
+            String resultLLVM = LLVM.LLVMPrintModuleToString(result.value).getString();
 
-            LLVMMemoryBufferRef ref = readBitCode(expected);
-            assertEquals(ref.asByteBuffer(), result.value.asByteBuffer());
+            // Uncommment to update expected files.
+            // Files.write(expected, resultLLVM.getBytes(), StandardOpenOption.WRITE);
+
+            assertEquals(Files.readString(expected), resultLLVM);
         } catch (ParseException e) {
             System.out.println("Ignoring error. " + e);
         } catch (FileNotFoundException e) {
@@ -69,6 +74,7 @@ public class LLVMVisitorTest {
 
     }
 
+    @SuppressWarnings("unused")
     private static LLVMMemoryBufferRef readBitCode(Path file) throws FileNotFoundException {
         BytePointer path = new BytePointer(file.toString());
         LLVMMemoryBufferRef memory = new LLVMMemoryBufferRef();

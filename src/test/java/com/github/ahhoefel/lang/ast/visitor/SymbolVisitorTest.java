@@ -2,7 +2,6 @@ package com.github.ahhoefel.lang.ast.visitor;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,9 +25,8 @@ public class SymbolVisitorTest {
 
     @ParameterizedTest(name = "{0} {1}")
     @ArgumentsSource(FileArgumentProvider.class)
-    public void testSymbols(Path source, Path entry, Path symbolsFile) throws IOException {
+    public void testSymbols(Path source, Path entry, Path symbolsFile) throws Exception {
         String s = Files.readString(entry);
-        String expected = Files.readString(symbolsFile);
         try {
             File f = (File) fileParser.parse(s);
             f.setTarget(new Target(source, entry));
@@ -36,6 +34,12 @@ public class SymbolVisitorTest {
             GlobalSymbols symbols = new GlobalSymbols();
             f.accept(v, symbols);
             symbols.resolve(source, v, fileParser);
+
+            // Uncomment to update expected results.
+            // Files.write(symbolsFile, symbols.toString().getBytes(),
+            // StandardOpenOption.WRITE);
+
+            String expected = Files.readString(symbolsFile);
             assertEquals(expected, symbols.toString());
         } catch (ParseException e) {
             System.out.println("Ignoring error: " + e);

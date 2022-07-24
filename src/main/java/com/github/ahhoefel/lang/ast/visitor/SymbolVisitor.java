@@ -12,6 +12,7 @@ import com.github.ahhoefel.lang.ast.LValue;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.TypeDeclaration;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
+import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.AndExpression;
 import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
@@ -36,7 +37,6 @@ import com.github.ahhoefel.lang.ast.statements.ExpressionStatement;
 import com.github.ahhoefel.lang.ast.statements.ForStatement;
 import com.github.ahhoefel.lang.ast.statements.IfStatement;
 import com.github.ahhoefel.lang.ast.statements.ReturnStatement;
-import com.github.ahhoefel.lang.ast.statements.Statement;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
@@ -99,24 +99,26 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(Block block, Object... objs) {
-        for (Statement s : block.statements) {
-            s.accept(this, objs);
+        for (Visitable stmt : block.getStatements()) {
+            stmt.accept(this, objs);
         }
     }
 
     @Override
     public void visit(AssignmentStatement stmt, Object... objs) {
-        stmt.getLValue().accept(this, objs);
+        if (stmt.getLValue().isPresent()) {
+            stmt.getLValue().get().accept(this);
+        } else if (stmt.getVariableDeclaration().isPresent()) {
+            stmt.getVariableDeclaration().get().accept(this);
+        } else {
+            throw new RuntimeException("Assignment statement should have either an lvalue or variable declaration");
+        }
         stmt.getExpression().accept(this, objs);
     }
 
     @Override
     public void visit(LValue stmt, Object... objs) {
-        if (stmt.isDeclaration()) {
-            // Add to local symbols.
-        } else {
-            stmt.getExpression().accept(this, objs);
-        }
+        stmt.getExpression().accept(this, objs);
     }
 
     @Override

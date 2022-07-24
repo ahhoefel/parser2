@@ -13,6 +13,7 @@ import com.github.ahhoefel.lang.ast.ImportCatalog;
 import com.github.ahhoefel.lang.ast.LValue;
 import com.github.ahhoefel.lang.ast.TypeDeclaration;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
+import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.AndExpression;
 import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
@@ -200,7 +201,13 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(AssignmentStatement stmt, Object... objs) {
-        stmt.getLValue().accept(this);
+        if (stmt.getLValue().isPresent()) {
+            stmt.getLValue().get().accept(this);
+        } else if (stmt.getVariableDeclaration().isPresent()) {
+            stmt.getVariableDeclaration().get().accept(this);
+        } else {
+            throw new RuntimeException("Assignment statement should have either an lvalue or variable declaration");
+        }
         out.add(" = ");
         stmt.getExpression().accept(this);
         out.endLine();
@@ -208,8 +215,8 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(Block block, Object... objs) {
-        for (int i = 0; i < block.size(); i++) {
-            block.get(i).accept(this);
+        for (Visitable stmt : block.getStatements()) {
+            stmt.accept(this);
         }
     }
 
@@ -284,14 +291,7 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(LValue stmt, Object... objs) {
-        if (stmt.isDeclaration()) {
-            out.add("var ");
-            out.add(stmt.getIdentifier());
-            out.add(" ");
-            out.add(stmt.getType().toString());
-        } else {
-            stmt.getExpression().accept(this);
-        }
+        stmt.getExpression().accept(this);
     }
 
     @Override

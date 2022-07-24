@@ -1,46 +1,22 @@
 package com.github.ahhoefel.lang.ast.statements;
 
-import com.github.ahhoefel.ir.Representation;
-import com.github.ahhoefel.lang.ast.ParseError;
-import com.github.ahhoefel.lang.ast.SymbolCatalogOld;
+import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.Expression;
-import com.github.ahhoefel.lang.ast.type.Type;
-import com.github.ahhoefel.parser.ErrorLog;
 
-import java.util.ArrayList;
-import java.util.Optional;
+public class ExpressionStatement implements Visitable {
 
-public class ExpressionStatement implements Statement {
+    private final Expression expression;
 
-  private final Expression expression;
-
-  public ExpressionStatement(Expression expression) {
-    this.expression = expression;
-  }
-
-  public Expression getExpression() {
-    return expression;
-  }
-
-  public void accept(Visitor v, Object... objs) {
-    v.visit(this, objs);
-  }
-
-  public void addToSymbolCatalog(SymbolCatalogOld symbolCatalog) {
-    expression.setSymbolCatalog(symbolCatalog);
-  }
-
-  @Override
-  public void addToRepresentation(Representation rep) {
-    expression.addToRepresentation(rep, new ArrayList<>());
-  }
-
-  @Override
-  public void typeCheck(ErrorLog log) {
-    Optional<Type> type = expression.checkType(log);
-    if (type.isPresent() && type.get() != Type.VOID) {
-      log.add(new ParseError(null, "Expression statement should have void type. Got: " + expression.getType()));
+    public ExpressionStatement(Expression expression) {
+        this.expression = expression;
     }
-  }
+
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public void accept(Visitor v, Object... objs) {
+        v.visit(this, objs);
+    }
 }

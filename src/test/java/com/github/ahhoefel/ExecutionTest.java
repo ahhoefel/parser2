@@ -52,10 +52,18 @@ public class ExecutionTest {
         System.out.println(s);
         File f = (File) fileParser.parse(s);
 
+        if (f == null) {
+            System.out.println("Missing file: " + source);
+        }
+
         System.out.println("Starting symbol visitor.");
         SymbolVisitor symbolVistor = new SymbolVisitor(source);
         GlobalSymbols symbols = new GlobalSymbols();
-        f.accept(symbolVistor, symbols);
+        try {
+            f.accept(symbolVistor, symbols);
+        } catch (Exception e) {
+            throw new Exception("Exception in symbol visitor of file " + source + " entry " + entry, e);
+        }
         symbols.resolve(source, symbolVistor, fileParser);
 
         System.out.println("Starting LLVM visitor.");

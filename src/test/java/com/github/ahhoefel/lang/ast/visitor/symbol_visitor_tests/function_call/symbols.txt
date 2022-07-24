@@ -1,0 +1,9 @@
+Global Symbols:
+
+  File: function_call:function_call.ro
+    Imports:
+    Functions:
+      foo
+      main
+
+Unresolved Imports:
