@@ -107,11 +107,11 @@ public class LLVMVisitor implements Visitor {
         }
         @SuppressWarnings("unchecked")
         Value<LLVMModuleRef> out = (Value<LLVMModuleRef>) objs[0];
-        LLVM.LLVMDumpValue(fnRef.value);
+        // LLVM.LLVMDumpValue(fnRef.value);
         // BytePointer b = LLVM.LLVMPrintValueToString(fnRef.value);
         // System.out.println("String:" + b.getString());
-        BytePointer b = LLVM.LLVMPrintModuleToString(context.getFileModule());
-        System.out.println("String: " + b.getString());
+        // BytePointer b = LLVM.LLVMPrintModuleToString(context.getFileModule());
+        // System.out.println("String: " + b.getString());
 
         out.value = context.getFileModule();
     }
@@ -140,7 +140,7 @@ public class LLVMVisitor implements Visitor {
             v.accept(this, context, builder);
         }
 
-        // Block
+        // Block setup
         Value<Boolean> selfTerminates = new Value<>(false);
         fn.getBlock().accept(this, fnRef, block, builder, context, selfTerminates);
         if (selfTerminates.value && (fn.getReturnType() == Type.VOID)) {
@@ -163,7 +163,6 @@ public class LLVMVisitor implements Visitor {
         Value<Boolean> selfTerminates = (Value<Boolean>) objs[4];
         for (Visitable statement : block.getStatements()) {
             statement.accept(this, fn, blockRef, builder, context, selfTerminates);
-            System.out.println("Self terminates: " + selfTerminates.value);
         }
     }
 
@@ -395,7 +394,7 @@ public class LLVMVisitor implements Visitor {
             }
             Value<LLVMValueRef> fnRefValue = new Value<>();
             fnDef.get().getDeclaration().accept(this,
-                    new Context(context.getGlobalSymbols(), context.getFileSymbols()),
+                    new Context(context),
                     fnRefValue);
             fnRef = fnRefValue.value;
         }

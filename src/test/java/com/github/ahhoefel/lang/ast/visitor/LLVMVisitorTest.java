@@ -34,6 +34,8 @@ public class LLVMVisitorTest {
 
     private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
 
+    private static final boolean OVERWRITE_GOLDENS = false;
+
     /** Compares llvm_visitor_tests to their expected llvm. */
     @ParameterizedTest(name = "{0} {1}")
     @ArgumentsSource(FileArgumentProvider.class)
@@ -55,7 +57,10 @@ public class LLVMVisitorTest {
             String resultLLVM = LLVM.LLVMPrintModuleToString(result.value).getString();
 
             // Uncommment to update expected files.
-            // Files.write(expected, resultLLVM.getBytes(), StandardOpenOption.WRITE);
+            if (OVERWRITE_GOLDENS) {
+                System.out.println("Overwriting golden: " + entry.getFileName());
+                Files.write(expected, resultLLVM.getBytes(), StandardOpenOption.WRITE);
+            }
 
             assertEquals(Files.readString(expected), resultLLVM);
         } catch (ParseException e) {

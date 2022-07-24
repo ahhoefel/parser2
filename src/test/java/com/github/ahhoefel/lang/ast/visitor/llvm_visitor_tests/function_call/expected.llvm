@@ -7,3 +7,8 @@ start:
   %fnReturnValueName = call i64 @foo()
   store i64 %fnReturnValueName, i64* %x, align 4
 }
+
+define i64 @foo() {
+start:
+  ret i64 5
+}

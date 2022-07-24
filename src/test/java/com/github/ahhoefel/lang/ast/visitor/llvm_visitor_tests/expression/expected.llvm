@@ -7,3 +7,19 @@ start:
   %eq = icmp eq i64 %fnReturnValueName, 9
   ret i1 %eq
 }
+
+define i64 @foo() {
+start:
+  %a = alloca i64, align 8
+  %b = alloca i64, align 8
+  %c = alloca i64, align 8
+  %d = alloca i64, align 8
+  %a1 = load i64, i64* %a, align 4
+  %b2 = load i64, i64* %b, align 4
+  %c3 = load i64, i64* %c, align 4
+  %sum = add i64 %b2, %c3
+  %mult = mul i64 %a1, %sum
+  %d4 = load i64, i64* %d, align 4
+  %sum5 = add i64 %mult, %d4
+  ret i64 %sum5
+}

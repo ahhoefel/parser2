@@ -30,6 +30,16 @@ public class StatementRules implements LanguageComponent {
     // Internal
     private Symbol statement;
     private Symbol lvalue;
+    private Symbol variableDeclaration;
+
+    @Override
+    public List<Symbol> provides(SymbolTable nonTerminals) {
+        statementList = nonTerminals.newSymbol("statementList");
+        statement = nonTerminals.newSymbol("statement");
+        lvalue = nonTerminals.newSymbol("lvalue");
+        variableDeclaration = nonTerminals.newSymbol("variableDeclaration");
+        return List.of(statementList);
+    }
 
     @Override
     public void provideRules(LanguageBuilder lang) {
@@ -56,12 +66,16 @@ public class StatementRules implements LanguageComponent {
         rules.add(statement, lex.forKeyword, expression, lex.lBrace, statementList, lex.rBrace)
                 .setAction(e -> new ForStatement((Expression) e[1], (Block) e[3]));
 
-        // Assignment statement
-        Rule statementToAssignment = rules.add(statement, lvalue, lex.equals, expression)
+        // Assignment to LValue statement
+        Rule statementToLValueAssignment = rules.add(statement, lvalue, lex.equals, expression)
                 .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2]));
-        rules.add(lvalue, lex.varKeyword, lex.identifier, type)
-                .setAction(e -> new VariableDeclaration(((Token) e[1]).getValue(), (Type) e[2]));
         rules.add(lvalue, expression).setAction(e -> new LValue((Expression) e[0], null));
+
+        // Assign to variable declaration statement
+        Rule statementToVarDeclAssignment = rules.add(statement, variableDeclaration, lex.equals, expression)
+                .setAction(e -> new AssignmentStatement((VariableDeclaration) e[0], (Expression) e[2]));
+        rules.add(variableDeclaration, lex.varKeyword, lex.identifier, type)
+                .setAction(e -> new VariableDeclaration(((Token) e[1]).getValue(), (Type) e[2]));
 
         // Return statement
         Rule statementToReturn = rules.add(statement, lex.returnKeyword, expression)
@@ -73,15 +87,8 @@ public class StatementRules implements LanguageComponent {
 
         lang.getResolver().addShiftPreference(statementToExpression, lex.hyphen);
         lang.getResolver().addShiftPreference(statementToReturn, lex.hyphen);
-        lang.getResolver().addShiftPreference(statementToAssignment, lex.hyphen);
-    }
-
-    @Override
-    public List<Symbol> provides(SymbolTable nonTerminals) {
-        statementList = nonTerminals.newSymbol("statementList");
-        statement = nonTerminals.newSymbol("statement");
-        lvalue = nonTerminals.newSymbol("lvalue");
-        return List.of(statementList);
+        lang.getResolver().addShiftPreference(statementToLValueAssignment, lex.hyphen);
+        lang.getResolver().addShiftPreference(statementToVarDeclAssignment, lex.hyphen);
     }
 
     @Override
