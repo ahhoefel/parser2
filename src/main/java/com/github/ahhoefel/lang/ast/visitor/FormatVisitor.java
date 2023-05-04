@@ -310,6 +310,7 @@ public class FormatVisitor implements Visitor {
     public void visit(VariableDeclaration decl, Object... objs) {
         out.add("var ");
         out.add(decl.getName());
+        out.add(" ");
         out.add(decl.getType().toString());
     }
 
