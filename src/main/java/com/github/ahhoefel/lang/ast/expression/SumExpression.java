@@ -3,7 +3,7 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 
-public class SumExpression implements Expression {
+public class SumExpression extends Expression {
 
     private Expression a;
     private Expression b;

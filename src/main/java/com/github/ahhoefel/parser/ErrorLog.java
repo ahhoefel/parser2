@@ -33,31 +33,36 @@ public class ErrorLog {
   // Error files are the expected errors from testing the given target.
   public static ErrorLog readErrors(Target target) {
     ErrorLog log = new ErrorLog();
+
+    List<String> lines;
     try {
-      List<String> lines = Files.readAllLines(target.getErrorPath());
-      for (int i = 0; i < lines.size(); i++) {
-        String[] locationParts = lines.get(i).split(":");
-        Target t = new Target(target.getSource(), locationParts[0] + ":" + locationParts[1]);
-        CodeLocation location;
-        if (locationParts.length == 5) {
-          location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
-              Integer.parseInt(locationParts[4]));
-        } else {
-          location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
-              0);
-        }
-        StringBuilder errorMsg = new StringBuilder();
-        i++;
-        errorMsg.append(lines.get(i));
-        i++;
-        while (i < lines.size() && !lines.get(i).isEmpty()) {
-          errorMsg.append("\n").append(lines.get(i));
-          i++;
-        }
-        ParseError error = new ParseError(location, errorMsg.toString());
-        log.add(error);
-      }
+      lines = Files.readAllLines(target.getErrorPath());
     } catch (IOException e) {
+      // File may not be present. Resulting log is empty.
+      return log;
+    }
+
+    for (int i = 0; i < lines.size(); i++) {
+      String[] locationParts = lines.get(i).split(":");
+      Target t = new Target(target.getSource(), locationParts[0] + ":" + locationParts[1]);
+      CodeLocation location;
+      if (locationParts.length == 5) {
+        location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
+            Integer.parseInt(locationParts[4]));
+      } else {
+        location = new CodeLocation(t, Integer.parseInt(locationParts[2]) - 1, Integer.parseInt(locationParts[3]) - 1,
+            0);
+      }
+      StringBuilder errorMsg = new StringBuilder();
+      i++;
+      errorMsg.append(lines.get(i));
+      i++;
+      while (i < lines.size() && !lines.get(i).isEmpty()) {
+        errorMsg.append("\n").append(lines.get(i));
+        i++;
+      }
+      ParseError error = new ParseError(location, errorMsg.toString());
+      log.add(error);
     }
     return log;
   }

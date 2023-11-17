@@ -7,7 +7,7 @@ import com.github.ahhoefel.parser.Token;
 import java.util.List;
 import java.util.Optional;
 
-public class FunctionInvocationExpression implements Expression {
+public class FunctionInvocationExpression extends Expression {
 
     private Optional<Expression> implicitArg;
     private List<Expression> args;

@@ -2,7 +2,7 @@ package com.github.ahhoefel.lang.ast.visitor;
 
 import java.util.Optional;
 
-import org.bytedeco.javacpp.BytePointer;
+//import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.PointerPointer;
 import org.bytedeco.llvm.LLVM.LLVMBasicBlockRef;
 import org.bytedeco.llvm.LLVM.LLVMBuilderRef;
@@ -49,8 +49,10 @@ import com.github.ahhoefel.lang.ast.symbols.Context;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
+import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
+import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.type.NamedType;
 import com.github.ahhoefel.lang.ast.type.StructType;
 import com.github.ahhoefel.lang.ast.type.Type;
@@ -183,7 +185,8 @@ public class LLVMVisitor implements Visitor {
         } else if (stmt.getVariableDeclaration().isPresent()) {
             ref = LLVM.LLVMBuildAlloca(builder, LLVM.LLVMInt64Type(),
                     stmt.getVariableDeclaration().get().getName());
-            context.getLocals().put(stmt.getVariableDeclaration().get(), LLVM.LLVMInt64Type(), ref);
+            // TODO: Fix the symbol index
+            context.getLocals().put(stmt.getVariableDeclaration().get(), new SymbolIndex(-1));
         } else {
             throw new RuntimeException("Assignment statement should have either an lvalue or variable declaration");
         }
@@ -360,14 +363,13 @@ public class LLVMVisitor implements Visitor {
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
         Context context = (Context) objs[2];
         ExpressionType type = (ExpressionType) objs[3];
-        Optional<LocalSymbols.LocalSymbol> symbol = context.getLocals().get(expr.getIdentifier());
-        if (!symbol.isPresent()) {
-            throw new RuntimeException("Unknown variable: " + expr.getIdentifier());
-        }
+        // SymbolReference symbol = expr.getSymbolReference();
         if (type == ExpressionType.LVALUE) {
-            ref.value = symbol.get().value;
+            // TODO: fix.
+            // ref.value = symbol.get();
         } else {
-            ref.value = LLVM.LLVMBuildLoad(builder, symbol.get().value, expr.getIdentifier());
+            // TODO: fix symbol value.
+            ref.value = LLVM.LLVMBuildLoad(builder, null /* symbol.get().value */, expr.getIdentifier());
         }
     }
 
@@ -383,10 +385,13 @@ public class LLVMVisitor implements Visitor {
             expr.getArgs().get(i).accept(this, argValue, builder, context, ExpressionType.RVALUE);
             args[i] = argValue.value;
         }
-        Optional<LocalSymbol> fn = context.getLocals().get(expr.getIdentifier());
+        // TODO: fix symbol index
+        Optional<LocalSymbol> fn = context.getLocals().get(expr.getIdentifier(), new SymbolIndex(-1));
         LLVMValueRef fnRef;
         if (fn.isPresent()) {
-            fnRef = fn.get().value;
+            // TODO: fix;
+            // fnRef = fn.get().value;
+            fnRef = null;
         } else {
             Optional<FunctionDefinition> fnDef = context.getFileSymbols().getFunction(expr.getIdentifier());
             if (!fnDef.isPresent()) {
@@ -469,7 +474,8 @@ public class LLVMVisitor implements Visitor {
         Value<LLVMTypeRef> typeRef = new Value<>();
         type.accept(this, typeRef);
         LLVMValueRef ref = LLVM.LLVMBuildAlloca(builder, LLVM.LLVMInt64Type(), decl.getName());
-        context.getLocals().put(decl, typeRef.value, ref);
+        // TODO: fix.
+        context.getLocals().put(decl, null /* typeRef.value, ref */);
 
     }
 

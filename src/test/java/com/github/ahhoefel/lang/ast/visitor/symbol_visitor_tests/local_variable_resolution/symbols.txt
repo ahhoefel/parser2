@@ -1,0 +1,11 @@
+Global Symbols:
+
+  File: local_variable_resolution:local_variable_resolution
+    Imports:
+    Functions:
+      main
+      Local symbol table:
+        0, var x int, -1
+        1, var y int, 0
+    Symbol References:
+      x (local variable)

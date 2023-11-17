@@ -108,7 +108,7 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(IntegerLiteralExpression expr, Object... objs) {
-        out.add(Integer.toString(expr.getValue()));
+        out.add(Long.toString(expr.getValue()));
     }
 
     @Override

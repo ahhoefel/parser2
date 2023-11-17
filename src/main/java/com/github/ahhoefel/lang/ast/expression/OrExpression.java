@@ -3,7 +3,7 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 
-public class OrExpression implements Expression {
+public class OrExpression extends Expression {
 
     private Expression a;
     private Expression b;

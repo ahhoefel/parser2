@@ -1,12 +1,15 @@
 package com.github.ahhoefel.lang.ast.expression;
 
 import com.github.ahhoefel.lang.ast.*;
+import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
+import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Token;
 
-public class VariableExpression implements Expression {
+public class VariableExpression extends Expression {
 
     private final String identifier;
+    private SymbolReference symbol;
     private Type type;
 
     public VariableExpression(Token t) {
@@ -25,6 +28,25 @@ public class VariableExpression implements Expression {
 
     public String getIdentifier() {
         return identifier;
+    }
+
+    public void setSymbolReference(SymbolReference symbol) {
+        this.symbol = symbol;
+    }
+
+    public SymbolReference getSymbolReference() {
+        return this.symbol;
+    }
+
+    @Override
+    public void setRegisterTracker(RegisterTracker register) {
+        throw new UnsupportedOperationException(
+                "Registers should not be set on variable expressions, but rather on variable declarations");
+    }
+
+    @Override
+    public RegisterTracker getRegisterTracker() {
+        return symbol.getRegisterTracker();
     }
 
     @Override

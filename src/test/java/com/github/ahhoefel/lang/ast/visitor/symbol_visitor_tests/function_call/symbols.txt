@@ -1,9 +1,11 @@
 Global Symbols:
 
-  File: function_call:function_call.ro
+  File: function_call:function_call
     Imports:
     Functions:
       foo
+      Local symbol table:
       main
-
-Unresolved Imports:
+      Local symbol table:
+        0, var y int, -1
+    Symbol References:

@@ -1,7 +1,7 @@
 package com.github.ahhoefel;
 
 import com.github.ahhoefel.parser.LRParser;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ExampleDTest {
 

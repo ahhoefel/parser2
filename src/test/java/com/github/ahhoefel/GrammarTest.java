@@ -4,8 +4,8 @@ import com.github.ahhoefel.parser.Grammar;
 import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Set;
@@ -30,7 +30,7 @@ public class GrammarTest {
     Grammar grammar = new Grammar(terminals, nonTerminals, rs);
     Set<Symbol> epsilons = Grammar.epsilons(grammar);
     Set<Symbol> expectedEpsilons = Set.of(a);
-    Assert.assertEquals(expectedEpsilons, epsilons);
+    Assertions.assertEquals(expectedEpsilons, epsilons);
   }
 
   @Test
@@ -55,13 +55,13 @@ public class GrammarTest {
     Grammar.NonTerminalMap<Set<Symbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
     Grammar.NonTerminalMap<Set<Symbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
 
-    Assert.assertEquals(Set.of(a, b), firstNonTerminals.get(s));
-    Assert.assertEquals(Set.of(), firstNonTerminals.get(a));
-    Assert.assertEquals(Set.of(), firstNonTerminals.get(b));
+    Assertions.assertEquals(Set.of(a, b), firstNonTerminals.get(s));
+    Assertions.assertEquals(Set.of(), firstNonTerminals.get(a));
+    Assertions.assertEquals(Set.of(), firstNonTerminals.get(b));
 
-    Assert.assertEquals(Set.of(x, y, z), firstTerminals.get(s));
-    Assert.assertEquals(Set.of(x), firstTerminals.get(a));
-    Assert.assertEquals(Set.of(y, z), firstTerminals.get(b));
+    Assertions.assertEquals(Set.of(x, y, z), firstTerminals.get(s));
+    Assertions.assertEquals(Set.of(x), firstTerminals.get(a));
+    Assertions.assertEquals(Set.of(y, z), firstTerminals.get(b));
   }
 
   @Test
@@ -95,21 +95,21 @@ public class GrammarTest {
     Grammar.NonTerminalMap<Set<Symbol>> firstNonTerminals = Grammar.firstNonTerminals(grammar, epsilons);
     Grammar.NonTerminalMap<Set<Symbol>> firstTerminals = Grammar.firstTerminals(grammar, epsilons, firstNonTerminals);
 
-    Assert.assertEquals(Set.of(d), epsilons);
+    Assertions.assertEquals(Set.of(d), epsilons);
 
-    Assert.assertEquals(Set.of(a, b, d, e), firstNonTerminals.get(s));
-    Assert.assertEquals(Set.of(a, b, d, e), firstNonTerminals.get(a));
-    Assert.assertEquals(Set.of(d, e), firstNonTerminals.get(b));
-    Assert.assertEquals(Set.of(), firstNonTerminals.get(c));
-    Assert.assertEquals(Set.of(), firstNonTerminals.get(d));
-    Assert.assertEquals(Set.of(), firstNonTerminals.get(e));
+    Assertions.assertEquals(Set.of(a, b, d, e), firstNonTerminals.get(s));
+    Assertions.assertEquals(Set.of(a, b, d, e), firstNonTerminals.get(a));
+    Assertions.assertEquals(Set.of(d, e), firstNonTerminals.get(b));
+    Assertions.assertEquals(Set.of(), firstNonTerminals.get(c));
+    Assertions.assertEquals(Set.of(), firstNonTerminals.get(d));
+    Assertions.assertEquals(Set.of(), firstNonTerminals.get(e));
 
-    Assert.assertEquals(Set.of(x, y, z), firstTerminals.get(s));
-    Assert.assertEquals(Set.of(x, y, z), firstTerminals.get(a));
-    Assert.assertEquals(Set.of(y, z), firstTerminals.get(b));
-    Assert.assertEquals(Set.of(w), firstTerminals.get(c));
-    Assert.assertEquals(Set.of(y), firstTerminals.get(d));
-    Assert.assertEquals(Set.of(z), firstTerminals.get(e));
+    Assertions.assertEquals(Set.of(x, y, z), firstTerminals.get(s));
+    Assertions.assertEquals(Set.of(x, y, z), firstTerminals.get(a));
+    Assertions.assertEquals(Set.of(y, z), firstTerminals.get(b));
+    Assertions.assertEquals(Set.of(w), firstTerminals.get(c));
+    Assertions.assertEquals(Set.of(y), firstTerminals.get(d));
+    Assertions.assertEquals(Set.of(z), firstTerminals.get(e));
   }
 
   @Test
@@ -136,12 +136,12 @@ public class GrammarTest {
 
     System.out.println(follow.toString());
 
-    Assert.assertEquals(Set.of(b, c), follow.getNonTerminals(a));
-    Assert.assertEquals(Set.of(c), follow.getNonTerminals(b));
-    Assert.assertEquals(Set.of(), follow.getNonTerminals(c));
+    Assertions.assertEquals(Set.of(b, c), follow.getNonTerminals(a));
+    Assertions.assertEquals(Set.of(c), follow.getNonTerminals(b));
+    Assertions.assertEquals(Set.of(), follow.getNonTerminals(c));
 
-    Assert.assertEquals(Set.of(y, z), follow.getTerminals(a));
-    Assert.assertEquals(Set.of(z), follow.getTerminals(b));
-    Assert.assertEquals(Set.of(terminals.getEof()), follow.getTerminals(c));
+    Assertions.assertEquals(Set.of(y, z), follow.getTerminals(a));
+    Assertions.assertEquals(Set.of(z), follow.getTerminals(b));
+    Assertions.assertEquals(Set.of(terminals.getEof()), follow.getTerminals(c));
   }
 }

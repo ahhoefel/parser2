@@ -6,7 +6,7 @@ import com.github.ahhoefel.lang.ast.type.Type;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StructLiteralExpression implements Expression {
+public class StructLiteralExpression extends Expression {
 
     private Type type;
     private Map<String, Expression> values;

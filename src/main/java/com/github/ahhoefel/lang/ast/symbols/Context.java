@@ -24,7 +24,7 @@ public class Context {
         this.globals = context.globals;
         this.file = context.file;
         this.fileModule = context.fileModule;
-        this.locals = new LocalSymbols(context.locals);
+        this.locals = new LocalSymbols();
     }
 
     public GlobalSymbols getGlobalSymbols() {

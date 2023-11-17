@@ -4,11 +4,13 @@ import com.github.ahhoefel.lang.ast.Block;
 import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.Expression;
+import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
 
 public class ForStatement implements Visitable {
 
     private final Block block;
     private final Expression condition;
+    private LocalSymbols.SymbolIndex symbolIndex;
 
     public ForStatement(Expression condition, Block block) {
         this.condition = condition;
@@ -25,5 +27,13 @@ public class ForStatement implements Visitable {
 
     public Block getBlock() {
         return block;
+    }
+
+      public void setLocalSymbolIndex(LocalSymbols.SymbolIndex symbolIndex) {
+        this.symbolIndex = symbolIndex;
+    }
+
+    public LocalSymbols.SymbolIndex getLocalSymbolIndex() {
+        return this.symbolIndex;
     }
 }

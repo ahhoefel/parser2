@@ -1,12 +1,14 @@
 package com.github.ahhoefel.lang.ast.symbols;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.type.Type;
@@ -15,23 +17,37 @@ import com.github.ahhoefel.util.IndentedString;
 public class FileSymbols {
 
     private Target target;
-    private Map<Target, FileSymbols> imports;
+    private Map<String, Target> imports;
     private Map<String, Type> types;
     private Map<String, FunctionDefinition> functions;
+    private List<SymbolReference> symbolReferences;
 
     public FileSymbols(Target target) {
         this.target = target;
         imports = new HashMap<>();
         functions = new HashMap<>();
         types = new HashMap<>();
+        symbolReferences = new ArrayList<>();
     }
 
-    public void addImport(Target target, FileSymbols symbols) {
-        imports.put(target, symbols);
+    public Collection<FunctionDefinition> getFunctions() {
+        return functions.values();
     }
 
-    public void addFunction(FunctionDeclaration function) {
-        functions.put(function.getName(), new FunctionDefinition(function));
+    public void addImport(String shortName, Target target) {
+        imports.put(shortName, target);
+    }
+
+    public Optional<Target> getImport(String shortName) {
+        return Optional.ofNullable(imports.get(shortName));
+    }
+
+    public Collection<Target> getImports() {
+        return imports.values();
+    }
+
+    public void addFunction(FunctionDeclaration function, LocalSymbols localSymbols) {
+        functions.put(function.getName(), new FunctionDefinition(function, localSymbols));
     }
 
     public Optional<FunctionDefinition> getFunction(String name) {
@@ -46,6 +62,18 @@ public class FileSymbols {
         return target;
     }
 
+    public void addSymbolReference(SymbolReference ref) {
+        this.symbolReferences.add(ref);
+    }
+
+    public boolean resolve() {
+        boolean resolved = true;
+        for (SymbolReference ref : symbolReferences) {
+            resolved = resolved && ref.resolve();
+        }
+        return resolved;
+    }
+
     public void toIndentedString(IndentedString out) {
         out.add("File: ").add(target.toString()).endLine().indent();
         out.addLine("Imports:").indent();
@@ -56,11 +84,15 @@ public class FileSymbols {
         listFunctions(out);
         out.unindent();
 
+        out.addLine("Symbol References:").indent();
+        listSymbolReferences(out);
+        out.unindent();
+
         out.unindent();
     }
 
     public void listImports(IndentedString out) {
-        List<Target> targets = new ArrayList<>(imports.keySet());
+        List<Target> targets = new ArrayList<>(imports.values());
         targets.sort((o1, o2) -> {
             Target t1 = (Target) o1;
             Target t2 = (Target) o2;
@@ -76,18 +108,48 @@ public class FileSymbols {
         Collections.sort(fns);
         for (String fn : fns) {
             out.addLine(fn);
+            out.addLine("Local symbol table:");
+            out.indent();
+            functions.get(fn).localSymbols.toIndentedString(out);
+            out.unindent();
+        }
+    }
+
+    public void listSymbolReferences(IndentedString out) {
+        for (SymbolReference ref : this.symbolReferences) {
+            out.addLine(ref.toString());
         }
     }
 
     public static class FunctionDefinition {
         private FunctionDeclaration declaration;
+        private LocalSymbols localSymbols;
+        private RegisterScope registerScope;
+        private Label returnLabel;
 
-        public FunctionDefinition(FunctionDeclaration declaration) {
+        private static int FUNCTION_COUNTER = 0;
+
+        public FunctionDefinition(FunctionDeclaration declaration, LocalSymbols localSymbols) {
             this.declaration = declaration;
+            this.localSymbols = localSymbols;
+            this.registerScope = new RegisterScope();
+            this.returnLabel = new Label("fn_return_" + FUNCTION_COUNTER++);
         }
 
         public FunctionDeclaration getDeclaration() {
             return declaration;
+        }
+
+        public LocalSymbols getLocalSymbols() {
+            return localSymbols;
+        }
+
+        public RegisterScope getRegisterScope() {
+            return registerScope;
+        }
+
+        public Label getReturnLabel() {
+            return returnLabel;
         }
     }
 }

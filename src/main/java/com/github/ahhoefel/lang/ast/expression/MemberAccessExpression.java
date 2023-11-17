@@ -5,7 +5,7 @@ import com.github.ahhoefel.lang.ast.type.Type;
 
 import com.github.ahhoefel.parser.Token;
 
-public class MemberAccessExpression implements Expression {
+public class MemberAccessExpression extends Expression {
 
     private final Token member;
     private final Expression expression;

@@ -1,0 +1,9 @@
+func main() {
+   var x int = 1
+   var y int = 2
+   if x == 1 {
+     var a int = 3
+     var b int = 4
+   }
+   var z int = 5
+}

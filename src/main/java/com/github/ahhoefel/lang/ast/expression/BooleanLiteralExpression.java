@@ -3,7 +3,7 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 
-public class BooleanLiteralExpression implements Expression {
+public class BooleanLiteralExpression extends Expression {
 
     private boolean value;
 

@@ -3,7 +3,7 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 
-public class UnaryMinusExpression implements Expression {
+public class UnaryMinusExpression extends Expression {
 
     private Expression a;
 

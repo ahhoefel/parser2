@@ -13,14 +13,17 @@ public class StructType implements Type {
     private List<String> orderedMembers;
     private Map<String, Type> members;
     private Map<String, Integer> memberOffsets;
+    private int width;
 
     public StructType(List<Member> members) {
+        this.width = 0;
         this.members = new HashMap<>();
         this.orderedMembers = new ArrayList<>();
         this.memberOffsets = new HashMap<>();
         for (Member member : members) {
             this.members.put(member.getIdentifier(), member.getType());
             this.orderedMembers.add(member.getIdentifier());
+            this.width += member.getType().getWidthBits();
         }
     }
 
@@ -31,6 +34,13 @@ public class StructType implements Type {
     public List<String> memberNames() {
         return orderedMembers;
     }
+
+    @Override
+    public int getWidthBits() {
+        return width;
+    }
+
+
 
     public String toString() {
         String out = "struct {\n";

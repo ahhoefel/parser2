@@ -2,14 +2,12 @@ package com.github.ahhoefel.lang.ast.symbols;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.ahhoefel.lang.ast.File;
 import com.github.ahhoefel.lang.ast.Target;
@@ -20,96 +18,104 @@ import com.github.ahhoefel.util.IndentedString;
 
 public class GlobalSymbols {
 
-    private Map<Target, FileSymbols> symbols;
-    private Map<Target, Set<FileSymbols>> unresolvedImports;
+    private SymbolVisitor symbolVisitor;
+    private LRParser fileParser;
 
-    public GlobalSymbols() {
-        symbols = new HashMap<>();
-        unresolvedImports = new HashMap<>();
+    private Map<Target, FilePair> files;
+
+    private class FilePair {
+        private File file;
+        private FileSymbols symbols;
+        public FilePair(File file, FileSymbols symbols) {
+            this.file = file;
+            this.symbols = symbols;
+        }
+    }
+
+    public GlobalSymbols(SymbolVisitor v, LRParser fileParser ) {
+        files = new HashMap<>();
+        this.symbolVisitor = v;
+        this.fileParser = fileParser;
     }
 
     public boolean containsTarget(Target t) {
-        return symbols.containsKey(t);
+        return files.containsKey(t);
     }
 
     public FileSymbols get(Target t) {
-        return symbols.get(t);
+        return files.get(t).symbols;
     }
 
-    public FileSymbols add(Target t) {
-        FileSymbols symbols = new FileSymbols(t);
-        this.symbols.put(t, symbols);
-        if (unresolvedImports.containsKey(t)) {
-            Set<FileSymbols> set = unresolvedImports.remove(t);
-            for (FileSymbols f : set) {
-                f.addImport(t, symbols);
+    public Optional<FileSymbols> add(Target t) {
+        try {
+            String s = Files.readString(t.getFilePath());
+            File file = (File) fileParser.parse(s);
+            file.setTarget(t);
+            FileSymbols symbols = new FileSymbols(t);
+            this.files.put(t, new FilePair(file, symbols));
+            file.accept(symbolVisitor, this, symbols);
+            return Optional.of(symbols);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read file: " + t.getFilePath(), e);
+        } catch (ParseException e) {
+            System.out.println("Ignoring error: " + e);
+        }
+        return Optional.empty();
+    }
+
+    public boolean resolve() {
+        boolean resolved = true;
+        for (FilePair f : files.values()) {
+            resolved = resolved && f.symbols.resolve();
+        }
+        return resolved;
+    }
+
+    public boolean transitivelyLoadImports() {
+        List<Target> queue = new ArrayList<>();
+        for (FilePair f : files.values()) {
+            for ( Target t : f.symbols.getImports()) {
+                if (!files.containsKey(t)) {
+                    queue.add(t);
+                }
             }
         }
-        return symbols;
-    }
-
-    public void addUnresolvedImport(Target t, FileSymbols symbols) {
-        if (unresolvedImports.containsKey(t)) {
-            unresolvedImports.get(t).add(symbols);
-        } else {
-            Set<FileSymbols> set = new HashSet<>();
-            set.add(symbols);
-            unresolvedImports.put(t, set);
+        for (int i = 0; i < queue.size(); i++) {
+            Target t = queue.get(i);
+            if (!files.containsKey(t)) {
+                Optional<FileSymbols> f = this.add(t);
+                if (!f.isPresent()) {
+                    return false;
+                }
+                for (Target q : f.get().getImports()) {
+                    if (!files.containsKey(q)) {
+                        queue.add(q);
+                    }
+                }
+            }
         }
+        return true;
     }
 
     public String toString() {
         IndentedString s = new IndentedString();
         s.addLine("Global Symbols:").indent();
-        List<Target> targets = new ArrayList<>(symbols.keySet());
+        List<Target> targets = new ArrayList<>(files.keySet());
         targets.sort((o1, o2) -> {
             Target t1 = (Target) o1;
             Target t2 = (Target) o2;
             return t1.getFilePath().compareTo(t2.getFilePath());
         });
         for (Target t : targets) {
-            FileSymbols file = symbols.get(t);
+            FileSymbols symbols = files.get(t).symbols;
             s.endLine();
-            file.toIndentedString(s);
+            symbols.toIndentedString(s);
         }
         s.unindent();
-
-        targets = new ArrayList<>(unresolvedImports.keySet());
-        targets.sort((o1, o2) -> {
-            Target t1 = (Target) o1;
-            Target t2 = (Target) o2;
-            return t1.getFilePath().compareTo(t2.getFilePath());
-        });
-
-        s.endLine();
-        s.addLine("Unresolved Imports:").indent();
-        for (Target t : targets) {
-            s.addLine(t.toString()).indent();
-            List<FileSymbols> files = new ArrayList<>(unresolvedImports.get(t));
-            Comparator<FileSymbols> comp = Comparator.comparing(x -> x.getTarget().toString());
-            files.sort(comp);
-            s.addLine("Required by:");
-            for (FileSymbols file : files) {
-                file.toIndentedString(s);
-            }
-        }
-        s.unindent();
-
         return s.toString();
     }
 
-    public void resolve(Path source, SymbolVisitor v, LRParser fileParser) throws IOException {
-        while (!unresolvedImports.isEmpty()) {
-            for (Target t : unresolvedImports.keySet()) {
-                String s = Files.readString(t.getFilePath());
-                try {
-                    File f = (File) fileParser.parse(s);
-                    f.setTarget(t);
-                    f.accept(v, this);
-                } catch (ParseException e) {
-                    System.out.println("Ignoring error: " + e);
-                }
-            }
-        }
+    public List<FileSymbols> getFiles() {
+        return files.values().stream().map(p -> p.symbols).collect(Collectors.toList());
     }
 }

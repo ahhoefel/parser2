@@ -4,11 +4,15 @@ Global Symbols:
     Imports:
     Functions:
       foo
+      Local symbol table:
+    Symbol References:
 
-  File: requires_import:requires_import.ro
+  File: requires_import:requires_import
     Imports:
       requires_import:provides_import
     Functions:
       main
-
-Unresolved Imports:
+      Local symbol table:
+        0, var x int, -1
+    Symbol References:
+      provides_import (import)

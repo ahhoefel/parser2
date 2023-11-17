@@ -4,8 +4,8 @@ import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.ShiftReduceResolver;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
 
 public class ShiftReduceResolverTest {
 
@@ -20,7 +20,7 @@ public class ShiftReduceResolverTest {
     ShiftReduceResolver resolver = new ShiftReduceResolver();
     resolver.addShiftPreference(r, t);
 
-    Assert.assertEquals(resolver.getPreference(r, t).get(), ShiftReduceResolver.Preference.SHIFT);
+    Assertions.assertEquals(resolver.getPreference(r, t).get(), ShiftReduceResolver.Preference.SHIFT);
 
   }
 

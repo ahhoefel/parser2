@@ -14,7 +14,7 @@ import com.github.ahhoefel.parser.LRParser;
 import com.github.ahhoefel.parser.LanguageBuilder;
 import com.github.ahhoefel.parser.ParseException;
 
-import org.junit.Assert;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,7 +30,7 @@ public class FormatVisitorTest {
         Expression e = (Expression) parser.parse("3 * 4 + x");
         FormatVisitor v = new FormatVisitor();
         e.accept(v);
-        Assert.assertEquals("3 * 4 + x", v.toString());
+        Assertions.assertEquals("3 * 4 + x", v.toString());
     }
 
     @Test
@@ -38,7 +38,7 @@ public class FormatVisitorTest {
         Expression e = (Expression) parser.parse("3*-4+x");
         FormatVisitor v = new FormatVisitor();
         e.accept(v);
-        Assert.assertEquals("3 * -4 + x", v.toString());
+        Assertions.assertEquals("3 * -4 + x", v.toString());
     }
 
     @Test
@@ -46,7 +46,7 @@ public class FormatVisitorTest {
         Expression e = (Expression) parser.parse("3*(4+x)");
         FormatVisitor v = new FormatVisitor();
         e.accept(v);
-        Assert.assertEquals("3 * (4 + x)", v.toString());
+        Assertions.assertEquals("3 * (4 + x)", v.toString());
     }
 
     private static class RoFiles extends FileArgumentProvider {
@@ -63,7 +63,7 @@ public class FormatVisitorTest {
             File f = (File) fileParser.parse(s);
             FormatVisitor v = new FormatVisitor();
             f.accept(v);
-            Assert.assertEquals(path.toString(), s, v.toString());
+            Assertions.assertEquals(Files.readString(path), s, v.toString());
         } catch (ParseException e) {
             System.out.println("Ignoring error on path: " + path);
             System.out.println(e);

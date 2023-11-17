@@ -4,8 +4,9 @@ import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Rules;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+
 
 import java.util.List;
 import java.util.Set;
@@ -31,9 +32,9 @@ public class RulesTest {
     Rule r4 = new Rule(b, List.of(z));
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
     Rules rules = new Rules(terminals, nonTerminals, rs);
-    Assert.assertFalse(rules.isEpsilon(s));
-    Assert.assertTrue(rules.isEpsilon(a));
-    Assert.assertFalse(rules.isEpsilon(b));
+    Assertions.assertFalse(rules.isEpsilon(s));
+    Assertions.assertTrue(rules.isEpsilon(a));
+    Assertions.assertFalse(rules.isEpsilon(b));
   }
 
   @Test
@@ -55,20 +56,20 @@ public class RulesTest {
     List<Rule> rs = List.of(r0, r1, r2, r3, r4);
     Rules rules = new Rules(terminals, nonTerminals, rs);
 
-    Assert.assertEquals(Set.of(), rules.getSimpleFirstTerminals(s));
-    Assert.assertEquals(Set.of(x), rules.getSimpleFirstTerminals(a));
-    Assert.assertEquals(Set.of(y, z), rules.getSimpleFirstTerminals(b));
+    Assertions.assertEquals(Set.of(), rules.getSimpleFirstTerminals(s));
+    Assertions.assertEquals(Set.of(x), rules.getSimpleFirstTerminals(a));
+    Assertions.assertEquals(Set.of(y, z), rules.getSimpleFirstTerminals(b));
 
-    Assert.assertEquals(Set.of(a, b), rules.getSimpleFirstNonTerminals(s));
-    Assert.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(a));
-    Assert.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(b));
+    Assertions.assertEquals(Set.of(a, b), rules.getSimpleFirstNonTerminals(s));
+    Assertions.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(a));
+    Assertions.assertEquals(Set.of(), rules.getSimpleFirstNonTerminals(b));
 
-    Assert.assertEquals(Set.of(s, a, b), rules.getFirstNonTerminals(s));
-    Assert.assertEquals(Set.of(a), rules.getFirstNonTerminals(a));
-    Assert.assertEquals(Set.of(b), rules.getFirstNonTerminals(b));
+    Assertions.assertEquals(Set.of(s, a, b), rules.getFirstNonTerminals(s));
+    Assertions.assertEquals(Set.of(a), rules.getFirstNonTerminals(a));
+    Assertions.assertEquals(Set.of(b), rules.getFirstNonTerminals(b));
 
-    Assert.assertEquals(Set.of(x, y, z), rules.getFirstTerminals(s));
-    Assert.assertEquals(Set.of(x), rules.getFirstTerminals(a));
-    Assert.assertEquals(Set.of(y, z), rules.getFirstTerminals(b));
+    Assertions.assertEquals(Set.of(x, y, z), rules.getFirstTerminals(s));
+    Assertions.assertEquals(Set.of(x), rules.getFirstTerminals(a));
+    Assertions.assertEquals(Set.of(y, z), rules.getFirstTerminals(b));
   }
 }

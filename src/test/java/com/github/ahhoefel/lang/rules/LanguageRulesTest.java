@@ -11,20 +11,17 @@ import java.util.Collection;
 
 import java.nio.file.Path;
 import java.io.IOException;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.github.ahhoefel.parser.ErrorLog;
 
 // Tests that files parse correctly and produce the desired AST.
-@RunWith(Parameterized.class)
+
 public class LanguageRulesTest {
     private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/tests/";
     private static final LanguageRules RULES = new LanguageRules();
 
-    @Parameters
     public static Collection<Object[]> testTargets() throws IOException {
         return Files.walk(Paths.get(BASE_PATH))
                 .filter(Files::isRegularFile)
@@ -36,21 +33,16 @@ public class LanguageRulesTest {
 
     public static Target filenameToTarget(Path path) {
         String filename = path.toString();
-        String relativeFilenameNoSuffix = filename.substring(BASE_PATH.length(), filename.length() - 3);
-        int i = relativeFilenameNoSuffix.lastIndexOf("/");
-        String relativeBase = relativeFilenameNoSuffix.substring(0, i);
-        String name = relativeFilenameNoSuffix.substring(i + 1);
+        String relativeFilename = filename.substring(BASE_PATH.length());
+        int i = relativeFilename.lastIndexOf("/");
+        String relativeBase = relativeFilename.substring(0, i);
+        String name = relativeFilename.substring(i + 1);
         return new Target(Path.of(BASE_PATH), relativeBase, name);
     }
 
-    private Target target;
-
-    public LanguageRulesTest(Target target) {
-        this.target = target;
-    }
-
-    @Test
-    public void testTarget() {
+    @ParameterizedTest
+    @MethodSource("testTargets")
+    public void testTarget(Target target) {
         ErrorLog log = new ErrorLog();
         try {
             File file = RULES.parse(target, log);

@@ -8,9 +8,14 @@ import com.github.ahhoefel.lang.ast.Visitor;
 public class UnionType implements Type {
 
     private List<Member> members;
+    private int width;
 
     public UnionType(List<Member> members) {
         this.members = members;
+        width = 8; // Could be replaced with log_2(#members)
+        for (Member member : members) {
+            width += member.getType().getWidthBits();
+        }
     }
 
     @Override
@@ -20,5 +25,10 @@ public class UnionType implements Type {
 
     public List<Member> getMembers() {
         return members;
+    }
+
+    @Override
+    public int getWidthBits() {
+        return width;
     }
 }

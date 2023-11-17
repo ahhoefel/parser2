@@ -12,20 +12,20 @@ public class ExampleF {
   Grammar grammar;
   SymbolTable.TerminalTable terminals;
   Symbol digit;
+  Symbol separator;
   SymbolTable.NonTerminalTable nonTerminals;
   Symbol start;
-  Symbol word;
   Symbol number;
 
   public ExampleF() {
     terminals = new SymbolTable.TerminalTable();
-    digit = terminals.newSymbol("d");
+    digit = terminals.newSymbol("digit");
+    separator = terminals.newSymbol("separator");
     nonTerminals = new SymbolTable.NonTerminalTable();
     start = nonTerminals.getStart();
-    word = nonTerminals.newSymbol("word");
     number = nonTerminals.newSymbol("number");
 
-    Rule r1 = new Rule(start, List.of(number, start));
+    Rule r1 = new Rule(start, List.of(number, separator, start));
     Rule r2 = new Rule(start, List.of(number));
     Rule r3 = new Rule(number, List.of(digit, number));
     Rule r4 = new Rule(number, List.of(digit));

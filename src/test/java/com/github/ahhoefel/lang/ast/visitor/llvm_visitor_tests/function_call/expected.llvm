@@ -1,5 +1,5 @@
-; ModuleID = 'function_call:function_call.ro'
-source_filename = "function_call:function_call.ro"
+; ModuleID = 'function_call:function_call'
+source_filename = "function_call:function_call"
 
 define void @main() {
 start:

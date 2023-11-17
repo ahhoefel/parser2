@@ -1,0 +1,5 @@
+import import_unresolved/missing_import
+
+func main() int {
+  var x int = missing_import.foo()
+}

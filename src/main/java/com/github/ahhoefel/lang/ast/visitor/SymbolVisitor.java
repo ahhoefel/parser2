@@ -1,6 +1,7 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
 import java.nio.file.Path;
+import java.util.Optional;
 
 import com.github.ahhoefel.lang.ast.Block;
 import com.github.ahhoefel.lang.ast.Declaration;
@@ -40,6 +41,9 @@ import com.github.ahhoefel.lang.ast.statements.ReturnStatement;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
+import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
+import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
+import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.type.NamedType;
 import com.github.ahhoefel.lang.ast.type.StructType;
 import com.github.ahhoefel.lang.ast.type.UnionType;
@@ -47,6 +51,13 @@ import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
+
+// Visitors aren't type safe. Here's the list of expected arguments and return types
+// File(GlobalSymbols, FileSymbols)
+// Declaration(GlobalSymbols, FileSymbols)
+// Block(GlobalSymbols, FileSymbols, LocalSymbols, SymbolIndex)
+// Statement(GlobalSymbols, FileSymbols, LocalSymbols, SymbolIndex, SymbolIndex [result])
+// Expression(GlobalSymbols, FileSymbols, LocalSymbols, SymbolIndex, SymbolIndex [result])
 
 public class SymbolVisitor implements Visitor {
 
@@ -59,10 +70,7 @@ public class SymbolVisitor implements Visitor {
     @Override
     public void visit(File file, Object... objs) {
         GlobalSymbols g = (GlobalSymbols) objs[0];
-        if (g.containsTarget(file.getTarget())) {
-            return;
-        }
-        FileSymbols symbols = g.add(file.getTarget());
+        FileSymbols symbols = (FileSymbols) objs[1];
         file.getImports().accept(this, g, symbols);
         for (Declaration d : file.getDeclarations()) {
             d.accept(this, g, symbols);
@@ -78,14 +86,10 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(Import stmt, Object... objs) {
-        GlobalSymbols g = (GlobalSymbols) objs[0];
+        // GlobalSymbols g = (GlobalSymbols) objs[0];
         FileSymbols symbols = (FileSymbols) objs[1];
         Target target = new Target(source, stmt.getTargetString());
-        if (g.containsTarget(target)) {
-            symbols.addImport(target, g.get(target));
-        } else {
-            g.addUnresolvedImport(target, symbols);
-        }
+        symbols.addImport(stmt.getShortName(), target);
     }
 
     @Override
@@ -93,23 +97,41 @@ public class SymbolVisitor implements Visitor {
         GlobalSymbols g = (GlobalSymbols) objs[0];
         FileSymbols symbols = (FileSymbols) objs[1];
         LocalSymbols locals = new LocalSymbols();
-        symbols.addFunction(fn);
-        fn.getBlock().accept(this, g, symbols, locals);
+        symbols.addFunction(fn, locals);
+        SymbolIndex prevSymbolIndex = new SymbolIndex(-1);
+        SymbolIndex resultSymbolIndex = new SymbolIndex(-1);
+        for (VariableDeclaration v : fn.getParameters()) {
+            v.accept(this, g, symbols, locals, prevSymbolIndex, resultSymbolIndex);
+            prevSymbolIndex = new SymbolIndex(resultSymbolIndex.value);
+        }
+        System.out.println(locals.toString());
+        fn.getBlock().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
     @Override
     public void visit(Block block, Object... objs) {
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        SymbolIndex resultSymbolIndex = new SymbolIndex(-1);
         for (Visitable stmt : block.getStatements()) {
-            stmt.accept(this, objs);
+            stmt.accept(this, g, symbols, locals, prevSymbolIndex, resultSymbolIndex);
+            prevSymbolIndex = new SymbolIndex(resultSymbolIndex.value);
         }
     }
 
     @Override
     public void visit(AssignmentStatement stmt, Object... objs) {
+        // GlobalSymbols g = (GlobalSymbols) objs[0];
+        // FileSymbols symbols = (FileSymbols) objs[1];
+        // LocalSymbols locals = (LocalSymbols) objs[2];
+        // SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        // SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
         if (stmt.getLValue().isPresent()) {
-            stmt.getLValue().get().accept(this);
+            stmt.getLValue().get().accept(this, objs);
         } else if (stmt.getVariableDeclaration().isPresent()) {
-            stmt.getVariableDeclaration().get().accept(this);
+            stmt.getVariableDeclaration().get().accept(this, objs);
         } else {
             throw new RuntimeException("Assignment statement should have either an lvalue or variable declaration");
         }
@@ -141,6 +163,13 @@ public class SymbolVisitor implements Visitor {
     @Override
     public void visit(FunctionInvocationExpression expr, Object... objs) {
 
+        // GlobalSymbols g = (GlobalSymbols) objs[0];
+        // FileSymbols symbols = (FileSymbols) objs[1];
+        // LocalSymbols locals = (LocalSymbols) objs[2];
+        // SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        if (expr.getImplicitArg().isPresent()) {
+            expr.getImplicitArg().get().accept(this, objs);
+        }
     }
 
     @Override
@@ -206,27 +235,59 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(VariableExpression expr, Object... objs) {
-
+        GlobalSymbols globals = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        // Optional<LocalSymbol> symbol = locals.get(expr.getIdentifier(),
+        // prevSymbolIndex);
+        // if (symbol.isEmpty()) {
+        // throw new RuntimeException("Reference to undeclared variable: " +
+        // expr.getIdentifier());
+        // }
+        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), globals, symbols, locals, prevSymbolIndex));
     }
 
     @Override
     public void visit(ExpressionStatement stmt, Object... objs) {
-
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        // SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
+        stmt.getExpression().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
     @Override
     public void visit(ForStatement stmt, Object... objs) {
-
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        // SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
+        stmt.getCondition().accept(this, g, symbols, locals, prevSymbolIndex);
+        stmt.getBlock().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
     @Override
     public void visit(IfStatement stmt, Object... objs) {
-
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        // SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
+        stmt.setLocalSymbolIndex(prevSymbolIndex);
+        stmt.getBlock().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
     @Override
     public void visit(ReturnStatement stmt, Object... objs) {
-
+        GlobalSymbols g = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        stmt.setLocalSymbolIndex(prevSymbolIndex);
+        stmt.getExpression().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
     @Override
@@ -238,7 +299,12 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(VariableDeclaration decl, Object... objs) {
-
+        // GlobalSymbols g = (GlobalSymbols) objs[0];
+        // FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
+        resultSymbolIndex.value = locals.put(decl, prevSymbolIndex).value;
     }
 
     @Override

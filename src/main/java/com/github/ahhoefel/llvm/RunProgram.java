@@ -34,9 +34,9 @@ public class RunProgram {
             File f = (File) fileParser.parse(s);
 
             SymbolVisitor symbolVistor = new SymbolVisitor(source);
-            GlobalSymbols symbols = new GlobalSymbols();
+            GlobalSymbols symbols = new GlobalSymbols(symbolVistor, fileParser);
             f.accept(symbolVistor, symbols);
-            symbols.resolve(source, symbolVistor, fileParser);
+            symbols.resolve();
 
             LLVMVisitor v = new LLVMVisitor(symbols);
             LLVMVisitor.Value<LLVMMemoryBufferRef> result = new LLVMVisitor.Value<>();
@@ -63,8 +63,6 @@ public class RunProgram {
             System.err.println("Result " + LLVM.LLVMGenericValueToInt(exec_res, 0));
         } catch (ParseException e) {
             System.out.println("Ignoring error. " + e);
-        } catch (FileNotFoundException e) {
-            System.out.println("File not found:" + e);
         }
     }
 

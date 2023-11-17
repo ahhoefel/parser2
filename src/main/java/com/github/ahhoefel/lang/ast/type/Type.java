@@ -9,6 +9,8 @@ public interface Type extends Visitable {
     public static final Type BOOL = new BooleanType();
     public static final Type VOID = new VoidType();
 
+    int getWidthBits();
+
     class IntType implements Type {
 
         public String toString() {
@@ -22,6 +24,10 @@ public interface Type extends Visitable {
         @Override
         public void accept(Visitor v, Object... objs) {
             v.visit(this, objs);
+        }
+
+        public int getWidthBits() {
+            return 64;
         }
     }
 
@@ -37,6 +43,10 @@ public interface Type extends Visitable {
         @Override
         public void accept(Visitor v, Object... objs) {
             v.visit(this, objs);
+        }
+
+        public int getWidthBits() {
+            return 64;
         }
     }
 
@@ -54,6 +64,10 @@ public interface Type extends Visitable {
         public void accept(Visitor v, Object... objs) {
             v.visit(this, objs);
         }
+
+        public int getWidthBits() {
+            return 64;
+        }
     }
 
     class VoidType implements Type {
@@ -68,6 +82,10 @@ public interface Type extends Visitable {
         @Override
         public void accept(Visitor v, Object... objs) {
             v.visit(this, objs);
+        }
+
+        public int getWidthBits() {
+            return 0;
         }
     }
 }

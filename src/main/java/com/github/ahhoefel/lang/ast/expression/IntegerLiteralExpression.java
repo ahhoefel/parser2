@@ -4,16 +4,16 @@ import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Token;
 
-public class IntegerLiteralExpression implements Expression {
+public class IntegerLiteralExpression extends Expression {
 
-    private int value;
+    private long value;
 
     public IntegerLiteralExpression(Token t) {
         String text = t.getValue();
-        this.value = Integer.parseInt(text);
+        this.value = Long.parseLong(text);
     }
 
-    public int getValue() {
+    public long getValue() {
         return value;
     }
 

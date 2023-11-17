@@ -1,0 +1,11 @@
+Global Symbols:
+
+  File: import_unresolved:import_unresolved
+    Imports:
+      import_unresolved:missing_import
+    Functions:
+      main
+      Local symbol table:
+        0, var x int, -1
+    Symbol References:
+      missing_import (unresolved)

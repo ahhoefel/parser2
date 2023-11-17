@@ -1,0 +1,6 @@
+
+func main() {
+  var x int = 12
+  var y int = 13
+  var z int = x + y
+}

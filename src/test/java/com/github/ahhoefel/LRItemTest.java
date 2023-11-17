@@ -1,8 +1,9 @@
 package com.github.ahhoefel;
 
 import com.github.ahhoefel.parser.*;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+
 
 import java.util.List;
 import java.util.Set;
@@ -29,7 +30,7 @@ public class LRItemTest {
     Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
     Grammar.FirstSymbols first = grammar.first();
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0, terminals.getEof()), grammar, first);
-    Assert.assertEquals(closure, Set.of(new MarkedRule(r0, 0, terminals.getEof()), new MarkedRule(r1, 0, y),
+    Assertions.assertEquals(closure, Set.of(new MarkedRule(r0, 0, terminals.getEof()), new MarkedRule(r1, 0, y),
         new MarkedRule(r1, 0, z), new MarkedRule(r2, 0, y), new MarkedRule(r2, 0, z)));
   }
 
@@ -57,7 +58,7 @@ public class LRItemTest {
     Grammar.FirstSymbols first = grammar.first();
 
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6, 1, plus), grammar, first);
-    Assert.assertEquals(closure,
+    Assertions.assertEquals(closure,
         Set.of(new MarkedRule(r1, 0, plus), new MarkedRule(r1, 0, rparen), new MarkedRule(r2, 0, plus),
             new MarkedRule(r2, 0, rparen), new MarkedRule(r3, 0, plus), new MarkedRule(r3, 0, times),
             new MarkedRule(r3, 0, rparen), new MarkedRule(r4, 0, plus), new MarkedRule(r4, 0, times),
@@ -83,7 +84,7 @@ public class LRItemTest {
     // [F => ^ ( start ) , +],
 
     closure = LRItem.closure(Set.of(new MarkedRule(r1, 1, terminals.getEof())), grammar, first);
-    Assert.assertEquals(closure, Set.of(new MarkedRule(r1, 1, terminals.getEof())));
+    Assertions.assertEquals(closure, Set.of(new MarkedRule(r1, 1, terminals.getEof())));
   }
 
   /*
@@ -105,13 +106,13 @@ public class LRItemTest {
    * Grammar.FirstSymbols first = grammar.first();
    * 
    * Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6,1, plus), grammar,
-   * first); System.out.println(closure); Assert.assertEquals(Set.of( new
+   * first); System.out.println(closure); Assertions.assertEquals(Set.of( new
    * MarkedRule(r6, 1, plus), new MarkedRule(r1, 0, plus), new MarkedRule(r2, 0,
    * plus), new MarkedRule(r3, 0, plus), new MarkedRule(r4, 0, plus), new
    * MarkedRule(r5, 0, plus), new MarkedRule(r6, 0, plus) ), closure);
    * 
    * closure = LRItem.closure( Set.of( new MarkedRule(r1, 1, terminals.getEof())
-   * ), grammar, first); Assert.assertEquals(closure, Set.of( new MarkedRule(r1,
+   * ), grammar, first); Assertions.assertEquals(closure, Set.of( new MarkedRule(r1,
    * 1, terminals.getEof()) )); }
    */
 
@@ -139,7 +140,7 @@ public class LRItemTest {
     // Rules rules = new Rules(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5,
     // r6));
     LRTable table = LRParser.getSLRTable(grammar);
-    Assert.assertEquals(22, table.state.size());
+    Assertions.assertEquals(22, table.state.size());
 
     System.out.println(table);
     // List<Symbol> input = List.of(n, plus, n, eof);

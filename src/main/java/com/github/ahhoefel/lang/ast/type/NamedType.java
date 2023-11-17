@@ -36,6 +36,11 @@ public class NamedType implements Type {
         return type.get();
     }
 
+    @Override
+    public int getWidthBits() {
+        return getType().getWidthBits();
+    }
+
     public boolean equals(Object o) {
         // Order matters here so we recursively descend into named types, flipping
         // sides.
