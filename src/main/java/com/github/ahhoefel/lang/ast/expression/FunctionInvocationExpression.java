@@ -1,6 +1,7 @@
 package com.github.ahhoefel.lang.ast.expression;
 
 import com.github.ahhoefel.lang.ast.*;
+import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Token;
 
@@ -13,6 +14,7 @@ public class FunctionInvocationExpression extends Expression {
     private List<Expression> args;
     private String identifier;
     private Type type;
+    private SymbolReference symbol;
 
     public FunctionInvocationExpression(Token identifier, List<Expression> args) {
         this.identifier = identifier.getValue();
@@ -49,4 +51,13 @@ public class FunctionInvocationExpression extends Expression {
     public boolean isLValue() {
         return false;
     }
+
+    public void setSymbolReference(SymbolReference symbol) {
+        this.symbol = symbol;
+    }
+
+    public SymbolReference getSymbolReference() {
+        return this.symbol;
+    }
+
 }

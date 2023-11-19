@@ -1,7 +1,6 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 import com.github.ahhoefel.lang.ast.Block;
 import com.github.ahhoefel.lang.ast.Declaration;
@@ -42,7 +41,6 @@ import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
-import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.type.NamedType;
 import com.github.ahhoefel.lang.ast.type.StructType;
@@ -162,11 +160,11 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(FunctionInvocationExpression expr, Object... objs) {
-
-        // GlobalSymbols g = (GlobalSymbols) objs[0];
-        // FileSymbols symbols = (FileSymbols) objs[1];
-        // LocalSymbols locals = (LocalSymbols) objs[2];
-        // SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        GlobalSymbols globals = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), globals, symbols, locals, prevSymbolIndex));
         if (expr.getImplicitArg().isPresent()) {
             expr.getImplicitArg().get().accept(this, objs);
         }
@@ -277,6 +275,7 @@ public class SymbolVisitor implements Visitor {
         SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
         // SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
         stmt.setLocalSymbolIndex(prevSymbolIndex);
+        stmt.getCondition().accept(this, g, symbols, locals, prevSymbolIndex);
         stmt.getBlock().accept(this, g, symbols, locals, prevSymbolIndex);
     }
 
@@ -309,47 +308,50 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(NotEqualExpression expr, Object... objs) {
-
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
     }
 
     @Override
     public void visit(ParenthesesExpression expr, Object... objs) {
-
+        expr.getExpression().accept(this, objs);
     }
 
     @Override
     public void visit(IntType type, Object... objs) {
-
+        // No implementation needed
     }
 
     @Override
     public void visit(BooleanType type, Object... objs) {
-
+        // No implementation needed
     }
 
     @Override
     public void visit(StringType type, Object... objs) {
-
+        // No implementation needed
     }
 
     @Override
     public void visit(VoidType type, Object... objs) {
-
+        // No implementation needed
     }
 
     @Override
     public void visit(UnionType type, Object... objs) {
-
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
     public void visit(StructType type, Object... objs) {
-
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
     public void visit(NamedType type, Object... objs) {
-
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
-
 }

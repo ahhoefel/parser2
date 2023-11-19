@@ -65,7 +65,14 @@ public class LangToASM {
             System.out.println(t.getFilePath());
             globals.add(t);
         }
-        globals.resolve();
+        boolean resolved = globals.resolve();
+        if (!resolved) {
+            System.out.println("Symbols not resolved:");
+            System.out.println(globals.toString());
+            System.exit(1);
+        }
+
+        System.out.println(globals.toString());
 
         RegisterVisitor registerVisitor = new RegisterVisitor();
         registerVisitor.assignRegisters(globals);

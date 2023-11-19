@@ -1,6 +1,8 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
 import java.math.BigInteger;
+import java.util.List;
+import java.util.Optional;
 
 import com.github.ahhoefel.arm.AssemblyFile;
 import com.github.ahhoefel.arm.Condition;
@@ -26,6 +28,7 @@ import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.AndExpression;
 import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
@@ -51,6 +54,7 @@ import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
+import com.github.ahhoefel.lang.ast.symbols.SymbolReference.Resolution;
 import com.github.ahhoefel.lang.ast.type.NamedType;
 import com.github.ahhoefel.lang.ast.type.StructType;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
@@ -78,8 +82,16 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(AndExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getLeft().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X1, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRight().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.ADD.of(Register.X0, Register.X0, Register.X1));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
     }
 
     @Override
@@ -111,8 +123,43 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(FunctionInvocationExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        FunctionDefinition defn = (FunctionDefinition) objs[1];
+        for (Expression arg : expr.getArgs()) {
+            arg.accept(this, objs);
+        }
+
+        Optional<Resolution> res = expr.getSymbolReference().getResolution();
+        if (!res.isPresent()) {
+            throw new RuntimeException("Unresolved function invocation:" + defn.getDeclaration().getName());
+        }
+        Optional<FunctionDefinition> fnDefnOpt = res.get().getFunctionDefinition();
+        if (!fnDefnOpt.isPresent()) {
+            throw new RuntimeException(
+                    "Function invocations should resolve to functions:" + defn.getDeclaration().getName());
+        }
+        FunctionDefinition fnDefn = fnDefnOpt.get();
+        List<VariableDeclaration> params = fnDefn.getDeclaration().getParameters();
+        if (params.size() != expr.getArgs().size()) {
+            throw new RuntimeException(
+                    "Args length and param length do not match. This should have been caught in type checking.");
+        }
+        for (int i = 0; i < params.size(); i++) {
+            VariableDeclaration param = params.get(i);
+            Expression arg = expr.getArgs().get(i);
+            asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0,
+                    new RegisterShift<>(Register.SP,
+                            new UInt15MultipleOf8(arg.getRegisterTracker().getStackPositionBytes()))));
+            asm.add(InstructionType.SUB_IMM.of(Register.X1, Register.SP,
+                    new UInt12(fnDefn.getRegisterScope().getTotalWidthBits() / 8
+                            - param.getRegisterTracker().getStackPositionBytes())));
+            asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0,
+                    new RegisterShift<>(Register.X1, new UInt15MultipleOf8(0))));
+        }
+        asm.add(InstructionType.BL.of(new Label(fnDefn.getDeclaration().getName())));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0,
+                new RegisterShift<>(Register.SP,
+                        new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
     }
 
     @Override
@@ -283,12 +330,17 @@ public class AArch64Visitor implements Visitor {
         FunctionDefinition defn = (FunctionDefinition) objs[1];
         RegisterScope scope = defn.getRegisterScope();
         int stackDepthBytes = scope.getTotalWidthBits() / 8;
-
         asm.add(InstructionType.LABEL.of(new Label(fn.getName())));
         asm.add(InstructionType.SUB_IMM.of(Register.SP, Register.SP, new UInt12(stackDepthBytes)));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.W30,
+                new RegisterShift<>(Register.SP,
+                        new UInt15MultipleOf8(defn.getReturnProgramCounterRegister().getStackPositionBytes()))));
         fn.getBlock().accept(this, asm, defn);
 
         asm.add(InstructionType.LABEL.of(defn.getReturnLabel()));
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.W30,
+                new RegisterShift<>(Register.SP,
+                        new UInt15MultipleOf8(defn.getReturnProgramCounterRegister().getStackPositionBytes()))));
         asm.add(InstructionType.ADD_IMM.of(Register.SP, Register.SP, new UInt12(stackDepthBytes)));
         asm.add(InstructionType.RET.of());
     }

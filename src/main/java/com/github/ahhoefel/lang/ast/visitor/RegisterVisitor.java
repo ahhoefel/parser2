@@ -1,6 +1,5 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
-import com.github.ahhoefel.arm.AssemblyFile;
 import com.github.ahhoefel.lang.ast.Block;
 import com.github.ahhoefel.lang.ast.File;
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
@@ -14,6 +13,7 @@ import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.AndExpression;
 import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
@@ -52,26 +52,28 @@ public class RegisterVisitor implements Visitor {
     public void assignRegisters(GlobalSymbols globals) {
         for (FileSymbols f : globals.getFiles()) {
             for (FunctionDefinition fn : f.getFunctions()) {
-                fn.getDeclaration().accept(this, fn.getRegisterScope(), fn.getLocalSymbols());
+                fn.getDeclaration().accept(this, fn);
             }
         }
     }
 
     @Override
     public void visit(AndExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
     }
 
     @Override
     public void visit(BooleanLiteralExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
     }
 
     @Override
     public void visit(EqualExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getLeft().accept(this, objs);
         expr.getRight().accept(this, objs);
         expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
@@ -79,13 +81,21 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(FunctionInvocationExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        for (Expression arg : expr.getArgs()) {
+            arg.accept(this, objs);
+        }
+        if (expr.getSymbolReference() == null) {
+            throw new RuntimeException("No symbol reference for identifier:" + expr.getIdentifier());
+        }
+        Type returnType = expr.getSymbolReference().getResolution().get().getFunctionDefinition().get().getDeclaration()
+                .getReturnType();
+        expr.setRegisterTracker(scope.createRegister(returnType.getWidthBits()));
     }
 
     @Override
     public void visit(IntegerLiteralExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
@@ -115,7 +125,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(NotEqualExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getLeft().accept(this, objs);
         expr.getRight().accept(this, objs);
         expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
@@ -129,7 +139,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(ProductExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getLeft().accept(this, objs);
         expr.getRight().accept(this, objs);
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
@@ -143,7 +153,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(SubtractExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getLeft().accept(this, objs);
         expr.getRight().accept(this, objs);
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
@@ -151,7 +161,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(SumExpression expr, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getLeft().accept(this, objs);
         expr.getRight().accept(this, objs);
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
@@ -205,6 +215,13 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(FunctionDeclaration fn, Object... objs) {
+        FunctionDefinition defn = (FunctionDefinition) objs[0];
+        // TODO: consider separating INT type and return address width.
+        // Should it be 32 bits if it's in w30?
+        defn.setReturnProgramCounterRegister(defn.getRegisterScope().createRegister(Type.INT.getWidthBits()));
+        for (VariableDeclaration v : fn.getParameters()) {
+            v.accept(this, objs);
+        }
         fn.getBlock().accept(this, objs);
     }
 
@@ -246,7 +263,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(VariableDeclaration decl, Object... objs) {
-        RegisterScope scope = (RegisterScope) objs[0];
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         decl.setRegisterTracker(scope.createRegister(decl.getType().getWidthBits()));
     }
 

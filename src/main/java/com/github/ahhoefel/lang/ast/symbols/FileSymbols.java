@@ -11,6 +11,7 @@ import java.util.Optional;
 import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
 import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.util.IndentedString;
 
@@ -108,9 +109,11 @@ public class FileSymbols {
         Collections.sort(fns);
         for (String fn : fns) {
             out.addLine(fn);
+            out.indent();
             out.addLine("Local symbol table:");
             out.indent();
             functions.get(fn).localSymbols.toIndentedString(out);
+            out.unindent();
             out.unindent();
         }
     }
@@ -126,6 +129,7 @@ public class FileSymbols {
         private LocalSymbols localSymbols;
         private RegisterScope registerScope;
         private Label returnLabel;
+        private RegisterTracker returnProgramCounterRegister;
 
         private static int FUNCTION_COUNTER = 0;
 
@@ -150,6 +154,14 @@ public class FileSymbols {
 
         public Label getReturnLabel() {
             return returnLabel;
+        }
+
+        public void setReturnProgramCounterRegister(RegisterTracker returnProgramCounterRegister) {
+            this.returnProgramCounterRegister = returnProgramCounterRegister;
+        }
+
+        public RegisterTracker getReturnProgramCounterRegister() {
+            return returnProgramCounterRegister;
         }
     }
 }

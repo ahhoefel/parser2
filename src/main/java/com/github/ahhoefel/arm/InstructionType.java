@@ -15,6 +15,8 @@ public class InstructionType {
             ParameterType.UINT_12);
     public static final InstructionType MUL = new InstructionType("MUL", ParameterType.X, ParameterType.X,
             ParameterType.X);
+    public static final InstructionType AND = new InstructionType("AND", ParameterType.X, ParameterType.X,
+            ParameterType.X);
 
     public static final InstructionType LDR = new InstructionType("LDR", ParameterType.X, ParameterType.LABEL);
     public static final InstructionType LDR_REGISTER_OFFSET = new InstructionType("LDR", ParameterType.X,

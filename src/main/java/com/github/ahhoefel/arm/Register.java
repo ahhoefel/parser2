@@ -10,14 +10,17 @@ public class Register implements Parameter {
 
     public static final Register X0 = new Register("x0");
     public static final Register X1 = new Register("x1");
+    public static final Register W30 = new Register("w30");
     public static final Register SP = new Register("sp");
 
     private String name;
+
     Register(String name) {
         this.name = name;
     }
 
     private static Map<Integer, Register> virtualRegisters = new HashMap<>();
+
     public static Register virtual(int n) {
         if (virtualRegisters.containsKey(n)) {
             return virtualRegisters.get(n);

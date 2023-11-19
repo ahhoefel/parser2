@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
+import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
@@ -16,7 +17,8 @@ public class SymbolReference {
         private LocalSymbols locals;
         private SymbolIndex localSymbolIndex;
 
-        public ResolutionKey(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals, SymbolIndex locaSymbolIndex) {
+        public ResolutionKey(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals,
+                SymbolIndex locaSymbolIndex) {
             this.name = name;
             this.globals = globals;
             this.file = file;
@@ -24,19 +26,29 @@ public class SymbolReference {
             this.localSymbolIndex = locaSymbolIndex;
         }
     }
+
     private ResolutionKey key;
 
-    private static class Resolution {
+    public static class Resolution {
         private Optional<VariableDeclaration> localVariable;
         private Optional<FileSymbols> fileImport;
+        private Optional<FunctionDefinition> functionDefinition;
+
         public Resolution() {
             localVariable = Optional.empty();
             fileImport = Optional.empty();
+            functionDefinition = Optional.empty();
+        }
+
+        public Optional<FunctionDefinition> getFunctionDefinition() {
+            return functionDefinition;
         }
     }
+
     private Optional<Resolution> resolution;
 
-    public SymbolReference(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals, SymbolIndex localSymbolIndex) {
+    public SymbolReference(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals,
+            SymbolIndex localSymbolIndex) {
         this.key = new ResolutionKey(name, globals, file, locals, localSymbolIndex);
         this.resolution = Optional.empty();
         file.addSymbolReference(this);
@@ -47,6 +59,13 @@ public class SymbolReference {
         if (symbol.isPresent()) {
             resolution = Optional.of(new Resolution());
             resolution.get().localVariable = Optional.of(symbol.get().declaration);
+            return true;
+        }
+
+        Optional<FunctionDefinition> fn = key.file.getFunction(key.name);
+        if (fn.isPresent()) {
+            resolution = Optional.of(new Resolution());
+            resolution.get().functionDefinition = fn;
             return true;
         }
 
@@ -70,6 +89,10 @@ public class SymbolReference {
             return resolution.get().localVariable.get().getRegisterTracker();
         }
         throw new UnsupportedOperationException("Registers for imports not supported yet.");
+    }
+
+    public Optional<Resolution> getResolution() {
+        return resolution;
     }
 
     public String toString() {
