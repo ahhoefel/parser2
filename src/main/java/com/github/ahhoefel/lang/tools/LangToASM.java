@@ -3,6 +3,7 @@ package com.github.ahhoefel.lang.tools;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +39,9 @@ public class LangToASM {
         @Option(name = "targets", abbrev = 't', help = "Targets to be compiled, comma separated.", defaultValue = "")
         public String targets;
 
+        @Option(name = "input", abbrev = 'i', help = "Single input file to be compiled.", defaultValue = "")
+        public String input;
+
         @Option(name = "output", abbrev = 'o', help = "Output filename.", defaultValue = "")
         public String output;
     }
@@ -54,7 +58,7 @@ public class LangToASM {
         }
 
         Path source = Path.of(options.root);
-        List<String> entries = Arrays.asList(options.targets.split(","));
+        List<String> entries = options.targets.isEmpty() ? List.of() : Arrays.asList(options.targets.split(","));
         Path asmFile = Path.of(options.output);
         SymbolVisitor v = new SymbolVisitor(source);
         GlobalSymbols globals = new GlobalSymbols(v, fileParser);
@@ -65,6 +69,12 @@ public class LangToASM {
             System.out.println(t.getFilePath());
             globals.add(t);
         }
+        if (!options.input.isEmpty()) {
+            Target t = new Target(source, Path.of(options.input));
+            System.out.println(t.getFilePath());
+            globals.add(t);
+        }
+
         boolean resolved = globals.resolve();
         if (!resolved) {
             System.out.println("Symbols not resolved:");

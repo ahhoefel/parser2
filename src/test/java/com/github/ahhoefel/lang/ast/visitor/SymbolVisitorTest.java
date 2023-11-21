@@ -38,7 +38,7 @@ public class SymbolVisitorTest {
     public void testSymbols(Path source, List<Path> entries, Path symbolsFile) throws Exception {
         logger.info("Running test: " + source.toString());
         logger.info("Entries: " + entries.toString());
-        
+
         SymbolVisitor v = new SymbolVisitor(source);
         GlobalSymbols globals = new GlobalSymbols(v, fileParser);
         for (Path entry : entries) {
@@ -49,8 +49,8 @@ public class SymbolVisitorTest {
         globals.resolve();
 
         // Uncomment to update expected results.
-            //Files.write(symbolsFile, globals.toString().getBytes(),
-            //StandardOpenOption.WRITE);
+        // Files.write(symbolsFile, globals.toString().getBytes(),
+        // StandardOpenOption.WRITE);
 
         String expected = Files.readString(symbolsFile);
         assertEquals(expected, globals.toString());
@@ -67,13 +67,15 @@ public class SymbolVisitorTest {
                 String testName = p.getFileName().toString();
                 List<Path> entries;
                 try {
-                    entries = Files.list(p).filter(f -> f.toFile().getName().endsWith(".ro")).collect(Collectors.toList());
+                    entries = Files.list(p).filter(f -> f.toFile().getName().endsWith(".ro"))
+                            .collect(Collectors.toList());
                 } catch (IOException e) {
                     logger.atError().log(e.toString());
                     entries = List.of();
                 }
                 Path symbols = p.resolve("symbols.txt");
-                return Arguments.of(Named.of(testName, source), Named.of("" + entries.size() +" entries", entries), Named.of("symbols.txt", symbols));
+                return Arguments.of(Named.of(testName, source), Named.of("" + entries.size() + " entries", entries),
+                        Named.of("symbols.txt", symbols));
             });
         }
     }

@@ -4,8 +4,9 @@ Global Symbols:
     Imports:
     Functions:
       foo
-      Local symbol table:
+        Local symbol table:
       main
-      Local symbol table:
-        0, var y int, -1
+        Local symbol table:
+          0, var y int, -1
     Symbol References:
+      foo 

@@ -314,8 +314,7 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(ExpressionStatement stmt, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        stmt.getExpression().accept(this, objs);
     }
 
     @Override

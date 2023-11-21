@@ -5,7 +5,8 @@ Global Symbols:
       import_unresolved:missing_import
     Functions:
       main
-      Local symbol table:
-        0, var x int, -1
+        Local symbol table:
+          0, var x int, -1
     Symbol References:
+      foo (unresolved)
       missing_import (unresolved)

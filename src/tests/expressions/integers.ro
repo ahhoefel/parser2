@@ -1,11 +1,11 @@
-func main() bool {
+func other() bool {
   if 1 + 1 != 2 {
     return false
   }
   return true
 }
 
-func other() bool {
+func main() bool {
   if 1 + 1 != 2 {
     return false
   }

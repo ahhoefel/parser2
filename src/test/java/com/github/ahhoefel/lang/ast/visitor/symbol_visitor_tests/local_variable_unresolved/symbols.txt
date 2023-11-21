@@ -4,8 +4,8 @@ Global Symbols:
     Imports:
     Functions:
       main
-      Local symbol table:
-        0, var x int, -1
-        1, var y int, 0
+        Local symbol table:
+          0, var x int, -1
+          1, var y int, 0
     Symbol References:
       z (unresolved)

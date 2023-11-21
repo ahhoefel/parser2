@@ -1,6 +1,6 @@
 /target
 /.vscode
-/.src/tests/bazel-bin
-/.src/tests/bazel-out
-/.src/tests/bazel-testlogs
-/.src/tests/bazel-tests
+/src/tests/bazel-bin
+/src/tests/bazel-out
+/src/tests/bazel-testlogs
+/src/tests/bazel-tests
