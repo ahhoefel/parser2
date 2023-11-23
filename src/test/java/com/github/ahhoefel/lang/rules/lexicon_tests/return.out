@@ -1,0 +1,9 @@
+func(func) @ :1:1:0
+identifierGrammar(main) @ :1:6:5
+lparen(() @ :1:10:9
+rparen()) @ :1:11:10
+bool(bool) @ :1:13:12
+lbrace({) @ :1:18:17
+return(return) @ :2:3:21
+false(false) @ :2:10:28
+rbrace(}) @ :3:1:34

@@ -6,7 +6,6 @@ import java.util.Optional;
 
 import com.github.ahhoefel.arm.AssemblyFile;
 import com.github.ahhoefel.arm.Condition;
-import com.github.ahhoefel.arm.Instruction;
 import com.github.ahhoefel.arm.InstructionType;
 import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.arm.Register;
@@ -317,10 +316,23 @@ public class AArch64Visitor implements Visitor {
         stmt.getExpression().accept(this, objs);
     }
 
+    private static int FOR_LABEL_COUNTER = 0;
+
     @Override
     public void visit(ForStatement stmt, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        Label before = new Label("before_for_" + FOR_LABEL_COUNTER);
+        Label after = new Label("after_for_" + FOR_LABEL_COUNTER++);
+
+        asm.add(InstructionType.LABEL.of(before));
+        stmt.getCondition().accept(this, objs);
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(stmt.getCondition().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.CMP.of(Register.X0, new UInt12(0)));
+        asm.add(InstructionType.B_EQ.of(after));
+        stmt.getBlock().accept(this, objs);
+        asm.add(InstructionType.B.of(before));
+        asm.add(InstructionType.LABEL.of(after));
     }
 
     @Override

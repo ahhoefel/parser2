@@ -7,6 +7,7 @@ import com.github.ahhoefel.parser.Rule;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
 import com.github.ahhoefel.lang.ast.Import;
+import com.github.ahhoefel.parser.ConcatAction;
 import com.github.ahhoefel.parser.LanguageBuilder;
 import com.github.ahhoefel.parser.LanguageComponent;
 import com.github.ahhoefel.parser.Token;
@@ -23,11 +24,11 @@ public class ImportRules implements LanguageComponent {
   public void provideRules(LanguageBuilder lang) {
     Lexicon lex = lang.getLexicon();
     Rule.Builder rules = lang.getRules();
-    rules.add(imp0rt, lex.importKeyword, path).setAction(e -> new Import((String) e[1]));
+    rules.add(imp0rt, lex.importKeyword, path).setAction(e -> new Import(((Token) e[1]).getValue()));
     rules.add(imp0rt, lex.importKeyword, lex.identifier, path)
-        .setAction(e -> new Import(((Token) e[1]).getValue(), (String) e[2]));
-    rules.add(path, lex.identifier).setAction(e -> ((Token) e[0]).getValue());
-    rules.add(path, path, lex.forwardSlash, lex.identifier).setAction(e -> e[0] + "/" + ((Token) e[2]).getValue());
+        .setAction(e -> new Import(((Token) e[1]).getValue(), ((Token) e[2]).getValue()));
+    rules.add(path, lex.identifier).setAction(e -> e[0]);
+    rules.add(path, path, lex.forwardSlash, lex.identifier).setAction(ConcatAction.SINGLETON);
   }
 
   @Override

@@ -145,12 +145,12 @@ public class LLVMVisitor implements Visitor {
         // Block setup
         Value<Boolean> selfTerminates = new Value<>(false);
         fn.getBlock().accept(this, fnRef, block, builder, context, selfTerminates);
-        if (selfTerminates.value && (fn.getReturnType() == Type.VOID)) {
+        if (selfTerminates.value && (fn.getReturnType() instanceof VoidType)) {
             throw new RuntimeException(
                     "Function with void return type should not end in return statement: " +
                             fn.getName());
         }
-        if (!selfTerminates.value && (fn.getReturnType() != Type.VOID)) {
+        if (!selfTerminates.value && (!(fn.getReturnType() instanceof VoidType))) {
             throw new RuntimeException("Non-void function needs return statement: " + fn.getName());
         }
     }

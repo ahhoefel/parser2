@@ -215,9 +215,11 @@ public class FormatVisitor implements Visitor {
 
     @Override
     public void visit(Block block, Object... objs) {
+        out.indent();
         for (Visitable stmt : block.getStatements()) {
             stmt.accept(this);
         }
+        out.unindent();
     }
 
     @Override
@@ -249,15 +251,13 @@ public class FormatVisitor implements Visitor {
             }
         }
         out.add(")");
-        if (fn.getReturnType() != null && fn.getReturnType() != Type.VOID) {
+        if (fn.getReturnType() != null && !(fn.getReturnType() instanceof VoidType)) {
             out.add(" ");
             out.add(fn.getReturnType().toString());
         }
         out.add(" {");
         out.endLine();
-        out.indent();
         fn.getBlock().accept(this);
-        out.unindent();
         out.addLine("}");
     }
 
@@ -265,9 +265,9 @@ public class FormatVisitor implements Visitor {
     public void visit(IfStatement stmt, Object... objs) {
         out.add("if ");
         stmt.getCondition().accept(this);
-        out.add(" {").endLine().indent();
+        out.add(" {").endLine();
         stmt.getBlock().accept(this);
-        out.unindent().addLine("}");
+        out.addLine("}");
     }
 
     @Override

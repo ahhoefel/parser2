@@ -5,8 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Member;
 import com.github.ahhoefel.lang.ast.Visitor;
+import com.github.ahhoefel.parser.LocateableList;
 
 public class StructType implements Type {
 
@@ -14,17 +16,29 @@ public class StructType implements Type {
     private Map<String, Type> members;
     private Map<String, Integer> memberOffsets;
     private int width;
+    private CodeLocation location;
 
-    public StructType(List<Member> members) {
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
+    }
+
+    public StructType(LocateableList<Member> members) {
         this.width = 0;
         this.members = new HashMap<>();
         this.orderedMembers = new ArrayList<>();
         this.memberOffsets = new HashMap<>();
-        for (Member member : members) {
+        for (Member member : members.getList()) {
             this.members.put(member.getIdentifier(), member.getType());
             this.orderedMembers.add(member.getIdentifier());
             this.width += member.getType().getWidthBits();
         }
+        this.setLocation(members.getLocation());
     }
 
     public Type getMember(String identifier) {
@@ -39,8 +53,6 @@ public class StructType implements Type {
     public int getWidthBits() {
         return width;
     }
-
-
 
     public String toString() {
         String out = "struct {\n";

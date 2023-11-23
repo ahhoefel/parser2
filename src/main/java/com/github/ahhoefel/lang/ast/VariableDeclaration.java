@@ -3,16 +3,19 @@ package com.github.ahhoefel.lang.ast;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.ErrorLog;
+import com.github.ahhoefel.parser.Locateable;
 
-public class VariableDeclaration implements Visitable {
+public class VariableDeclaration implements Visitable, Locateable {
 
     private String name;
     private Type type;
     private RegisterTracker registerTracker;
+    private CodeLocation location;
 
-    public VariableDeclaration(String name, Type type) {
+    public VariableDeclaration(String name, Type type, CodeLocation location) {
         this.name = name;
         this.type = type;
+        this.location = location;
     }
 
     public void accept(Visitor v, Object... objs) {
@@ -41,5 +44,15 @@ public class VariableDeclaration implements Visitable {
 
     public String toString() {
         return String.format("var %s %s", name, type);
+    }
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 }

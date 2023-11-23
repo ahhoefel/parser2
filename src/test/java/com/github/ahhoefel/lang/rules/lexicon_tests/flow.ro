@@ -1,0 +1,9 @@
+func main() {
+    var x int = 3
+    for x < 10 {
+        x = x + 1
+    }
+    if x / 2 == 0 {
+        foo(x)
+    }
+}

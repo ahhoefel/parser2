@@ -30,13 +30,13 @@ import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.parser.LRParser;
 
 public class AArch64VisitorTest {
-      private static final Logger logger = LoggerFactory.getLogger(SymbolVisitorTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(SymbolVisitorTest.class);
     private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
 
     @ParameterizedTest
     @ArgumentsSource(FileArgumentProvider.class)
     public void testSymbols(Path source, List<Path> entries, Path asmFile) throws Exception {
-      
+
         SymbolVisitor v = new SymbolVisitor(source);
         GlobalSymbols globals = new GlobalSymbols(v, fileParser);
         for (Path entry : entries) {
@@ -54,8 +54,7 @@ public class AArch64VisitorTest {
 
         // Uncomment to update expected results.
         Files.write(asmFile, asm.toString().getBytes(),
-        StandardOpenOption.WRITE);
-        
+                StandardOpenOption.WRITE);
 
         String expected = Files.readString(asmFile);
         assertEquals(expected, asm.toString());
@@ -72,13 +71,15 @@ public class AArch64VisitorTest {
                 String testName = p.getFileName().toString();
                 List<Path> entries;
                 try {
-                    entries = Files.list(p).filter(f -> f.toFile().getName().endsWith(".ro")).collect(Collectors.toList());
+                    entries = Files.list(p).filter(f -> f.toFile().getName().endsWith(".ro"))
+                            .collect(Collectors.toList());
                 } catch (IOException e) {
                     logger.atError().log(e.toString());
                     entries = List.of();
                 }
                 Path asm = p.resolve("aarch64.s");
-                return Arguments.of(Named.of(testName, source), Named.of("" + entries.size() +" entries", entries), Named.of("aarch64.s", asm));
+                return Arguments.of(Named.of(testName, source), Named.of("" + entries.size() + " entries", entries),
+                        Named.of("aarch64.s", asm));
             });
         }
     }

@@ -164,7 +164,8 @@ public class SymbolVisitor implements Visitor {
         FileSymbols symbols = (FileSymbols) objs[1];
         LocalSymbols locals = (LocalSymbols) objs[2];
         SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
-        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), globals, symbols, locals, prevSymbolIndex));
+        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), expr.getLocation(), globals, symbols, locals,
+                prevSymbolIndex));
         if (expr.getImplicitArg().isPresent()) {
             expr.getImplicitArg().get().accept(this, objs);
         }
@@ -243,7 +244,8 @@ public class SymbolVisitor implements Visitor {
         // throw new RuntimeException("Reference to undeclared variable: " +
         // expr.getIdentifier());
         // }
-        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), globals, symbols, locals, prevSymbolIndex));
+        expr.setSymbolReference(new SymbolReference(expr.getIdentifier(), expr.getLocation(), globals, symbols, locals,
+                prevSymbolIndex));
     }
 
     @Override

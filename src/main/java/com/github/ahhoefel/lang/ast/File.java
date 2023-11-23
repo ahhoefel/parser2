@@ -6,13 +6,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class File implements Visitable {
+import com.github.ahhoefel.parser.Locateable;
+
+public class File implements Visitable, Locateable {
 
     private Target target;
     private ImportCatalog imports;
     private List<Declaration> declarations;
     private Map<String, FunctionDeclaration> functions;
     private List<TypeDeclaration> types;
+    private CodeLocation location;
 
     public File() {
         imports = new ImportCatalog();
@@ -71,5 +74,13 @@ public class File implements Visitable {
 
     public ImportCatalog getImports() {
         return imports;
+    }
+
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 }

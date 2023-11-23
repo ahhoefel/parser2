@@ -14,6 +14,7 @@ public class VariableExpression extends Expression {
 
     public VariableExpression(Token t) {
         this.identifier = t.getValue();
+        this.setLocation(t.getLocation());
     }
 
     @Override

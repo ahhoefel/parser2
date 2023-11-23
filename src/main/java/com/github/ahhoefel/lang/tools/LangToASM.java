@@ -3,18 +3,12 @@ package com.github.ahhoefel.lang.tools;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import com.github.ahhoefel.arm.AssemblyFile;
-import com.github.ahhoefel.arm.InstructionType;
-import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.lang.ast.Target;
-import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.visitor.AArch64Visitor;
 import com.github.ahhoefel.lang.ast.visitor.RegisterVisitor;

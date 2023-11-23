@@ -2,6 +2,7 @@ package com.github.ahhoefel.lang.ast.type;
 
 import java.util.List;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Member;
 import com.github.ahhoefel.lang.ast.Visitor;
 
@@ -16,6 +17,18 @@ public class UnionType implements Type {
         for (Member member : members) {
             width += member.getType().getWidthBits();
         }
+    }
+
+    private CodeLocation location;
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 
     @Override

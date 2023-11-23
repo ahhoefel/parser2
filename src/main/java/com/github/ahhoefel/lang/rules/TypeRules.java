@@ -10,11 +10,14 @@ import com.github.ahhoefel.lang.ast.type.NamedType;
 import com.github.ahhoefel.lang.ast.type.ParameterizedType;
 import com.github.ahhoefel.lang.ast.type.StructType;
 import com.github.ahhoefel.lang.ast.type.Type;
+import com.github.ahhoefel.lang.ast.type.Type.IntType;
+import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
+import com.github.ahhoefel.lang.ast.type.Type.StringType;
 import com.github.ahhoefel.lang.ast.type.UnionType;
 import com.github.ahhoefel.parser.LanguageBuilder;
 import com.github.ahhoefel.parser.LanguageComponent;
+import com.github.ahhoefel.parser.LocateableList;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -33,11 +36,11 @@ public class TypeRules implements LanguageComponent {
         Lexicon lex = lang.getLexicon();
         Rule.Builder rules = lang.getRules();
 
-        rules.add(type, lex.intKeyword).setAction(e -> Type.INT);
-        rules.add(type, lex.boolKeyword).setAction(e -> Type.BOOL);
-        rules.add(type, lex.stringKeyword).setAction(e -> Type.STRING);
+        rules.add(type, lex.intKeyword).setAction(e -> new IntType(new CodeLocation(e)));
+        rules.add(type, lex.boolKeyword).setAction(e -> new BooleanType(new CodeLocation(e)));
+        rules.add(type, lex.stringKeyword).setAction(e -> new StringType(new CodeLocation(e)));
         rules.add(type, lex.structKeyword, lex.lBrace, members, lex.rBrace)
-                .setAction(e -> new StructType((List<Member>) e[2]));
+                .setAction(e -> new StructType((LocateableList<Member>) e[2]));
         rules.add(type, lex.unionKeyword, lex.lBrace, members, lex.rBrace)
                 .setAction(e -> new UnionType((List<Member>) e[2]));
         rules.add(type, lex.identifier).setAction(e -> new NamedType(((Token) e[0]).getValue()));
@@ -50,22 +53,22 @@ public class TypeRules implements LanguageComponent {
         rules.add(type, type, lex.lBracket, typeParams, lex.rBracket)
                 .setAction(e -> new ParameterizedType((List<Type>) e[2]));
         rules.add(typeParams, typeParams, lex.comma, type).setAction(e -> {
-            List<Type> params = (List<Type>) e[0];
+            LocateableList<Type> params = (LocateableList<Type>) e[0];
             params.add((Type) e[2]);
             return params;
         });
         rules.add(typeParams, type).setAction(e -> {
-            List<Type> params = new ArrayList<>();
+            LocateableList<Type> params = new LocateableList<>();
             params.add((Type) e[0]);
             return params;
         });
 
         rules.add(members, members, lex.identifier, type).setAction(e -> {
-            List<Member> m = (List<Member>) e[0];
+            LocateableList<Member> m = (LocateableList<Member>) e[0];
             m.add(new Member(((Token) e[1]).getValue(), (Type) e[2]));
             return m;
         });
-        rules.add(members).setAction(e -> new ArrayList<>());
+        rules.add(members).setAction(e -> new LocateableList<>());
     }
 
     @Override

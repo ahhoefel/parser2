@@ -16,12 +16,12 @@ public class LRParser {
 
   public Object parse(String s) {
     ErrorLog log = new ErrorLog();
-    List<Token> tokens = lang.getLexicon().parse(s, log);
+    LocateableList<Token> tokens = lang.getLexicon().parse(s, log);
     if (!log.isEmpty()) {
       throw new ParseException(log);
     }
     tokens.add(new Token(lang.getLexicon().getTerminals().getEof(), "eof", null));
-    Object o = Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), log);
+    Object o = Parser.parseTokens(table, tokens.getList().iterator(), grammar.getAugmentedStartRule().getSource(), log);
     if (!log.isEmpty()) {
       throw new ParseException(log);
     }

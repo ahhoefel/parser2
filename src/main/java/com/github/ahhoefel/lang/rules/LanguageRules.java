@@ -5,7 +5,6 @@ import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.parser.*;
 
 import java.io.IOException;
-import java.util.List;
 
 public class LanguageRules {
 
@@ -25,10 +24,20 @@ public class LanguageRules {
   }
 
   public File parse(Target target, ErrorLog log) throws IOException {
-    List<Token> tokens = lang.getLexicon().parse(target, log);
+    if (target == null) {
+      throw new RuntimeException("Target should not be null");
+    }
+    LocateableList<Token> tokens = lang.getLexicon().parse(target, log);
+    if (lang == null) {
+      throw new RuntimeException("a");
+    }
+    if (tokens == null) {
+      throw new RuntimeException(log.toString());
+    }
     tokens.add(new Token(lang.getLexicon().getTerminals().getEof(), "eof", null));
     System.out.println("Parsing target: " + target);
-    File f = (File) Parser.parseTokens(table, tokens.iterator(), grammar.getAugmentedStartRule().getSource(), log);
+    File f = (File) Parser.parseTokens(table, tokens.getList().iterator(), grammar.getAugmentedStartRule().getSource(),
+        log);
     if (f != null) {
       f.setTarget(target);
     }

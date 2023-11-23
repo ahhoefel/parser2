@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public class TokenAction implements Function<Object[], Object> {
+public class TokenAction implements Function<Locateable[], Locateable> {
 
   private Symbol terminal;
   private Map<String, Symbol> keywordMap;
@@ -26,7 +26,7 @@ public class TokenAction implements Function<Object[], Object> {
   }
 
   @Override
-  public Object apply(Object[] objects) {
+  public Locateable apply(Locateable[] objects) {
     Token token = (Token) objects[0];
     String value = token.getValue();
     Symbol symbol = keywordMap.get(value);

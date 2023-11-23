@@ -3,10 +3,13 @@ package com.github.ahhoefel.parser;
 import java.util.List;
 import java.util.Objects;
 
-public class ParseTree {
+import com.github.ahhoefel.lang.ast.CodeLocation;
+
+public class ParseTree implements Locateable {
   private List<ParseTree> children;
   private Rule rule;
   private Token token;
+  private CodeLocation location;
 
   public ParseTree(Rule rule, List<ParseTree> children) {
     this.rule = rule;
@@ -29,6 +32,14 @@ public class ParseTree {
     return token;
   }
 
+  public void setLocation(CodeLocation location) {
+    this.location = location;
+  }
+
+  public CodeLocation getLocation() {
+    return location;
+  }
+
   public String toString() {
     StringBuffer buf = new StringBuffer();
     toString(buf, "");
@@ -40,7 +51,8 @@ public class ParseTree {
       return false;
     }
     ParseTree t = (ParseTree) o;
-    return Objects.equals(t.token, this.token) && Objects.equals(t.children, this.children) && Objects.equals(t.rule, this.rule);
+    return Objects.equals(t.token, this.token) && Objects.equals(t.children, this.children)
+        && Objects.equals(t.rule, this.rule);
   }
 
   public void toString(StringBuffer buf, String indent) {

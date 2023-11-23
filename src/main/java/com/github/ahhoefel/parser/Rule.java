@@ -9,7 +9,7 @@ import java.util.function.Function;
 public class Rule {
   private Symbol source;
   private List<Symbol> symbols;
-  private Function<Object[], Object> action;
+  private Function<Locateable[], Locateable> action;
 
   public Rule(Symbol source, List<Symbol> symbols) {
     assert source != null;
@@ -19,7 +19,7 @@ public class Rule {
     this.action = new ParseTreeAction();
   }
 
-  public Rule(Symbol source, List<Symbol> symbols, Function<Object[], Object> action) {
+  public Rule(Symbol source, List<Symbol> symbols, Function<Locateable[], Locateable> action) {
     assert source != null;
     assert symbols.stream().allMatch(x -> x != null);
     this.source = source;
@@ -35,11 +35,11 @@ public class Rule {
     return symbols;
   }
 
-  public Function<Object[], Object> getAction() {
+  public Function<Locateable[], Locateable> getAction() {
     return action;
   }
 
-  public Rule setAction(Function<Object[], Object> action) {
+  public Rule setAction(Function<Locateable[], Locateable> action) {
     this.action = action;
     return this;
   }
@@ -61,7 +61,7 @@ public class Rule {
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append(source.toString());
-    buf.append(" ->");
+    buf.append(" ⟹");
     for (Symbol symbol : symbols) {
       buf.append(" ");
       buf.append(symbol.toString());
@@ -69,9 +69,9 @@ public class Rule {
     return buf.toString();
   }
 
-  private class ParseTreeAction implements Function<Object[], Object> {
+  private class ParseTreeAction implements Function<Locateable[], Locateable> {
     @Override
-    public Object apply(Object[] objects) {
+    public Locateable apply(Locateable[] objects) {
       List<ParseTree> children = new ArrayList<>();
       for (Object o : objects) {
         if (o instanceof Token) {
@@ -79,7 +79,9 @@ public class Rule {
         } else if (o instanceof ParseTree) {
           children.add((ParseTree) o);
         } else {
-          throw new RuntimeException(String.format("Cannot build parse tree from %s: expected Token or ParseTree. Likely an action hasn't been specified on a parse rule.", o.getClass().toString()));
+          throw new RuntimeException(String.format(
+              "Cannot build parse tree from %s: expected Token or ParseTree. Likely an action hasn't been specified on a parse rule.",
+              o.getClass().toString()));
         }
       }
       return new ParseTree(Rule.this, children);

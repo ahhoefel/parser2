@@ -26,13 +26,14 @@ public class GlobalSymbols {
     private class FilePair {
         private File file;
         private FileSymbols symbols;
+
         public FilePair(File file, FileSymbols symbols) {
             this.file = file;
             this.symbols = symbols;
         }
     }
 
-    public GlobalSymbols(SymbolVisitor v, LRParser fileParser ) {
+    public GlobalSymbols(SymbolVisitor v, LRParser fileParser) {
         files = new HashMap<>();
         this.symbolVisitor = v;
         this.fileParser = fileParser;
@@ -74,7 +75,7 @@ public class GlobalSymbols {
     public boolean transitivelyLoadImports() {
         List<Target> queue = new ArrayList<>();
         for (FilePair f : files.values()) {
-            for ( Target t : f.symbols.getImports()) {
+            for (Target t : f.symbols.getImports()) {
                 if (!files.containsKey(t)) {
                     queue.add(t);
                 }

@@ -2,19 +2,22 @@ package com.github.ahhoefel.lang.ast.statements;
 
 import java.util.Optional;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.LValue;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
+import com.github.ahhoefel.parser.Locateable;
 
-public class AssignmentStatement implements Visitable {
+public class AssignmentStatement implements Visitable, Locateable {
 
     private final Optional<LValue> lvalue;
     private final Optional<VariableDeclaration> declaration;
     private final Expression expression;
     private LocalSymbols.SymbolIndex symbolIndex;
+    private CodeLocation location;
 
     public AssignmentStatement(LValue lvalue, Expression expression) {
         this.lvalue = Optional.of(lvalue);
@@ -51,5 +54,15 @@ public class AssignmentStatement implements Visitable {
 
     public LocalSymbols.SymbolIndex getLocalSymbolIndex() {
         return this.symbolIndex;
+    }
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 }

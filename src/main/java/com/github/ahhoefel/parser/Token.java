@@ -2,7 +2,7 @@ package com.github.ahhoefel.parser;
 
 import com.github.ahhoefel.lang.ast.CodeLocation;
 
-public class Token {
+public class Token implements Locateable {
 
   private final String value;
   private final Symbol symbol;
@@ -14,8 +14,12 @@ public class Token {
     this.location = location;
   }
 
+  public void setLocation(CodeLocation location) {
+    this.location = location;
+  }
+
   public String toString() {
-    return String.format("%s(%s)", symbol, value);
+    return String.format("%s(%s) @ %s", symbol, value, location);
   }
 
   public Symbol getSymbol() {

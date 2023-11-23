@@ -12,6 +12,7 @@ public class StructLiteralExpression extends Expression {
     private Map<String, Expression> values;
 
     public StructLiteralExpression(Type type) {
+
         this.type = type;
         this.values = new HashMap<>();
     }

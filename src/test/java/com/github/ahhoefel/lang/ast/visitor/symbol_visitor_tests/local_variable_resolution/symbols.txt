@@ -8,4 +8,4 @@ Global Symbols:
           0, var x int, -1
           1, var y int, 0
     Symbol References:
-      x (local variable)
+      x (local variable) :3:17:48

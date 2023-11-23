@@ -9,7 +9,6 @@ public class ProductExpression extends Expression {
     private Expression b;
 
     public ProductExpression(Expression a, Expression b) {
-
         this.a = a;
         this.b = b;
     }

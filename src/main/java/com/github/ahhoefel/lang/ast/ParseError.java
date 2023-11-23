@@ -1,5 +1,7 @@
 package com.github.ahhoefel.lang.ast;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Objects;
 
 public class ParseError {
@@ -7,6 +9,7 @@ public class ParseError {
   private CodeLocation location;
   private String description;
   private String snippet;
+  private Exception exception;
 
   public ParseError(CodeLocation location, String description) {
     this.location = location;
@@ -17,6 +20,12 @@ public class ParseError {
     this.location = location;
     this.snippet = snippet;
     this.description = description;
+  }
+
+  public ParseError(CodeLocation location, String description, Exception exception) {
+    this.location = location;
+    this.description = description;
+    this.exception = exception;
   }
 
   public String toString() {
@@ -31,6 +40,12 @@ public class ParseError {
     }
     out += "\n";
     out += description;
+    if (exception != null) {
+      out += "\n";
+      StringWriter sw = new StringWriter();
+      exception.printStackTrace(new PrintWriter(sw));
+      out += sw.toString();
+    }
     return out;
   }
 

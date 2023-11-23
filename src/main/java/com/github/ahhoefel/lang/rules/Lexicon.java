@@ -4,7 +4,6 @@ import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.parser.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -128,16 +127,16 @@ public class Lexicon {
 
     start = nonTerminals.getStart();
     word = nonTerminals.newSymbol("word");
-    rules.add(start).setAction(e -> new ArrayList<Token>());
+    rules.add(start).setAction(e -> new LocateableList<Token>());
     rules.add(start, start, word).setAction(e -> {
-      List<Token> words = (List<Token>) e[0];
-      if (e[1] != null) {
+      LocateableList<Token> words = (LocateableList<Token>) e[0];
+      if (!((Token) e[1]).getSymbol().equals(whitespace)) {
         words.add((Token) e[1]);
       }
       return words;
     });
     rules.add(word, identifierGrammar.identifier).setAction(new TokenAction(identifier, keywords));
-    rules.add(word, whitespaceGrammar.whitespace).setAction(e -> null);
+    rules.add(word, whitespaceGrammar.whitespace).setAction(new TokenAction(whitespace));
     Rule wordIsNumber = rules.add(word, numberGrammar.number).setAction(new TokenAction(number));
     rules.add(word, chars.period).setAction(new TokenAction(period));
     rules.add(word, chars.lparen).setAction(new TokenAction(lParen));
@@ -175,16 +174,16 @@ public class Lexicon {
   }
 
   @SuppressWarnings("unchecked")
-  public List<Token> parse(Target target, ErrorLog log) throws IOException {
+  public LocateableList<Token> parse(Target target, ErrorLog log) throws IOException {
     Iterator<Token> tokens = chars.parse(target);
     // System.out.print("Lexing... ");
-    return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
+    return (LocateableList<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
   }
 
   @SuppressWarnings("unchecked")
-  public List<Token> parse(String s, ErrorLog log) {
+  public LocateableList<Token> parse(String s, ErrorLog log) {
     Iterator<Token> tokens = chars.parse(s);
-    return (List<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
+    return (LocateableList<Token>) Parser.parseTokens(table, tokens, grammar.getAugmentedStartRule().getSource(), log);
   }
 
   public SymbolTable.TerminalTable getTerminals() {

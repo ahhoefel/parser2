@@ -47,9 +47,13 @@ public class LanguageRulesTest {
         try {
             File file = RULES.parse(target, log);
             ErrorLog expectedError = ErrorLog.readErrors(target);
-            if (file == null && !expectedError.isEmpty()) {
-                System.out.println("Skipping target with expected error: " + target);
-                return;
+            if (file == null) {
+                if (!expectedError.isEmpty()) {
+                    System.out.println("Skipping target with expected error: " + target);
+                    return;
+                } else {
+                    throw new RuntimeException("Error parsing file: " + log.toString());
+                }
             }
             FormatVisitor visitor = new FormatVisitor();
             visitor.visit(file);

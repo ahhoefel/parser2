@@ -2,17 +2,29 @@ package com.github.ahhoefel.lang.ast.type;
 
 import java.util.Optional;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Visitor;
 
 public class NamedType implements Type {
     private String identifier;
     private Optional<String> packagePrefix;
     private Optional<Type> type;
+    private CodeLocation location;
 
     public NamedType(String identifier) {
         this.identifier = identifier;
         packagePrefix = Optional.empty();
         type = Optional.empty();
+    }
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 
     public NamedType(String packagePrefix, String identifier) {

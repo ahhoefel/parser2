@@ -2,6 +2,7 @@ package com.github.ahhoefel.lang.ast.symbols;
 
 import java.util.Optional;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
@@ -28,6 +29,7 @@ public class SymbolReference {
     }
 
     private ResolutionKey key;
+    private CodeLocation location;
 
     public static class Resolution {
         private Optional<VariableDeclaration> localVariable;
@@ -47,9 +49,11 @@ public class SymbolReference {
 
     private Optional<Resolution> resolution;
 
-    public SymbolReference(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals,
+    public SymbolReference(String name, CodeLocation location, GlobalSymbols globals, FileSymbols file,
+            LocalSymbols locals,
             SymbolIndex localSymbolIndex) {
         this.key = new ResolutionKey(name, globals, file, locals, localSymbolIndex);
+        this.location = location;
         this.resolution = Optional.empty();
         file.addSymbolReference(this);
     }
@@ -99,12 +103,12 @@ public class SymbolReference {
         String out = key.name + " ";
         if (resolution.isPresent()) {
             if (resolution.get().fileImport.isPresent()) {
-                out += "(import)";
+                out += "(import) " + location;
             } else if (resolution.get().localVariable.isPresent()) {
-                out += "(local variable)";
+                out += "(local variable) " + location;
             }
         } else {
-            out += "(unresolved)";
+            out += "(unresolved) " + location;
         }
         return out;
     }

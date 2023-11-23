@@ -209,8 +209,8 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(ForStatement stmt, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        stmt.getCondition().accept(this, objs);
+        stmt.getBlock().accept(this, objs);
     }
 
     @Override

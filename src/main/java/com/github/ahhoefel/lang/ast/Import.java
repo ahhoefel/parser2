@@ -5,6 +5,7 @@ public class Import implements Declaration {
     private boolean explicitShortName;
     private String shortName;
     private String path;
+    private CodeLocation location;
 
     public Import(String shortName, String path) {
         this.shortName = shortName;
@@ -51,5 +52,15 @@ public class Import implements Declaration {
             return String.format("import %s %s", shortName, path);
         }
         return String.format("import %s", path);
+    }
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 }

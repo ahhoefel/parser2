@@ -11,4 +11,4 @@ Global Symbols:
           3, var b int, 2
           4, var z int, 1
     Symbol References:
-      x (local variable)
+      x (local variable) :4:7:54

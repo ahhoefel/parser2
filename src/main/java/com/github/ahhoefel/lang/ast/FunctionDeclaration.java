@@ -1,6 +1,7 @@
 package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.ast.type.Type;
+import com.github.ahhoefel.parser.LocateableList;
 import com.github.ahhoefel.parser.Token;
 
 import java.util.ArrayList;
@@ -24,11 +25,12 @@ public class FunctionDeclaration implements Declaration {
     private List<VariableDeclaration> parameters;
     private Block statements;
     private Optional<Type> returnType;
+    private CodeLocation location;
 
-    public FunctionDeclaration(Token name, List<VariableDeclaration> parameters, Optional<Type> returnType,
+    public FunctionDeclaration(Token name, LocateableList<VariableDeclaration> parameters, Optional<Type> returnType,
             Block statements) {
         this.name = name.getValue();
-        this.parameters = parameters;
+        this.parameters = parameters.getList();
         this.statements = statements;
         this.returnType = returnType;
     }
@@ -72,6 +74,16 @@ public class FunctionDeclaration implements Declaration {
     public File addToFile(File file) {
         file.addFunction(this);
         return file;
+    }
+
+    @Override
+    public CodeLocation getLocation() {
+        return location;
+    }
+
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 
 }

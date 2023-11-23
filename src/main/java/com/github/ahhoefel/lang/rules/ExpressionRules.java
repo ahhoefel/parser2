@@ -44,7 +44,8 @@ public class ExpressionRules implements LanguageComponent {
                 Rule identifierRule = rules.add(expression, lex.identifier)
                                 .setAction(e -> new VariableExpression((Token) e[0]));
                 rules.add(expression, lex.number).setAction(e -> new IntegerLiteralExpression((Token) e[0]));
-                rules.add(expression, lex.trueKeyword).setAction(e -> new BooleanLiteralExpression(true));
+                rules.add(expression, lex.trueKeyword)
+                                .setAction(e -> new BooleanLiteralExpression(true));
                 rules.add(expression, lex.falseKeyword).setAction(e -> new BooleanLiteralExpression(false));
                 rules.add(expression, functionInvocation).setAction(e -> e[0]);
                 rules.add(expression, structLiteral).setAction(e -> e[0]);
@@ -86,15 +87,16 @@ public class ExpressionRules implements LanguageComponent {
                 rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen).setAction(
                                 e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>()));
                 rules.add(functionInvocation, lex.identifier, lex.lParen, argList, lex.rParen).setAction(
-                                e -> new FunctionInvocationExpression((Token) e[0], (List<Expression>) e[2]));
+                                e -> new FunctionInvocationExpression((Token) e[0],
+                                                ((LocateableList<Expression>) e[2]).getList()));
 
                 rules.add(argList, argument).setAction(e -> {
-                        List<Expression> args = new ArrayList<>();
+                        LocateableList<Expression> args = new LocateableList<Expression>();
                         args.add((Expression) e[0]);
                         return args;
                 });
                 rules.add(argList, argList, lex.comma, argument).setAction(e -> {
-                        List<Expression> args = (List<Expression>) e[0];
+                        LocateableList<Expression> args = (LocateableList<Expression>) e[0];
                         args.add((Expression) e[2]);
                         return args;
                 });

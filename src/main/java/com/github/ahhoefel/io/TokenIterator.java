@@ -18,6 +18,9 @@ public class TokenIterator implements Iterator<Token> {
   private int position = 0;
 
   public TokenIterator(RangeTokenizer tokenizer, Target target) throws IOException {
+    if (target == null) {
+      throw new RuntimeException("Target cannot be null");
+    }
     this.iter = new ReaderIterator(target);
     this.target = target;
     this.tokenizer = tokenizer;
@@ -29,6 +32,7 @@ public class TokenIterator implements Iterator<Token> {
   public TokenIterator(RangeTokenizer tokenizer, String s) {
     this.iter = new ReaderIterator(s);
     this.tokenizer = tokenizer;
+    // this.target = new Target(Path.of("/fake"), ":target.ro");
     if (!this.iter.hasNext()) {
       try {
         this.iter.close();

@@ -1,5 +1,6 @@
 package com.github.ahhoefel.parser;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.ParseError;
 import com.github.ahhoefel.util.Stack;
 
@@ -30,10 +31,11 @@ public class Parser<T> {
     return parseTokens(table, iter, start, Optional.empty(), log);
   }
 
-  private static <C> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start, Optional<C> context,
+  private static <C extends Locateable> Object parseTokens(LRTable table, Iterator<Token> iter, Symbol start,
+      Optional<C> context,
       ErrorLog log) {
     Stack<SymbolState> stack = new Stack<>();
-    Stack<Object> result = new Stack<>();
+    Stack<Locateable> result = new Stack<>();
     Token nextToken = iter.next();
     Symbol nextSymbol = nextToken.getSymbol();
     SymbolState symbolState = new SymbolState(start, 0);
@@ -56,7 +58,7 @@ public class Parser<T> {
         Rule rule = state.reduce.get(nextSymbol);
         int numChildren = rule.getSymbols().size();
         int numParameters = numChildren + (context.isPresent() ? 1 : 0);
-        Object[] children = new Object[numParameters];
+        Locateable[] children = new Locateable[numParameters];
         for (int i = 0; i < numChildren; i++) {
           stack.pop();
           children[numChildren - i - 1] = result.pop();
@@ -67,11 +69,33 @@ public class Parser<T> {
         stack.push(new SymbolState(rule.getSource(),
             table.state.get(stack.isEmpty() ? 0 : stack.peek().stateIndex).state.get(rule.getSource())));
         try {
-          result.push(rule.getAction().apply(children));
+          Locateable actionResult = rule.getAction().apply(children);
+          // if (children.length > 0) {
+          // if (actionResult == null) {
+          // throw new Exception("Result should not be null:" +
+          // rule.getAction().toString());
+          // }
+          // try {
+          // actionResult
+          // .setLocation(
+          // new CodeLocation(children[0].getLocation(), children[children.length -
+          // 1].getLocation()));
+          // } catch (RuntimeException e) {
+          // throw new RuntimeException("CodeLocation creation failed at rule: " +
+          // rule.toString() + " locations "
+          // + children[0].getLocation() + ", " + children[children.length -
+          // 1].getLocation(), e);
+          // }
+          // } else {
+          // throw new RuntimeException("No child rule: " + rule);
+          // // actionResult.setLocation(new CodeLocation(null, 0, 0, 0));
+          // }
+          result.push(actionResult);
         } catch (Exception e) {
           System.out.println(new ParseError(nextToken.getLocation(), "ParseActionException at rule " + rule));
           e.printStackTrace();
-          log.add(new ParseError(nextToken.getLocation(), "ParseActionException at rule " + rule));
+          log.add(new ParseError(nextToken.getLocation(),
+              "ParseActionException at rule " + rule, e));
           return null;
         }
       } else {

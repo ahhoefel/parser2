@@ -2,15 +2,15 @@ package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.type.Type;
+import com.github.ahhoefel.parser.Locateable;
 
-public class LValue implements Visitable {
+public class LValue implements Visitable, Locateable {
     private String identifier;
     private Type type;
+    private CodeLocation location;
 
     // E.g. a[i].y can be assigned to.
     private Expression expression;
-
-    private CodeLocation location;
 
     public LValue(Expression e, CodeLocation location) {
         this.expression = e;
@@ -33,11 +33,17 @@ public class LValue implements Visitable {
         return expression;
     }
 
+    public Type getType() {
+        return type;
+    }
+
+    @Override
     public CodeLocation getLocation() {
         return location;
     }
 
-    public Type getType() {
-        return type;
+    @Override
+    public void setLocation(CodeLocation location) {
+        this.location = location;
     }
 }
