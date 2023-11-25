@@ -11,10 +11,11 @@ public class NamedType implements Type {
     private Optional<Type> type;
     private CodeLocation location;
 
-    public NamedType(String identifier) {
+    public NamedType(String identifier, CodeLocation location) {
         this.identifier = identifier;
         packagePrefix = Optional.empty();
         type = Optional.empty();
+        this.location = location;
     }
 
     @Override
@@ -27,10 +28,11 @@ public class NamedType implements Type {
         this.location = location;
     }
 
-    public NamedType(String packagePrefix, String identifier) {
+    public NamedType(String packagePrefix, String identifier, CodeLocation location) {
         this.identifier = identifier;
         this.packagePrefix = Optional.of(packagePrefix);
         type = Optional.empty();
+        this.location = location;
     }
 
     public String getIdentifier() {
