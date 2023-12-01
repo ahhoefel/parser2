@@ -17,11 +17,14 @@ import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.AndExpression;
 import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
+import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.lang.ast.expression.NewExpression;
 import com.github.ahhoefel.lang.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.NotExpression;
 import com.github.ahhoefel.lang.ast.expression.OrExpression;
@@ -30,6 +33,7 @@ import com.github.ahhoefel.lang.ast.expression.ProductExpression;
 import com.github.ahhoefel.lang.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.SubtractExpression;
 import com.github.ahhoefel.lang.ast.expression.SumExpression;
+import com.github.ahhoefel.lang.ast.expression.TypeExpression;
 import com.github.ahhoefel.lang.ast.expression.UnaryMinusExpression;
 import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 import com.github.ahhoefel.lang.ast.statements.AssignmentStatement;
@@ -42,13 +46,12 @@ import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
-import com.github.ahhoefel.lang.ast.type.NamedType;
-import com.github.ahhoefel.lang.ast.type.StructType;
-import com.github.ahhoefel.lang.ast.type.UnionType;
+import com.github.ahhoefel.lang.ast.type.ExpressionType;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
+import com.github.ahhoefel.lang.ast.type.Type.TypeType;
 
 // Visitors aren't type safe. Here's the list of expected arguments and return types
 // File(GlobalSymbols, FileSymbols)
@@ -112,7 +115,7 @@ public class SymbolVisitor implements Visitor {
         FileSymbols symbols = (FileSymbols) objs[1];
         LocalSymbols locals = (LocalSymbols) objs[2];
         SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
-        SymbolIndex resultSymbolIndex = new SymbolIndex(-1);
+        SymbolIndex resultSymbolIndex = new SymbolIndex(prevSymbolIndex.value);
         for (Visitable stmt : block.getStatements()) {
             stmt.accept(this, g, symbols, locals, prevSymbolIndex, resultSymbolIndex);
             prevSymbolIndex = new SymbolIndex(resultSymbolIndex.value);
@@ -169,6 +172,19 @@ public class SymbolVisitor implements Visitor {
         if (expr.getImplicitArg().isPresent()) {
             expr.getImplicitArg().get().accept(this, objs);
         }
+    }
+
+    @Override
+    public void visit(NewExpression expr, Object... objs) {
+        expr.getType().accept(this, objs);
+        for (Expression arg : expr.getArgs()) {
+            arg.accept(this, objs);
+        }
+    }
+
+    @Override
+    public void visit(TypeExpression expr, Object... objs) {
+        expr.getStoredType().accept(this, objs);
     }
 
     @Override
@@ -259,6 +275,12 @@ public class SymbolVisitor implements Visitor {
     }
 
     @Override
+    public void visit(IndexAccessExpression expr, Object... objs) {
+        expr.getSubject().accept(this, objs);
+        expr.getIndex().accept(this, objs);
+    }
+
+    @Override
     public void visit(ForStatement stmt, Object... objs) {
         GlobalSymbols g = (GlobalSymbols) objs[0];
         FileSymbols symbols = (FileSymbols) objs[1];
@@ -340,19 +362,12 @@ public class SymbolVisitor implements Visitor {
     }
 
     @Override
-    public void visit(UnionType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+    public void visit(TypeType type, Object... objs) {
+        // No implementation needed
     }
 
     @Override
-    public void visit(StructType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
-    }
-
-    @Override
-    public void visit(NamedType type, Object... objs) {
+    public void visit(ExpressionType type, Object... objs) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }

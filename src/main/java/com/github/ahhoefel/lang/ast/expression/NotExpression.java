@@ -20,7 +20,7 @@ public class NotExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return Type.BOOL;
     }
 

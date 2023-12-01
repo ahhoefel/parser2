@@ -1,29 +1,33 @@
 package com.github.ahhoefel.lang.ast.expression;
 
+import java.util.List;
+
 import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Visitor;
-import com.github.ahhoefel.lang.ast.type.Type;
 
-public class BooleanLiteralExpression extends Expression {
+public class NewExpression extends Expression {
 
-    private boolean value;
+    private Expression type;
+    private List<Expression> args;
 
-    public BooleanLiteralExpression(boolean value, CodeLocation location) {
-        this.value = value;
+    public NewExpression(Expression type, List<Expression> args, CodeLocation location) {
+        this.type = type;
+        this.args = args;
         this.setLocation(location);
     }
 
-    public boolean getValue() {
-        return value;
-    }
-
+    @Override
     public void accept(Visitor v, Object... objs) {
         v.visit(this, objs);
     }
 
     @Override
     public Expression getType() {
-        return Type.BOOL;
+        return type;
+    }
+
+    public List<Expression> getArgs() {
+        return args;
     }
 
     @Override

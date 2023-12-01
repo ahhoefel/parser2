@@ -1,7 +1,6 @@
 package com.github.ahhoefel.lang.ast.expression;
 
 import com.github.ahhoefel.lang.ast.Visitor;
-import com.github.ahhoefel.lang.ast.type.Type;
 
 public class ParenthesesExpression extends Expression {
 
@@ -20,7 +19,7 @@ public class ParenthesesExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return a.getType();
     }
 

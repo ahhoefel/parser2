@@ -23,7 +23,7 @@ public class VariableExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return type;
     }
 
@@ -53,5 +53,9 @@ public class VariableExpression extends Expression {
     @Override
     public boolean isLValue() {
         return true;
+    }
+
+    public String toString() {
+        return identifier;
     }
 }

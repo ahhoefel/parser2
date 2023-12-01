@@ -15,10 +15,12 @@ import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
+import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.lang.ast.expression.NewExpression;
 import com.github.ahhoefel.lang.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.NotExpression;
 import com.github.ahhoefel.lang.ast.expression.OrExpression;
@@ -27,6 +29,7 @@ import com.github.ahhoefel.lang.ast.expression.ProductExpression;
 import com.github.ahhoefel.lang.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.SubtractExpression;
 import com.github.ahhoefel.lang.ast.expression.SumExpression;
+import com.github.ahhoefel.lang.ast.expression.TypeExpression;
 import com.github.ahhoefel.lang.ast.expression.UnaryMinusExpression;
 import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 import com.github.ahhoefel.lang.ast.statements.AssignmentStatement;
@@ -38,14 +41,13 @@ import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope;
-import com.github.ahhoefel.lang.ast.type.NamedType;
-import com.github.ahhoefel.lang.ast.type.StructType;
+import com.github.ahhoefel.lang.ast.type.ExpressionType;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
+import com.github.ahhoefel.lang.ast.type.Type.TypeType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
-import com.github.ahhoefel.lang.ast.type.UnionType;
 
 public class RegisterVisitor implements Visitor {
 
@@ -94,6 +96,21 @@ public class RegisterVisitor implements Visitor {
     }
 
     @Override
+    public void visit(NewExpression expr, Object... objs) {
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getType().accept(this, objs);
+        for (Expression arg : expr.getArgs()) {
+            arg.accept(this, objs);
+        }
+        expr.setRegisterTracker(scope.createRegister(Type.getWidthBits(expr.getType())));
+    }
+
+    @Override
+    public void visit(TypeExpression expr, Object... objs) {
+        expr.getStoredType().accept(this, objs);
+    }
+
+    @Override
     public void visit(IntegerLiteralExpression expr, Object... objs) {
         RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
@@ -101,20 +118,27 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(LessThanExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
     }
 
     @Override
     public void visit(LessThanOrEqualExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        expr.setRegisterTracker(scope.createRegister(Type.BOOL.getWidthBits()));
     }
 
     @Override
     public void visit(MemberAccessExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getExpression().accept(this, objs);
+        Expression subjectType = expr.getExpression().getType();
+        Expression memberType = Type.getMemberType(subjectType, expr.getMember().getValue());
+        expr.setRegisterTracker(scope.createRegister(Type.getWidthBits(memberType)));
     }
 
     @Override
@@ -185,6 +209,14 @@ public class RegisterVisitor implements Visitor {
     }
 
     @Override
+    public void visit(IndexAccessExpression expr, Object... objs) {
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        expr.getSubject().accept(this, objs);
+        expr.getIndex().accept(this, objs);
+        expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+    }
+
+    @Override
     public void visit(AssignmentStatement stmt, Object... objs) {
         stmt.getExpression().accept(this, objs);
         if (stmt.getLValue().isPresent()) {
@@ -246,8 +278,7 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(LValue stmt, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        stmt.getExpression().accept(this, objs);
     }
 
     @Override
@@ -264,7 +295,7 @@ public class RegisterVisitor implements Visitor {
     @Override
     public void visit(VariableDeclaration decl, Object... objs) {
         RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
-        decl.setRegisterTracker(scope.createRegister(decl.getType().getWidthBits()));
+        decl.setRegisterTracker(scope.createRegister(Type.getWidthBits(decl.getType())));
     }
 
     @Override
@@ -275,42 +306,40 @@ public class RegisterVisitor implements Visitor {
 
     @Override
     public void visit(IntType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        // Register store the type index of "int" rather than an int value.
+        type.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
     @Override
     public void visit(BooleanType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        // Register store the type index of "bool" rather than an bool value.
+        type.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
     @Override
     public void visit(StringType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        // Register store the type index of "string" rather than an bool value.
+        type.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
     @Override
     public void visit(VoidType type, Object... objs) {
+        RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
+        // Register store the type index of "void" rather than an bool value.
+        type.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+    }
+
+    @Override
+    public void visit(TypeType type, Object... objs) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
-    public void visit(UnionType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
-    }
-
-    @Override
-    public void visit(StructType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
-    }
-
-    @Override
-    public void visit(NamedType type, Object... objs) {
+    public void visit(ExpressionType type, Object... objs) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }

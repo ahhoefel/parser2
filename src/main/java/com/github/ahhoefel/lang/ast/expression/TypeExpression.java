@@ -3,25 +3,31 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 
-public class UnaryMinusExpression extends Expression {
+public class TypeExpression extends Expression {
 
-    private Expression a;
+    private Type type;
 
-    public UnaryMinusExpression(Expression a) {
-        this.a = a;
+    public TypeExpression(Type type) {
+        this.type = type;
+        this.setLocation(type.getLocation());
     }
 
-    public Expression getExpression() {
-        return a;
+    public Type getFunctionInvocation() {
+        return type;
     }
 
+    @Override
     public void accept(Visitor v, Object... objs) {
         v.visit(this, objs);
     }
 
+    public Type getStoredType() {
+        return type;
+    }
+
     @Override
     public Expression getType() {
-        return Type.INT;
+        return Type.TYPE;
     }
 
     @Override

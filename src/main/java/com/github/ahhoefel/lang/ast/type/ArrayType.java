@@ -1,22 +1,38 @@
 package com.github.ahhoefel.lang.ast.type;
 
-import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.parser.Locateable;
+import com.github.ahhoefel.lang.ast.Visitor;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 
-public class ArrayType implements Locateable {
-  private CodeLocation location;
-  // private Type type;
+public class ArrayType extends Type {
+  private Expression type;
 
-  public ArrayType(Type type) {
-    // this.type = type;
-  }
-
-  public CodeLocation getLocation() {
-    return location;
+  public ArrayType(Expression type) {
+    this.type = type;
   }
 
   @Override
-  public void setLocation(CodeLocation location) {
-    this.location = location;
+  public void accept(Visitor v, Object... args) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'accept'");
+  }
+
+  @Override
+  public int getWidthBits() {
+    return 64;
+  }
+
+  @Override
+  public int getEncoding() {
+    return 0;
+  }
+
+  @Override
+  public boolean isLValue() {
+    return false;
+  }
+
+  @Override
+  public Expression getType() {
+    return Type.TYPE;
   }
 }

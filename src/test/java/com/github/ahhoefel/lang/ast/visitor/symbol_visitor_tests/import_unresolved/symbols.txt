@@ -8,5 +8,5 @@ Global Symbols:
         Local symbol table:
           0, var x int, -1
     Symbol References:
-      foo (unresolved) null
-      missing_import (unresolved) :4:15:73
+      foo (unresolved) null, local symbol index: -1
+      missing_import (unresolved) :4:15:73, local symbol index: -1

@@ -1,11 +1,12 @@
 package com.github.ahhoefel.lang.ast;
 
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.type.Type;
 
 public class Member {
 
   private String identifier;
-  private Type type;
+  private Expression type;
 
   public Member(String identifier, Type type) {
     this.identifier = identifier;
@@ -16,7 +17,7 @@ public class Member {
     return identifier;
   }
 
-  public Type getType() {
+  public Expression getType() {
     return type;
   }
 

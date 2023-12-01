@@ -1,5 +1,6 @@
 package com.github.ahhoefel.lang.ast;
 
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.ErrorLog;
@@ -8,11 +9,11 @@ import com.github.ahhoefel.parser.Locateable;
 public class VariableDeclaration implements Visitable, Locateable {
 
     private String name;
-    private Type type;
+    private Expression type;
     private RegisterTracker registerTracker;
     private CodeLocation location;
 
-    public VariableDeclaration(String name, Type type, CodeLocation location) {
+    public VariableDeclaration(String name, Expression type, CodeLocation location) {
         this.name = name;
         this.type = type;
         this.location = location;
@@ -34,11 +35,11 @@ public class VariableDeclaration implements Visitable, Locateable {
         return name;
     }
 
-    public Type getType(ErrorLog log) {
+    public Expression getType(ErrorLog log) {
         return type;
     }
 
-    public Type getType() {
+    public Expression getType() {
         return type;
     }
 

@@ -37,6 +37,7 @@ public class LocalSymbols {
     public static class LocalSymbol {
         public VariableDeclaration declaration;
         public SymbolIndex prevIndex;
+
         public LocalSymbol(VariableDeclaration declaration, SymbolIndex prevIndex) {
             this.declaration = declaration;
             this.prevIndex = prevIndex;
@@ -49,19 +50,26 @@ public class LocalSymbols {
 
     public static class SymbolIndex {
         public int value;
+
         public SymbolIndex(int value) {
             this.value = value;
         }
+
+        public String toString() {
+            return "local symbol index: " + value;
+        }
+
     }
+
     private List<LocalSymbol> symbols;
-    
 
     public LocalSymbols() {
         this.symbols = new ArrayList<>();
     }
 
     public Optional<LocalSymbol> get(String name, SymbolIndex index) {
-        if (index.value < 0) return Optional.empty();
+        if (index.value < 0)
+            return Optional.empty();
         LocalSymbol symbol = symbols.get(index.value);
         while (true) {
             if (symbol.declaration.getName().equals(name)) {
@@ -87,17 +95,17 @@ public class LocalSymbols {
     public String toString() {
         String out = "";
         for (int i = 0; i < symbols.size(); i++) {
-          out += symbols.get(i) + "\n";
+            out += symbols.get(i) + "\n";
         }
         return out;
     }
 
     public void toIndentedString(IndentedString out) {
         for (int i = 0; i < symbols.size(); i++) {
-          out.add(Integer.toString(i));
-          out.add(", ");
-          out.add(symbols.get(i).toString());
-          out.endLine();
+            out.add(Integer.toString(i));
+            out.add(", ");
+            out.add(symbols.get(i).toString());
+            out.endLine();
         }
     }
 }

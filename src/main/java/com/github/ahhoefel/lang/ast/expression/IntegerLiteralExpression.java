@@ -11,6 +11,7 @@ public class IntegerLiteralExpression extends Expression {
     public IntegerLiteralExpression(Token t) {
         String text = t.getValue();
         this.value = Long.parseLong(text);
+        this.setLocation(t.getLocation());
     }
 
     public long getValue() {
@@ -22,7 +23,7 @@ public class IntegerLiteralExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return Type.INT;
     }
 

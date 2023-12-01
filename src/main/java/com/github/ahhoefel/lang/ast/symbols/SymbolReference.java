@@ -9,6 +9,7 @@ import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
+import com.github.ahhoefel.lang.ast.symbols.TypeTable.TypeRecord;
 
 public class SymbolReference {
     private static class ResolutionKey {
@@ -35,15 +36,21 @@ public class SymbolReference {
         private Optional<VariableDeclaration> localVariable;
         private Optional<FileSymbols> fileImport;
         private Optional<FunctionDefinition> functionDefinition;
+        private Optional<TypeRecord> globalType;
 
         public Resolution() {
             localVariable = Optional.empty();
             fileImport = Optional.empty();
             functionDefinition = Optional.empty();
+            globalType = Optional.empty();
         }
 
         public Optional<FunctionDefinition> getFunctionDefinition() {
             return functionDefinition;
+        }
+
+        public Optional<TypeRecord> getGlobalType() {
+            return globalType;
         }
     }
 
@@ -82,6 +89,14 @@ public class SymbolReference {
             resolution.get().fileImport = Optional.of(key.globals.get(importTarget.get()));
             return true;
         }
+
+        Optional<TypeRecord> globalType = key.globals.getTypeTable().get(key.name);
+        if (globalType.isPresent()) {
+            resolution = Optional.of(new Resolution());
+            resolution.get().globalType = globalType;
+            return true;
+        }
+
         return false;
     }
 
@@ -106,9 +121,11 @@ public class SymbolReference {
                 out += "(import) " + location;
             } else if (resolution.get().localVariable.isPresent()) {
                 out += "(local variable) " + location;
+            } else if (resolution.get().globalType.isPresent()) {
+                out += "(global type) " + location;
             }
         } else {
-            out += "(unresolved) " + location;
+            out += "(unresolved) " + location + ", " + key.localSymbolIndex;
         }
         return out;
     }

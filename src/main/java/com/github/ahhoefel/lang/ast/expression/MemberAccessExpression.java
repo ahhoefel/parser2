@@ -29,7 +29,7 @@ public class MemberAccessExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return memberType;
     }
 

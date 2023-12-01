@@ -1,10 +1,11 @@
 package com.github.ahhoefel.lang.ast;
 
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.type.Type;
 
 public class TypeDeclaration implements Declaration {
   private String identifier;
-  private Type type;
+  private Expression type;
   private CodeLocation location;
 
   public TypeDeclaration(String identifier, Type type) {
@@ -20,7 +21,7 @@ public class TypeDeclaration implements Declaration {
     return identifier;
   }
 
-  public Type getType() {
+  public Expression getType() {
     return type;
   }
 

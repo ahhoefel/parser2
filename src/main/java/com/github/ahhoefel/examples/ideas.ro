@@ -50,3 +50,18 @@ variable declaration syntax always has type:
 x int = 3
 x int = foo()
 
+Injection of heap management
+Arrays
+Malloc
+
+inject m MemManager
+class Array<T>  {
+  
+}
+
+func foo(Type t, n int) {
+  var x int = t.width
+  m.allocate(t.width)
+}
+
+

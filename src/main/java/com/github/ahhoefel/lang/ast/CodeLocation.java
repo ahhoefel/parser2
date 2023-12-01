@@ -1,6 +1,5 @@
 package com.github.ahhoefel.lang.ast;
 
-import java.util.List;
 import java.util.Objects;
 
 import com.github.ahhoefel.parser.Locateable;
@@ -43,13 +42,20 @@ public class CodeLocation {
   }
 
   public CodeLocation(Locateable[] locateables) {
+    int i = 0;
+    for (; i < locateables.length; i++) {
+      if (locateables[i].getLocation() == null) {
+        break;
+      }
+    }
+    assert i == locateables.length : "Location missing on parameter " + i;
     CodeLocation from = locateables[0].getLocation();
     this.target = from.target;
     this.lineNumber = from.lineNumber;
     this.character = from.character;
     this.position = from.position;
-    for (int i = 0; i < locateables.length; i++) {
-      this.length += locateables[i].getLocation().length;
+    for (Locateable locatable : locateables) {
+      this.length += locatable.getLocation().length;
     }
   }
 

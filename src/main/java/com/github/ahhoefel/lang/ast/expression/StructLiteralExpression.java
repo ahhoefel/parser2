@@ -31,7 +31,7 @@ public class StructLiteralExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return type;
     }
 

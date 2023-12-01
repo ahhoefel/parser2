@@ -19,7 +19,7 @@ public class Parser<T> {
     }
 
     public String toString() {
-      return String.format("(%s, %d)", symbol.toString(), stateIndex);
+      return String.format("(%s, %d, %d)", symbol.toString(), symbol.getIndex(), stateIndex);
     }
   }
 
@@ -102,16 +102,12 @@ public class Parser<T> {
         String out = "Parsing error.\n";
         out += "Next token: " + nextToken + "\n";
         out += "State: " + symbolState + "\n";
-        out += "Stack: ";
-        for (int i = 6; i >= 0; i--) {
+        out += "Stack (top):\n";
+        for (int i = 0; stack.deepPeek(i).isPresent(); i++) {
           Optional<SymbolState> s = stack.deepPeek(i);
-          if (!s.isPresent()) {
-            break;
-          }
-          out += s.get();
-          out += " ";
+          out += "\t" + s.get() + "\n";
         }
-        out += " (top)";
+        out += "(bottom)";
         log.add(new ParseError(nextToken.getLocation(), out));
         return null;
       }

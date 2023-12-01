@@ -1,11 +1,10 @@
 package com.github.ahhoefel.lang.ast.type;
 
 import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.lang.ast.Visitable;
 import com.github.ahhoefel.lang.ast.Visitor;
-import com.github.ahhoefel.parser.Locateable;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 
-public interface Type extends Visitable, Locateable {
+public abstract class Type extends Expression {
 
     // Singletons should not be used to explicitly written types in code, but rather
     // for the implicit types of expressions.
@@ -15,24 +14,27 @@ public interface Type extends Visitable, Locateable {
     public static final Type BOOL = new BooleanType(null);
     public static final Type STRING = new StringType(null);
     public static final Type VOID = new VoidType(null);
+    // The type of types.
+    public static final Type TYPE = new TypeType(null);
 
-    int getWidthBits();
+    public abstract int getWidthBits();
 
-    static abstract class AbstractType implements Type {
-        private CodeLocation location;
+    public abstract int getEncoding();
 
-        @Override
-        public CodeLocation getLocation() {
-            return location;
+    public static int getWidthBits(Expression type) {
+        if (type instanceof Type) {
+            return ((Type) type).getWidthBits();
         }
-
-        @Override
-        public void setLocation(CodeLocation location) {
-            this.location = location;
-        }
+        // TODO: allow width calculations for type expressions.
+        return 64;
     }
 
-    class IntType extends AbstractType {
+    public static Expression getMemberType(Expression type, String memberName) {
+        // TODO: lookup members on a type expression.
+        return INT;
+    }
+
+    public static class IntType extends Type {
 
         public IntType(CodeLocation location) {
             this.setLocation(location);
@@ -54,9 +56,23 @@ public interface Type extends Visitable, Locateable {
         public int getWidthBits() {
             return 64;
         }
+
+        public int getEncoding() {
+            return 1;
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
+        }
     }
 
-    class BooleanType extends AbstractType {
+    public static class BooleanType extends Type {
 
         public BooleanType(CodeLocation location) {
             this.setLocation(location);
@@ -78,9 +94,23 @@ public interface Type extends Visitable, Locateable {
         public int getWidthBits() {
             return 64;
         }
+
+        public int getEncoding() {
+            return 2;
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
+        }
     }
 
-    class StringType extends AbstractType {
+    public static class StringType extends Type {
 
         public StringType(CodeLocation location) {
             this.setLocation(location);
@@ -102,9 +132,23 @@ public interface Type extends Visitable, Locateable {
         public int getWidthBits() {
             return 64;
         }
+
+        public int getEncoding() {
+            return 3;
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
+        }
     }
 
-    class VoidType extends AbstractType {
+    public static class VoidType extends Type {
 
         public VoidType(CodeLocation location) {
             this.setLocation(location);
@@ -125,6 +169,58 @@ public interface Type extends Visitable, Locateable {
 
         public int getWidthBits() {
             return 0;
+        }
+
+        public int getEncoding() {
+            return 4;
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
+        }
+    }
+
+    public static class TypeType extends Type {
+
+        public TypeType(CodeLocation location) {
+            this.setLocation(location);
+        }
+
+        public String toString() {
+            return "type";
+        }
+
+        public boolean equals(Object o) {
+            return o instanceof TypeType;
+        }
+
+        @Override
+        public void accept(Visitor v, Object... objs) {
+            v.visit(this, objs);
+        }
+
+        public int getWidthBits() {
+            return 64;
+        }
+
+        public int getEncoding() {
+            return 5;
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
         }
     }
 }

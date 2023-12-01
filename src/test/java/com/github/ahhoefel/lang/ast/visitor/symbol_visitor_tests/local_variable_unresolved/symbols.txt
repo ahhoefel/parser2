@@ -8,4 +8,4 @@ Global Symbols:
           0, var x int, -1
           1, var y int, 0
     Symbol References:
-      z (unresolved) :3:17:48
+      z (unresolved) :3:17:48, local symbol index: 0

@@ -26,10 +26,12 @@ import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
+import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.lang.ast.expression.NewExpression;
 import com.github.ahhoefel.lang.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.NotExpression;
 import com.github.ahhoefel.lang.ast.expression.OrExpression;
@@ -38,6 +40,7 @@ import com.github.ahhoefel.lang.ast.expression.ProductExpression;
 import com.github.ahhoefel.lang.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.SubtractExpression;
 import com.github.ahhoefel.lang.ast.expression.SumExpression;
+import com.github.ahhoefel.lang.ast.expression.TypeExpression;
 import com.github.ahhoefel.lang.ast.expression.UnaryMinusExpression;
 import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 import com.github.ahhoefel.lang.ast.statements.AssignmentStatement;
@@ -48,18 +51,13 @@ import com.github.ahhoefel.lang.ast.statements.ReturnStatement;
 import com.github.ahhoefel.lang.ast.symbols.Context;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
-import com.github.ahhoefel.lang.ast.symbols.LocalSymbols;
-import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
-import com.github.ahhoefel.lang.ast.type.NamedType;
-import com.github.ahhoefel.lang.ast.type.StructType;
-import com.github.ahhoefel.lang.ast.type.Type;
-import com.github.ahhoefel.lang.ast.type.UnionType;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
+import com.github.ahhoefel.lang.ast.type.Type.TypeType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
 
 public class LLVMVisitor implements Visitor {
@@ -407,6 +405,16 @@ public class LLVMVisitor implements Visitor {
     }
 
     @Override
+    public void visit(NewExpression expr, Object... objs) {
+
+    }
+
+    @Override
+    public void visit(TypeExpression expr, Object... objs) {
+        expr.getStoredType().accept(this, objs);
+    }
+
+    @Override
     public void visit(MemberAccessExpression expr, Object... objs) {
 
     }
@@ -470,7 +478,7 @@ public class LLVMVisitor implements Visitor {
     public void visit(VariableDeclaration decl, Object... objs) {
         Context context = (Context) objs[0];
         LLVMBuilderRef builder = (LLVMBuilderRef) objs[1];
-        Type type = decl.getType();
+        Expression type = decl.getType();
         Value<LLVMTypeRef> typeRef = new Value<>();
         type.accept(this, typeRef);
         LLVMValueRef ref = LLVM.LLVMBuildAlloca(builder, LLVM.LLVMInt64Type(), decl.getName());
@@ -526,18 +534,20 @@ public class LLVMVisitor implements Visitor {
     }
 
     @Override
-    public void visit(UnionType type, Object... objs) {
+    public void visit(TypeType type, Object... objs) {
 
     }
 
     @Override
-    public void visit(StructType type, Object... objs) {
-
+    public void visit(IndexAccessExpression expr, Object... objs) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
-    public void visit(NamedType type, Object... objs) {
-
+    public void visit(com.github.ahhoefel.lang.ast.type.ExpressionType type, Object... objs) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
 }

@@ -13,6 +13,14 @@ public class Rule {
 
   public Rule(Symbol source, List<Symbol> symbols) {
     assert source != null;
+
+    int i = 0;
+    for (; i < symbols.size(); i++) {
+      if (symbols.get(i) == null) {
+        break;
+      }
+    }
+    assert i == symbols.size() : "Null symbol at index : " + i;
     assert symbols.stream().allMatch(x -> x != null);
     this.source = source;
     this.symbols = symbols;

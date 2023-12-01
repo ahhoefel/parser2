@@ -1,5 +1,6 @@
 package com.github.ahhoefel.lang.ast;
 
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.LocateableList;
 import com.github.ahhoefel.parser.Token;
@@ -58,8 +59,8 @@ public class FunctionDeclaration implements Declaration {
         return returnType.get();
     }
 
-    public List<Type> getParameterTypes() {
-        List<Type> types = new ArrayList<>();
+    public List<Expression> getParameterTypes() {
+        List<Expression> types = new ArrayList<>();
         for (VariableDeclaration param : parameters) {
             types.add(param.getType());
         }

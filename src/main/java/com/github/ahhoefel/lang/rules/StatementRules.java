@@ -14,7 +14,6 @@ import com.github.ahhoefel.lang.ast.statements.ExpressionStatement;
 import com.github.ahhoefel.lang.ast.statements.ForStatement;
 import com.github.ahhoefel.lang.ast.statements.IfStatement;
 import com.github.ahhoefel.lang.ast.statements.ReturnStatement;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.LanguageBuilder;
 import com.github.ahhoefel.parser.LanguageComponent;
 
@@ -74,8 +73,9 @@ public class StatementRules implements LanguageComponent {
         // Assign to variable declaration statement
         Rule statementToVarDeclAssignment = rules.add(statement, variableDeclaration, lex.equals, expression)
                 .setAction(e -> new AssignmentStatement((VariableDeclaration) e[0], (Expression) e[2]));
-        rules.add(variableDeclaration, lex.varKeyword, lex.identifier, type)
-                .setAction(e -> new VariableDeclaration(((Token) e[1]).getValue(), (Type) e[2], new CodeLocation(e)));
+        rules.add(variableDeclaration, lex.varKeyword, lex.identifier, expression)
+                .setAction(e -> new VariableDeclaration(((Token) e[1]).getValue(), (Expression) e[2],
+                        new CodeLocation(e)));
 
         // Return statement
         Rule statementToReturn = rules.add(statement, lex.returnKeyword, expression)

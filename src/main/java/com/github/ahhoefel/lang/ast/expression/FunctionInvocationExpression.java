@@ -43,7 +43,7 @@ public class FunctionInvocationExpression extends Expression {
     }
 
     @Override
-    public Type getType() {
+    public Expression getType() {
         return type;
     }
 

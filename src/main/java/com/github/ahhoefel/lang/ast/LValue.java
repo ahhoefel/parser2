@@ -33,7 +33,7 @@ public class LValue implements Visitable, Locateable {
         return expression;
     }
 
-    public Type getType() {
+    public Expression getType() {
         return type;
     }
 

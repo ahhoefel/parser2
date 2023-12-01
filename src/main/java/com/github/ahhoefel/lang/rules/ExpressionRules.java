@@ -1,6 +1,8 @@
 package com.github.ahhoefel.lang.rules;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.expression.*;
+import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.*;
 
 import java.util.ArrayList;
@@ -13,14 +15,17 @@ public class ExpressionRules implements LanguageComponent {
 
         // Internal
         private Symbol functionInvocation;
+        private Symbol newExpression;
         private Symbol argList;
         private Symbol argument;
 
         // External
         private Symbol structLiteral;
+        private Symbol type;
 
         public List<Symbol> provides(SymbolTable nonTerminals) {
                 expression = nonTerminals.newSymbol("expression");
+                newExpression = nonTerminals.newSymbol("newExpression");
                 functionInvocation = nonTerminals.newSymbol("functionInvocation");
                 argList = nonTerminals.newSymbol("argList");
                 argument = nonTerminals.newSymbol("argument");
@@ -28,11 +33,12 @@ public class ExpressionRules implements LanguageComponent {
         }
 
         public List<String> requires() {
-                return List.of("structLiteral");
+                return List.of("structLiteral", "type");
         }
 
         public void acceptExternalSymbols(Map<String, Symbol> external) {
                 this.structLiteral = external.get("structLiteral");
+                this.type = external.get("type");
         }
 
         @SuppressWarnings("unchecked")
@@ -45,10 +51,13 @@ public class ExpressionRules implements LanguageComponent {
                                 .setAction(e -> new VariableExpression((Token) e[0]));
                 rules.add(expression, lex.number).setAction(e -> new IntegerLiteralExpression((Token) e[0]));
                 rules.add(expression, lex.trueKeyword)
-                                .setAction(e -> new BooleanLiteralExpression(true));
-                rules.add(expression, lex.falseKeyword).setAction(e -> new BooleanLiteralExpression(false));
+                                .setAction(e -> new BooleanLiteralExpression(true, new CodeLocation(e)));
+                rules.add(expression, lex.falseKeyword)
+                                .setAction(e -> new BooleanLiteralExpression(false, new CodeLocation(e)));
                 rules.add(expression, functionInvocation).setAction(e -> e[0]);
+                rules.add(expression, newExpression).setAction(e -> e[0]);
                 rules.add(expression, structLiteral).setAction(e -> e[0]);
+                rules.add(expression, type).setAction(e -> e[0]);
 
                 Rule memberAccessRule = rules.add(expression, expression, lex.period, lex.identifier)
                                 .setAction(e -> new MemberAccessExpression((Expression) e[0], (Token) e[2]));
@@ -57,11 +66,16 @@ public class ExpressionRules implements LanguageComponent {
                         fn.setImplicitArg((Expression) e[0]);
                         return fn;
                 });
+
+                Rule indexAccessRule = rules.add(expression, expression, lex.lBracket, expression, lex.rBracket)
+                                .setAction(e -> new IndexAccessExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
+
                 Rule plus = rules.add(expression, expression, lex.plus, expression)
                                 .setAction(e -> new SumExpression((Expression) e[0], (Expression) e[2]));
                 Rule minus = rules.add(expression, expression, lex.hyphen, expression)
                                 .setAction(e -> new SubtractExpression((Expression) e[0], (Expression) e[2]));
-                Rule unitaryMinus = rules.add(expression, lex.hyphen, expression)
+                Rule unaryMinus = rules.add(expression, lex.hyphen, expression)
                                 .setAction(e -> new UnaryMinusExpression((Expression) e[1]));
                 Rule times = rules.add(expression, expression, lex.times, expression)
                                 .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
@@ -90,20 +104,31 @@ public class ExpressionRules implements LanguageComponent {
                                 e -> new FunctionInvocationExpression((Token) e[0],
                                                 ((LocateableList<Expression>) e[2]).getList()));
 
+                rules.add(newExpression, lex.newKeyword, expression, lex.lParen, lex.rParen)
+                                .setAction(e -> new NewExpression((Expression) e[1], List.of(), new CodeLocation(e)));
+                rules.add(newExpression, lex.newKeyword, expression, lex.lParen, argList, lex.rParen).setAction(
+                                e -> new NewExpression((Expression) e[1],
+                                                ((LocateableList<Expression>) e[3]).getList(), new CodeLocation(e)));
+
                 rules.add(argList, argument).setAction(e -> {
                         LocateableList<Expression> args = new LocateableList<Expression>();
                         args.add((Expression) e[0]);
+                        args.setLocation(e[0].getLocation());
                         return args;
                 });
                 rules.add(argList, argList, lex.comma, argument).setAction(e -> {
                         LocateableList<Expression> args = (LocateableList<Expression>) e[0];
                         args.add((Expression) e[2]);
+                        args.setLocation(new CodeLocation(e));
                         return args;
                 });
                 rules.add(argument, expression).setAction(e -> e[0]);
 
-                List<List<Pair<Rule, Symbol>>> precendence = List.of(List.of(new Pair<>(memberAccessRule, lex.period)),
-                                List.of(new Pair<>(unitaryMinus, lex.hyphen)), List.of(new Pair<>(times, lex.times)),
+                List<List<Pair<Rule, Symbol>>> precendence = List.of(
+                                List.of(new Pair<>(indexAccessRule, lex.lBracket)),
+                                List.of(new Pair<>(memberAccessRule, lex.period)),
+                                List.of(new Pair<>(unaryMinus, lex.hyphen)),
+                                List.of(new Pair<>(times, lex.times)),
                                 List.of(new Pair<>(plus, lex.plus), new Pair<>(minus, lex.hyphen)),
                                 List.of(new Pair<>(doubleEquals, lex.doubleEquals), new Pair<>(notEqual, lex.notEqual)),
                                 List.of(new Pair<>(lessThan, lex.lessThan),

@@ -29,10 +29,12 @@ import com.github.ahhoefel.lang.ast.expression.BooleanLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.EqualExpression;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.expression.FunctionInvocationExpression;
+import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
 import com.github.ahhoefel.lang.ast.expression.IntegerLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanExpression;
 import com.github.ahhoefel.lang.ast.expression.LessThanOrEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.MemberAccessExpression;
+import com.github.ahhoefel.lang.ast.expression.NewExpression;
 import com.github.ahhoefel.lang.ast.expression.NotEqualExpression;
 import com.github.ahhoefel.lang.ast.expression.NotExpression;
 import com.github.ahhoefel.lang.ast.expression.OrExpression;
@@ -41,6 +43,7 @@ import com.github.ahhoefel.lang.ast.expression.ProductExpression;
 import com.github.ahhoefel.lang.ast.expression.StructLiteralExpression;
 import com.github.ahhoefel.lang.ast.expression.SubtractExpression;
 import com.github.ahhoefel.lang.ast.expression.SumExpression;
+import com.github.ahhoefel.lang.ast.expression.TypeExpression;
 import com.github.ahhoefel.lang.ast.expression.UnaryMinusExpression;
 import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 import com.github.ahhoefel.lang.ast.statements.AssignmentStatement;
@@ -54,13 +57,13 @@ import com.github.ahhoefel.lang.ast.symbols.RegisterScope;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.symbols.SymbolReference.Resolution;
-import com.github.ahhoefel.lang.ast.type.NamedType;
-import com.github.ahhoefel.lang.ast.type.StructType;
+import com.github.ahhoefel.lang.ast.type.ExpressionType;
+import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
+import com.github.ahhoefel.lang.ast.type.Type.TypeType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
-import com.github.ahhoefel.lang.ast.type.UnionType;
 
 public class AArch64Visitor implements Visitor {
 
@@ -175,20 +178,47 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(LessThanExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getLeft().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X1, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRight().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.CMP.of(Register.X0, Register.X1));
+        asm.add(InstructionType.CSET.of(Register.X0, new Condition(Code.LT)));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
     }
 
     @Override
     public void visit(LessThanOrEqualExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        expr.getLeft().accept(this, objs);
+        expr.getRight().accept(this, objs);
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getLeft().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X1, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRight().getRegisterTracker().getStackPositionBytes()))));
+        asm.add(InstructionType.CMP.of(Register.X0, Register.X1));
+        asm.add(InstructionType.CSET.of(Register.X0, new Condition(Code.LE)));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
     }
 
     @Override
     public void visit(MemberAccessExpression expr, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        expr.getExpression().accept(this, objs);
+        Expression subjectType = expr.getExpression().getType();
+        Expression memberType = Type.getMemberType(subjectType, expr.getMember().getValue());
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        // TODO: Determine the member address
+        // asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new
+        // RegisterShift<>(Register.SP,
+        // new UInt15MultipleOf8(0))));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
+
     }
 
     @Override
@@ -288,10 +318,12 @@ public class AArch64Visitor implements Visitor {
         stmt.getExpression().accept(this, objs);
         AssemblyFile asm = (AssemblyFile) objs[0];
         // FunctionDefinition fn = (FunctionDefinition) objs[1];
+
         RegisterTracker register;
         if (stmt.getLValue().isPresent()) {
             LValue lvalue = stmt.getLValue().get();
-            throw new UnsupportedOperationException("LValues not supported yet in assignment statements");
+            lvalue.accept(this, objs);
+            register = lvalue.getExpression().getRegisterTracker();
         } else {
             VariableDeclaration var = stmt.getVariableDeclaration().get();
             register = var.getRegisterTracker();
@@ -356,6 +388,23 @@ public class AArch64Visitor implements Visitor {
         asm.add(InstructionType.RET.of());
     }
 
+    @Override
+    public void visit(NewExpression expr, Object... objs) {
+        // expr.getType().accept(this, objs);
+    }
+
+    @Override
+    public void visit(TypeExpression expr, Object... objs) {
+        AssemblyFile asm = (AssemblyFile) objs[0];
+        asm.add(InstructionType.MOV.of(
+                Register.X0,
+                new UInt64(BigInteger.valueOf(expr.getStoredType().getEncoding()))));
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(
+                Register.X0,
+                new RegisterShift<>(Register.SP,
+                        new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
+    }
+
     private static int IF_LABEL_COUNTER = 0;
 
     @Override
@@ -388,8 +437,7 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(LValue stmt, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        stmt.getExpression().accept(this, objs);
     }
 
     @Override
@@ -448,19 +496,19 @@ public class AArch64Visitor implements Visitor {
     }
 
     @Override
-    public void visit(UnionType type, Object... objs) {
+    public void visit(TypeType type, Object... objs) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
-    public void visit(StructType type, Object... objs) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+    public void visit(IndexAccessExpression expr, Object... objs) {
+        expr.getSubject().accept(this, objs);
+        expr.getIndex().accept(this, objs);
     }
 
     @Override
-    public void visit(NamedType type, Object... objs) {
+    public void visit(ExpressionType type, Object... objs) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }

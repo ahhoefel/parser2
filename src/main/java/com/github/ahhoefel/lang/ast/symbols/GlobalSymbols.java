@@ -22,6 +22,7 @@ public class GlobalSymbols {
     private LRParser fileParser;
 
     private Map<Target, FilePair> files;
+    private TypeTable typeTable;
 
     private class FilePair {
         private File file;
@@ -37,6 +38,7 @@ public class GlobalSymbols {
         files = new HashMap<>();
         this.symbolVisitor = v;
         this.fileParser = fileParser;
+        this.typeTable = new TypeTable();
     }
 
     public boolean containsTarget(Target t) {
@@ -59,9 +61,9 @@ public class GlobalSymbols {
         } catch (IOException e) {
             throw new RuntimeException("Failed to read file: " + t.getFilePath(), e);
         } catch (ParseException e) {
-            System.out.println("Ignoring error: " + e);
+            throw new RuntimeException("Parsing error on " + t, e);
         }
-        return Optional.empty();
+        // return Optional.empty();
     }
 
     public boolean resolve() {
@@ -118,5 +120,9 @@ public class GlobalSymbols {
 
     public List<FileSymbols> getFiles() {
         return files.values().stream().map(p -> p.symbols).collect(Collectors.toList());
+    }
+
+    public TypeTable getTypeTable() {
+        return typeTable;
     }
 }

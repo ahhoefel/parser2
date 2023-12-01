@@ -6,10 +6,8 @@ import com.github.ahhoefel.lang.ast.statements.ExpressionStatement;
 import com.github.ahhoefel.lang.ast.statements.ForStatement;
 import com.github.ahhoefel.lang.ast.statements.IfStatement;
 import com.github.ahhoefel.lang.ast.statements.ReturnStatement;
-import com.github.ahhoefel.lang.ast.type.NamedType;
-import com.github.ahhoefel.lang.ast.type.StructType;
+import com.github.ahhoefel.lang.ast.type.ExpressionType;
 import com.github.ahhoefel.lang.ast.type.Type;
-import com.github.ahhoefel.lang.ast.type.UnionType;
 
 public interface Visitor {
     void visit(AndExpression expr, Object... objs);
@@ -48,6 +46,12 @@ public interface Visitor {
 
     void visit(ParenthesesExpression expr, Object... objs);
 
+    void visit(NewExpression expr, Object... objs);
+
+    void visit(TypeExpression expr, Object... objs);
+
+    void visit(IndexAccessExpression expr, Object... objs);
+
     void visit(AssignmentStatement stmt, Object... objs);
 
     void visit(Block block, Object... objs);
@@ -82,10 +86,7 @@ public interface Visitor {
 
     void visit(Type.VoidType type, Object... objs);
 
-    void visit(UnionType type, Object... objs);
+    void visit(Type.TypeType type, Object... objs);
 
-    void visit(StructType type, Object... objs);
-
-    void visit(NamedType type, Object... objs);
-
+    void visit(ExpressionType type, Object... objs);
 }

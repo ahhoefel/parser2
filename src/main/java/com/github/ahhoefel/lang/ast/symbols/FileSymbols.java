@@ -11,15 +11,15 @@ import java.util.Optional;
 import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
 import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.util.IndentedString;
 
 public class FileSymbols {
 
     private Target target;
     private Map<String, Target> imports;
-    private Map<String, Type> types;
+    private Map<String, Expression> types;
     private Map<String, FunctionDefinition> functions;
     private List<SymbolReference> symbolReferences;
 
@@ -55,7 +55,7 @@ public class FileSymbols {
         return Optional.ofNullable(functions.get(name));
     }
 
-    public void addType(String identifier, Type type) {
+    public void addType(String identifier, Expression type) {
         this.types.put(identifier, type);
     }
 

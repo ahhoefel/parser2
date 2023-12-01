@@ -2,14 +2,13 @@ package com.github.ahhoefel.lang.ast.expression;
 
 import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Visitable;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Locateable;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 
 public abstract class Expression implements Visitable, Locateable {
     public abstract boolean isLValue();
 
-    public abstract Type getType();
+    public abstract Expression getType();
 
     private CodeLocation location;
 
