@@ -19,16 +19,18 @@ public class AssignmentStatement implements Visitable, Locateable {
     private LocalSymbols.SymbolIndex symbolIndex;
     private CodeLocation location;
 
-    public AssignmentStatement(LValue lvalue, Expression expression) {
+    public AssignmentStatement(LValue lvalue, Expression expression, CodeLocation location) {
         this.lvalue = Optional.of(lvalue);
         this.declaration = Optional.empty();
         this.expression = expression;
+        this.location = location;
     }
 
-    public AssignmentStatement(VariableDeclaration declaration, Expression expression) {
+    public AssignmentStatement(VariableDeclaration declaration, Expression expression, CodeLocation location) {
         this.lvalue = Optional.empty();
         this.declaration = Optional.of(declaration);
         this.expression = expression;
+        this.location = location;
     }
 
     public Optional<LValue> getLValue() {

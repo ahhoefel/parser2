@@ -1,0 +1,7 @@
+func main() {
+    var x int = 5
+    var y 3 = 5
+    var a Array[int] = new Array[int](5)
+    var b Array[bool] = new Array[int](5)
+    var c Array[int] = new Array[bool](5)
+}

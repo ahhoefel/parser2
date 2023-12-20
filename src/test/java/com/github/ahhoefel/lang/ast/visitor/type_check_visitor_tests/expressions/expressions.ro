@@ -1,0 +1,8 @@
+func main() {
+    2 + 3
+    2 + true
+    true + 2
+    true && false
+    true && 3
+    3 && false
+}

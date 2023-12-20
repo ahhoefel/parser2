@@ -67,12 +67,13 @@ public class StatementRules implements LanguageComponent {
 
         // Assignment to LValue statement
         Rule statementToLValueAssignment = rules.add(statement, lvalue, lex.equals, expression)
-                .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2]));
-        rules.add(lvalue, expression).setAction(e -> new LValue((Expression) e[0], null));
+                .setAction(e -> new AssignmentStatement((LValue) e[0], (Expression) e[2], new CodeLocation(e)));
+        rules.add(lvalue, expression).setAction(e -> new LValue((Expression) e[0], new CodeLocation(e)));
 
         // Assign to variable declaration statement
         Rule statementToVarDeclAssignment = rules.add(statement, variableDeclaration, lex.equals, expression)
-                .setAction(e -> new AssignmentStatement((VariableDeclaration) e[0], (Expression) e[2]));
+                .setAction(e -> new AssignmentStatement((VariableDeclaration) e[0], (Expression) e[2],
+                        new CodeLocation(e)));
         rules.add(variableDeclaration, lex.varKeyword, lex.identifier, expression)
                 .setAction(e -> new VariableDeclaration(((Token) e[1]).getValue(), (Expression) e[2],
                         new CodeLocation(e)));

@@ -1,13 +1,15 @@
 package com.github.ahhoefel.lang.ast.expression;
 
+import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Visitor;
 
 public class ParenthesesExpression extends Expression {
 
     private Expression a;
 
-    public ParenthesesExpression(Expression a) {
+    public ParenthesesExpression(Expression a, CodeLocation location) {
         this.a = a;
+        this.setLocation(location);
     }
 
     public Expression getExpression() {

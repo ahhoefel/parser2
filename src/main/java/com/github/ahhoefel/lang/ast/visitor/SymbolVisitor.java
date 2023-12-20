@@ -206,7 +206,16 @@ public class SymbolVisitor implements Visitor {
 
     @Override
     public void visit(MemberAccessExpression expr, Object... objs) {
+        expr.getExpression().accept(this, objs);
 
+        GlobalSymbols globals = (GlobalSymbols) objs[0];
+        FileSymbols symbols = (FileSymbols) objs[1];
+        LocalSymbols locals = (LocalSymbols) objs[2];
+        SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
+        expr.setSymbolReference(
+                new SymbolReference(expr.getMember().getValue(), expr.getLocation(), globals, symbols, locals,
+                        expr.getExpression(),
+                        prevSymbolIndex));
     }
 
     @Override
@@ -328,6 +337,7 @@ public class SymbolVisitor implements Visitor {
         SymbolIndex prevSymbolIndex = (SymbolIndex) objs[3];
         SymbolIndex resultSymbolIndex = (SymbolIndex) objs[4];
         resultSymbolIndex.value = locals.put(decl, prevSymbolIndex).value;
+        decl.getType().accept(this, objs);
     }
 
     @Override

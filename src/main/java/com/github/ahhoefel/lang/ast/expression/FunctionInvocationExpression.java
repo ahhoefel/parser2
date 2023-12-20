@@ -16,10 +16,11 @@ public class FunctionInvocationExpression extends Expression {
     private Type type;
     private SymbolReference symbol;
 
-    public FunctionInvocationExpression(Token identifier, List<Expression> args) {
+    public FunctionInvocationExpression(Token identifier, List<Expression> args, CodeLocation location) {
         this.identifier = identifier.getValue();
         this.args = args;
         this.implicitArg = Optional.empty();
+        this.setLocation(location);
     }
 
     public void setImplicitArg(Expression implicitArg) {

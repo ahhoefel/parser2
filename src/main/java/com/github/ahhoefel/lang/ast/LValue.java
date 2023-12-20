@@ -6,7 +6,6 @@ import com.github.ahhoefel.parser.Locateable;
 
 public class LValue implements Visitable, Locateable {
     private String identifier;
-    private Type type;
     private CodeLocation location;
 
     // E.g. a[i].y can be assigned to.
@@ -34,7 +33,7 @@ public class LValue implements Visitable, Locateable {
     }
 
     public Expression getType() {
-        return type;
+        return expression.getType();
     }
 
     @Override

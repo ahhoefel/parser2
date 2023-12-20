@@ -1,0 +1,6 @@
+Expected type: int
+Actual type: bool
+Location: :6:5:6
+Expected type: bool
+Actual type: int
+Location: :7:5:3

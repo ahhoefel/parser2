@@ -1,0 +1,12 @@
+Expected type: type
+Actual type: int
+Location: :3:5:5
+Expected type: IntegerLiteral(3)
+Actual type: int
+Location: :3:5:5
+Expected type: Array[bool]
+Actual type: Array[int]
+Location: :5:5:15
+Expected type: Array[int]
+Actual type: Array[bool]
+Location: :6:5:14

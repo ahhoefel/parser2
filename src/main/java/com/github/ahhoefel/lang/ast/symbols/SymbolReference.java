@@ -5,11 +5,13 @@ import java.util.Optional;
 import com.github.ahhoefel.lang.ast.CodeLocation;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
+import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.LocalSymbol;
 import com.github.ahhoefel.lang.ast.symbols.LocalSymbols.SymbolIndex;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.symbols.TypeTable.TypeRecord;
+import com.github.ahhoefel.lang.ast.type.Type;
 
 public class SymbolReference {
     private static class ResolutionKey {
@@ -18,6 +20,7 @@ public class SymbolReference {
         private FileSymbols file;
         private LocalSymbols locals;
         private SymbolIndex localSymbolIndex;
+        private Optional<Expression> subject;
 
         public ResolutionKey(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals,
                 SymbolIndex locaSymbolIndex) {
@@ -26,6 +29,18 @@ public class SymbolReference {
             this.file = file;
             this.locals = locals;
             this.localSymbolIndex = locaSymbolIndex;
+            this.subject = Optional.empty();
+        }
+
+        public ResolutionKey(String name, GlobalSymbols globals, FileSymbols file, LocalSymbols locals,
+                Expression subject,
+                SymbolIndex locaSymbolIndex) {
+            this.name = name;
+            this.globals = globals;
+            this.file = file;
+            this.locals = locals;
+            this.localSymbolIndex = locaSymbolIndex;
+            this.subject = Optional.of(subject);
         }
     }
 
@@ -37,12 +52,14 @@ public class SymbolReference {
         private Optional<FileSymbols> fileImport;
         private Optional<FunctionDefinition> functionDefinition;
         private Optional<TypeRecord> globalType;
+        private Optional<VariableDeclaration> memberVariable;
 
         public Resolution() {
             localVariable = Optional.empty();
             fileImport = Optional.empty();
             functionDefinition = Optional.empty();
             globalType = Optional.empty();
+            memberVariable = Optional.empty();
         }
 
         public Optional<FunctionDefinition> getFunctionDefinition() {
@@ -51,6 +68,16 @@ public class SymbolReference {
 
         public Optional<TypeRecord> getGlobalType() {
             return globalType;
+        }
+
+        public Expression getType() {
+            if (localVariable.isPresent()) {
+                return localVariable.get().getType();
+            }
+            if (globalType.isPresent()) {
+                return globalType.get().getType();
+            }
+            return null;
         }
     }
 
@@ -65,7 +92,35 @@ public class SymbolReference {
         file.addSymbolReference(this);
     }
 
+    // Used for member access expressions where the type of the subject determines
+    // the meaning of the symbol.
+    public SymbolReference(String name, CodeLocation location, GlobalSymbols globals, FileSymbols file,
+            LocalSymbols locals, Expression subject,
+            SymbolIndex localSymbolIndex) {
+        this.key = new ResolutionKey(name, globals, file, locals, subject, localSymbolIndex);
+        this.location = location;
+        this.resolution = Optional.empty();
+        file.addSymbolReference(this);
+    }
+
     public boolean resolve() {
+        if (key.subject.isPresent()) {
+            System.out.println("Foo " + key.subject.get().getType());
+            Expression type = key.subject.get().getType();
+            if (!type.getType().equals(Type.TYPE)) {
+                System.out.println("Bar");
+                return false;
+            }
+            if (Type.hasMemberVariable(type, key.name)) {
+                System.out.println("Baz");
+                resolution = Optional.of(new Resolution());
+                resolution.get().memberVariable = Optional.of(Type.getMemberVariable(type, key.name));
+                return true;
+            }
+            System.out.println("False");
+            return false;
+        }
+
         Optional<LocalSymbol> symbol = key.locals.get(key.name, key.localSymbolIndex);
         if (symbol.isPresent()) {
             resolution = Optional.of(new Resolution());
@@ -118,12 +173,17 @@ public class SymbolReference {
         String out = key.name + " ";
         if (resolution.isPresent()) {
             if (resolution.get().fileImport.isPresent()) {
-                out += "(import) " + location;
+                out += "(import)";
             } else if (resolution.get().localVariable.isPresent()) {
-                out += "(local variable) " + location;
+                out += "(local variable)";
             } else if (resolution.get().globalType.isPresent()) {
-                out += "(global type) " + location;
+                out += "(global type)";
+            } else if (resolution.get().memberVariable.isPresent()) {
+                out += "(member variable)";
+            } else if (resolution.get().functionDefinition.isPresent()) {
+                out += "(function call)";
             }
+            out += " " + location;
         } else {
             out += "(unresolved) " + location + ", " + key.localSymbolIndex;
         }

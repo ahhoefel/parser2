@@ -2,7 +2,6 @@ package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.ErrorLog;
 import com.github.ahhoefel.parser.Locateable;
 

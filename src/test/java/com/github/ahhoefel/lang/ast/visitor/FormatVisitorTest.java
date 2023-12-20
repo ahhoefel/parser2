@@ -1,11 +1,17 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 import com.github.ahhoefel.FileArgumentProvider;
 import com.github.ahhoefel.lang.ast.File;
+import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.expression.Expression;
+import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
+import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.rules.ExpressionRules;
 import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.lang.rules.StructLiteralRules;
@@ -58,6 +64,14 @@ public class FormatVisitorTest {
     @ParameterizedTest(name = "{0} {1}")
     @ArgumentsSource(RoFiles.class)
     public void testCorrectlyFormatted(Path path) throws Exception {
+        // SymbolVisitor v = new SymbolVisitor(source);
+        // GlobalSymbols globals = new GlobalSymbols(v, fileParser);
+        // for (Path entry : entries) {
+        // Target t = new Target(source, entry);
+        // Optional<FileSymbols> fileSymbols = globals.add(t);
+        // assertTrue(fileSymbols.isPresent());
+        // }
+
         String s = Files.readString(path);
         try {
             File f = (File) fileParser.parse(s);

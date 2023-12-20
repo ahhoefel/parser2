@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -22,21 +21,21 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.ahhoefel.arm.AssemblyFile;
 import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
+import com.github.ahhoefel.lang.ast.visitor.TypeCheckVisitor.TypeError;
 import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.parser.LRParser;
 
-public class AArch64VisitorTest {
+public class TypeCheckVisitorTest {
+
     private static final Logger logger = LoggerFactory.getLogger(SymbolVisitorTest.class);
     private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
 
     @ParameterizedTest
     @ArgumentsSource(FileArgumentProvider.class)
-    public void testSymbols(Path source, List<Path> entries, Path asmFile) throws Exception {
-
+    public void test(Path source, List<Path> entries, Path errorPath) throws Exception {
         SymbolVisitor v = new SymbolVisitor(source);
         GlobalSymbols globals = new GlobalSymbols(v, fileParser);
         for (Path entry : entries) {
@@ -44,27 +43,34 @@ public class AArch64VisitorTest {
             Optional<FileSymbols> fileSymbols = globals.add(t);
             assertTrue(fileSymbols.isPresent());
         }
-        boolean resolved = globals.resolve();
-        if (!resolved) {
-            throw new Exception("Unresolved: \n" + globals.toString());
+        globals.resolve();
+
+        TypeCheckVisitor typeCheckVisitor = new TypeCheckVisitor();
+        Optional<String> error = Optional.empty();
+        List<TypeError> errors = typeCheckVisitor.check(globals);
+        if (!errors.isEmpty()) {
+            String errorString = "";
+            for (TypeError typeError : errors) {
+                errorString += typeError + "\n";
+            }
+            error = Optional.of(errorString);
         }
 
-        RegisterVisitor registerVisitor = new RegisterVisitor();
-        registerVisitor.assignRegisters(globals);
+        Optional<String> expectedError = Optional.empty();
+        if (Files.exists(errorPath)) {
+            expectedError = Optional.of(Files.readString(errorPath));
+        }
 
-        AArch64Visitor asmVisitor = new AArch64Visitor();
-        AssemblyFile asm = asmVisitor.createAssemblyFile(globals);
-
-        // Uncomment to update expected results.
-        Files.write(asmFile, asm.toString().getBytes(),
-                StandardOpenOption.WRITE);
-
-        String expected = Files.readString(asmFile);
-        assertEquals(expected, asm.toString());
+        assertEquals(expectedError.isPresent(), error.isPresent(),
+                expectedError.isPresent() ? "Expected an error but none was found"
+                        : "Unexpected error: " + error.get());
+        if (error.isPresent() && expectedError.isPresent()) {
+            assertEquals(expectedError.get(), error.get());
+        }
     }
 
     private static class FileArgumentProvider implements ArgumentsProvider {
-        private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/lang/ast/visitor/aarch64_visitor_tests";
+        private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/lang/ast/visitor/type_check_visitor_tests";
 
         @Override
         public Stream<Arguments> provideArguments(ExtensionContext arg0) throws Exception {
@@ -80,9 +86,9 @@ public class AArch64VisitorTest {
                     logger.atError().log(e.toString());
                     entries = List.of();
                 }
-                Path asm = p.resolve("aarch64.s");
+                Path asm = p.resolve("errors.txt");
                 return Arguments.of(Named.of(testName, source), Named.of("" + entries.size() + " entries", entries),
-                        Named.of("aarch64.s", asm));
+                        Named.of("errors.txt", asm));
             });
         }
     }

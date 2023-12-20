@@ -9,4 +9,4 @@ Global Symbols:
         Local symbol table:
           0, var y int, -1
     Symbol References:
-      foo 
+      foo (function call) :2:16:5

@@ -60,7 +60,7 @@ public class CodeLocation {
   }
 
   public String toString() {
-    return String.format("%s:%d:%d:%d", target != null ? target : "", lineNumber + 1, character + 1, position);
+    return String.format("%s:%d:%d:%d", target != null ? target : "", lineNumber + 1, character + 1, length);
   }
 
   public boolean equals(Object o) {

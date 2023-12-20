@@ -31,4 +31,8 @@ public class IntegerLiteralExpression extends Expression {
     public boolean isLValue() {
         return false;
     }
+
+    public String toString() {
+        return "IntegerLiteral(" + value + ")";
+    }
 }

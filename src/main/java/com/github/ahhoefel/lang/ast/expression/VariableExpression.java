@@ -3,14 +3,12 @@ package com.github.ahhoefel.lang.ast.expression;
 import com.github.ahhoefel.lang.ast.*;
 import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Token;
 
 public class VariableExpression extends Expression {
 
     private final String identifier;
     private SymbolReference symbol;
-    private Type type;
 
     public VariableExpression(Token t) {
         this.identifier = t.getValue();
@@ -24,7 +22,7 @@ public class VariableExpression extends Expression {
 
     @Override
     public Expression getType() {
-        return type;
+        return symbol.getResolution().get().getType();
     }
 
     public String getIdentifier() {
@@ -57,5 +55,12 @@ public class VariableExpression extends Expression {
 
     public String toString() {
         return identifier;
+    }
+
+    public boolean equals(Object o) {
+        if (!(o instanceof VariableExpression)) {
+            return false;
+        }
+        return ((VariableExpression) o).identifier.equals(identifier);
     }
 }

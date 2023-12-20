@@ -1,8 +1,12 @@
 package com.github.ahhoefel.lang.ast.type;
 
 import com.github.ahhoefel.lang.ast.CodeLocation;
+import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.Expression;
+import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
+import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 
 public abstract class Type extends Expression {
 
@@ -16,6 +20,9 @@ public abstract class Type extends Expression {
     public static final Type VOID = new VoidType(null);
     // The type of types.
     public static final Type TYPE = new TypeType(null);
+
+    public static final VariableDeclaration LENGTH_MEMBER = new VariableDeclaration("length", Type.INT,
+            new CodeLocation(new Target(null, "//lang:Array"), 0, 0, 0));
 
     public abstract int getWidthBits();
 
@@ -32,6 +39,27 @@ public abstract class Type extends Expression {
     public static Expression getMemberType(Expression type, String memberName) {
         // TODO: lookup members on a type expression.
         return INT;
+    }
+
+    public static boolean hasMemberVariable(Expression type, String memberName) {
+        System.out.println("Expression: " + type + ", " + memberName + "ArrayType: " + (type.getClass().toString()));
+        if (type instanceof IndexAccessExpression &&
+                ((IndexAccessExpression) type).getSubject() instanceof VariableExpression &&
+                ((VariableExpression) ((IndexAccessExpression) type).getSubject()).getIdentifier().equals("Array") &&
+                memberName.equals("length")) {
+            return true;
+        }
+        return false;
+    }
+
+    public static VariableDeclaration getMemberVariable(Expression type, String memberName) {
+        if (type instanceof IndexAccessExpression &&
+                ((IndexAccessExpression) type).getSubject() instanceof VariableExpression &&
+                ((VariableExpression) ((IndexAccessExpression) type).getSubject()).getIdentifier().equals("Array") &&
+                memberName.equals("length")) {
+            return LENGTH_MEMBER;
+        }
+        return null;
     }
 
     public static class IntType extends Type {

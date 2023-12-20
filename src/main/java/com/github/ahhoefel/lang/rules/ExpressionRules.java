@@ -60,7 +60,8 @@ public class ExpressionRules implements LanguageComponent {
                 rules.add(expression, type).setAction(e -> e[0]);
 
                 Rule memberAccessRule = rules.add(expression, expression, lex.period, lex.identifier)
-                                .setAction(e -> new MemberAccessExpression((Expression) e[0], (Token) e[2]));
+                                .setAction(e -> new MemberAccessExpression((Expression) e[0], (Token) e[2],
+                                                new CodeLocation(e)));
                 rules.add(expression, expression, lex.period, functionInvocation).setAction(e -> {
                         FunctionInvocationExpression fn = (FunctionInvocationExpression) e[2];
                         fn.setImplicitArg((Expression) e[0]);
@@ -72,37 +73,49 @@ public class ExpressionRules implements LanguageComponent {
                                                 new CodeLocation(e)));
 
                 Rule plus = rules.add(expression, expression, lex.plus, expression)
-                                .setAction(e -> new SumExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new SumExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule minus = rules.add(expression, expression, lex.hyphen, expression)
-                                .setAction(e -> new SubtractExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new SubtractExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule unaryMinus = rules.add(expression, lex.hyphen, expression)
-                                .setAction(e -> new UnaryMinusExpression((Expression) e[1]));
+                                .setAction(e -> new UnaryMinusExpression((Expression) e[1], new CodeLocation(e)));
                 Rule times = rules.add(expression, expression, lex.times, expression)
-                                .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new ProductExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 rules.add(expression, lex.lParen, expression, lex.rParen)
-                                .setAction(e -> new ParenthesesExpression((Expression) e[1]));
+                                .setAction(e -> new ParenthesesExpression((Expression) e[1], new CodeLocation(e)));
                 Rule doubleAmpersand = rules.add(expression, expression, lex.doubleAmpersand, expression)
-                                .setAction(e -> new AndExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new AndExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule doublePipe = rules.add(expression, expression, lex.doublePipe, expression)
-                                .setAction(e -> new OrExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new OrExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule doubleEquals = rules.add(expression, expression, lex.doubleEquals, expression)
-                                .setAction(e -> new EqualExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new EqualExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule lessThan = rules.add(expression, expression, lex.lessThan, expression)
-                                .setAction(e -> new LessThanExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new LessThanExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule lessThanOrEqual = rules.add(expression, expression, lex.lessThanOrEqual, expression)
-                                .setAction(e -> new LessThanOrEqualExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new LessThanOrEqualExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
                 Rule greaterThan = rules.add(expression, expression, lex.greaterThan, expression)
-                                .setAction(e -> new LessThanExpression((Expression) e[2], (Expression) e[0]));
+                                .setAction(e -> new LessThanExpression((Expression) e[2], (Expression) e[0],
+                                                new CodeLocation(e)));
                 Rule greaterThanOrEqual = rules.add(expression, expression, lex.greaterThanOrEqual, expression)
-                                .setAction(e -> new LessThanOrEqualExpression((Expression) e[2], (Expression) e[0]));
+                                .setAction(e -> new LessThanOrEqualExpression((Expression) e[2], (Expression) e[0],
+                                                new CodeLocation(e)));
                 Rule notEqual = rules.add(expression, expression, lex.notEqual, expression)
-                                .setAction(e -> new NotEqualExpression((Expression) e[0], (Expression) e[2]));
+                                .setAction(e -> new NotEqualExpression((Expression) e[0], (Expression) e[2],
+                                                new CodeLocation(e)));
 
                 rules.add(functionInvocation, lex.identifier, lex.lParen, lex.rParen).setAction(
-                                e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>()));
+                                e -> new FunctionInvocationExpression((Token) e[0], new ArrayList<Expression>(),
+                                                new CodeLocation(e)));
                 rules.add(functionInvocation, lex.identifier, lex.lParen, argList, lex.rParen).setAction(
                                 e -> new FunctionInvocationExpression((Token) e[0],
-                                                ((LocateableList<Expression>) e[2]).getList()));
+                                                ((LocateableList<Expression>) e[2]).getList(), new CodeLocation(e)));
 
                 rules.add(newExpression, lex.newKeyword, expression, lex.lParen, lex.rParen)
                                 .setAction(e -> new NewExpression((Expression) e[1], List.of(), new CodeLocation(e)));

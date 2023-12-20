@@ -6,9 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.github.ahhoefel.lang.ast.Visitor;
+import com.github.ahhoefel.lang.ast.expression.Expression;
+import com.github.ahhoefel.lang.ast.type.Type;
+
 public class TypeTable {
 
-    public static class TypeRecord {
+    public static class TypeRecord extends Expression {
         private String name;
         private int widthBits;
         private int index;
@@ -27,6 +31,26 @@ public class TypeTable {
         }
 
         public String getName() {
+            return name;
+        }
+
+        @Override
+        public void accept(Visitor v, Object... args) {
+            // TODO Auto-generated method stub
+            throw new UnsupportedOperationException("Unimplemented method 'accept'");
+        }
+
+        @Override
+        public boolean isLValue() {
+            return false;
+        }
+
+        @Override
+        public Expression getType() {
+            return Type.TYPE;
+        }
+
+        public String toString() {
             return name;
         }
     }
