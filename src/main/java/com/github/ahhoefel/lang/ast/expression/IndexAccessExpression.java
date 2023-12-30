@@ -1,15 +1,15 @@
 package com.github.ahhoefel.lang.ast.expression;
 
 import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitor;
-import com.github.ahhoefel.lang.ast.type.ArrayType;
+import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.lang.ast.type.Type;
 
 public class IndexAccessExpression extends Expression {
 
     private Expression subject;
     private Expression index;
+    private RegisterTracker widthRegisterTracker; // Single element width
 
     public IndexAccessExpression(Expression subject, Expression index, CodeLocation location) {
         this.subject = subject;
@@ -27,7 +27,12 @@ public class IndexAccessExpression extends Expression {
 
     @Override
     public void accept(Visitor v, Object... args) {
-        v.visit(this, args);
+        try {
+            v.visit(this, args);
+        } catch (Exception e) {
+            throw new RuntimeException("Exception in " + v.getClass().toString() + " in AST at " + this.getLocation(),
+                    e);
+        }
     }
 
     @Override
@@ -71,5 +76,13 @@ public class IndexAccessExpression extends Expression {
         }
         IndexAccessExpression e = (IndexAccessExpression) o;
         return e.subject.equals(subject) && e.index.equals(index);
+    }
+
+    public RegisterTracker getWidthRegisterTracker() {
+        return widthRegisterTracker;
+    }
+
+    public void setWidthRegisterTracker(RegisterTracker widthRegisterTracker) {
+        this.widthRegisterTracker = widthRegisterTracker;
     }
 }

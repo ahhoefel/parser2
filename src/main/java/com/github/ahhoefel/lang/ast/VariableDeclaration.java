@@ -10,6 +10,8 @@ public class VariableDeclaration implements Visitable, Locateable {
     private String name;
     private Expression type;
     private RegisterTracker registerTracker;
+    private RegisterTracker arrayLengthRegisterTracker;
+    private RegisterTracker arrayItemWidthRegisterTracker;
     private CodeLocation location;
 
     public VariableDeclaration(String name, Expression type, CodeLocation location) {
@@ -28,6 +30,22 @@ public class VariableDeclaration implements Visitable, Locateable {
 
     public RegisterTracker getRegisterTracker() {
         return registerTracker;
+    }
+
+    public void setArrayLengthRegisterTracker(RegisterTracker arrayLengthRegisterTracker) {
+        this.arrayLengthRegisterTracker = arrayLengthRegisterTracker;
+    }
+
+    public RegisterTracker getArrayLengthRegisterTracker() {
+        return arrayLengthRegisterTracker;
+    }
+
+    public void setArrayItemWidthRegisterTracker(RegisterTracker arrayItemWidthRegisterTracker) {
+        this.arrayItemWidthRegisterTracker = arrayItemWidthRegisterTracker;
+    }
+
+    public RegisterTracker getArrayItemWidthRegisterTracker() {
+        return arrayItemWidthRegisterTracker;
     }
 
     public String getName() {

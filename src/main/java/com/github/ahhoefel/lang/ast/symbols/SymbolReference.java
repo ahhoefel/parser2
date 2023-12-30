@@ -79,6 +79,10 @@ public class SymbolReference {
             }
             return null;
         }
+
+        public Optional<VariableDeclaration> getLocalVariable() {
+            return localVariable;
+        }
     }
 
     private Optional<Resolution> resolution;

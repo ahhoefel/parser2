@@ -1,13 +1,11 @@
 package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.ast.expression.Expression;
-import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Locateable;
 
 public class LValue implements Visitable, Locateable {
     private String identifier;
     private CodeLocation location;
-
     // E.g. a[i].y can be assigned to.
     private Expression expression;
 

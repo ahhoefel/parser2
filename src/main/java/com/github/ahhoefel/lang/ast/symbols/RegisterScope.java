@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegisterScope {
-    
+
     private int registerCount;
     private int totalWidthBits;
     private List<RegisterTracker> registers;
     private List<List<RegisterTracker>> dependents;
-
 
     public RegisterScope() {
         this.registerCount = 0;
@@ -19,18 +18,18 @@ public class RegisterScope {
     }
 
     public RegisterTracker createRegister(int widthBits) {
-      RegisterTracker r = new RegisterTracker(widthBits, totalWidthBits/8);
-      totalWidthBits += widthBits;
-      return r;
+        RegisterTracker r = new RegisterTracker(widthBits, totalWidthBits / 8);
+        totalWidthBits += widthBits;
+        return r;
     }
 
     public int getTotalWidthBits() {
         return totalWidthBits;
     }
 
-    public class RegisterTracker {    
+    public class RegisterTracker {
         private int register;
-        private int widthBits; 
+        private int widthBits;
         private int stackPositionBytes;
 
         public RegisterTracker(int widthBits, int stackPositionBytes) {

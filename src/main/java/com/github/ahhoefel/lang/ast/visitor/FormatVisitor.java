@@ -112,7 +112,6 @@ public class FormatVisitor implements Visitor {
         out.add("new ");
         expr.getType().accept(this, objs);
         out.add("(");
-        out.add("(");
         List<Expression> args = expr.getArgs();
         for (int i = 0; i < args.size(); i++) {
             args.get(i).accept(this);

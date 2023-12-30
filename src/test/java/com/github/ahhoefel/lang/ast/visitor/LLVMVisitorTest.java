@@ -1,14 +1,12 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+
 import java.util.stream.Stream;
 
 import com.github.ahhoefel.lang.ast.File;
@@ -22,7 +20,6 @@ import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.llvm.LLVM.LLVMMemoryBufferRef;
-import org.bytedeco.llvm.LLVM.LLVMModuleRef;
 import org.bytedeco.llvm.global.LLVM;
 
 import org.junit.jupiter.api.extension.ExtensionContext;

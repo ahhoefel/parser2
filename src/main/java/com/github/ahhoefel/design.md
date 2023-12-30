@@ -142,4 +142,8 @@ fn postOrder(List roots, Node n) {
   roots.add(n);
 }
 
-- strucs
+- structs
+
+- Comment idea:
+  - Separate comment types for code and text to perserve formatting.
+  - Comments should have a line separator so they can be autoformatted, word wrapped properly.

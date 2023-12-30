@@ -23,4 +23,5 @@ public interface ParameterType {
     public static ParameterType LABEL = new ByInstanceOf<>(Label.class);
     public static ParameterType X_SHIFT_UINT_15_MULTIPLE_OF_8 = new ByInstanceOf<>(RegisterShift.class);
     public static ParameterType CONDITION = new ByInstanceOf<>(Condition.class);
+    public static ParameterType COMMENT = new ByInstanceOf<>(Comment.class);
 }

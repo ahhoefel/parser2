@@ -1,0 +1,5 @@
+func main() int {
+  var a Array[int] = new Array[int](1)
+  a[0] = 7
+  return a[0]
+}

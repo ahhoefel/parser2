@@ -103,6 +103,9 @@ public class RegisterVisitor implements Visitor {
             arg.accept(this, objs);
         }
         expr.setRegisterTracker(scope.createRegister(Type.getWidthBits(expr.getType())));
+        expr.setWidthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+        expr.setArrayLengthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+        expr.setArrayItemWidthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
     @Override
@@ -213,7 +216,9 @@ public class RegisterVisitor implements Visitor {
         RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         expr.getSubject().accept(this, objs);
         expr.getIndex().accept(this, objs);
+        expr.getType().accept(this, objs); // ???!
         expr.setRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+        expr.setWidthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
     }
 
     @Override
@@ -296,6 +301,19 @@ public class RegisterVisitor implements Visitor {
     public void visit(VariableDeclaration decl, Object... objs) {
         RegisterScope scope = ((FunctionDefinition) objs[0]).getRegisterScope();
         decl.setRegisterTracker(scope.createRegister(Type.getWidthBits(decl.getType())));
+        if (decl.getType() instanceof IndexAccessExpression) {
+            IndexAccessExpression type = (IndexAccessExpression) decl.getType();
+            if (!(type.getSubject() instanceof VariableExpression)) {
+                throw new RuntimeException(
+                        "IndexAccessExpressions used in variable declarations must have Array as subject.");
+            }
+            if (!((VariableExpression) type.getSubject()).getIdentifier().equals("Array")) {
+                throw new RuntimeException(
+                        "IndexAccessExpressions used in variable declarations must have Array as subject.");
+            }
+            decl.setArrayLengthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+            decl.setArrayItemWidthRegisterTracker(scope.createRegister(Type.INT.getWidthBits()));
+        }
     }
 
     @Override
@@ -335,7 +353,7 @@ public class RegisterVisitor implements Visitor {
     @Override
     public void visit(TypeType type, Object... objs) {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'visit'");
+        // throw new UnsupportedOperationException("Unimplemented method 'visit'");
     }
 
     @Override
