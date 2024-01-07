@@ -220,17 +220,31 @@ public class AArch64Visitor implements Visitor {
 
     @Override
     public void visit(MemberAccessExpression expr, Object... objs) {
-        expr.getExpression().accept(this, objs);
-        Expression subjectType = expr.getExpression().getType();
-        Expression memberType = Type.getMemberType(subjectType, expr.getMember().getValue());
         AssemblyFile asm = (AssemblyFile) objs[0];
-        // TODO: Determine the member address
-        // asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new
-        // RegisterShift<>(Register.SP,
-        // new UInt15MultipleOf8(0))));
+        expr.getExpression().accept(this, objs);
+        // Expression subjectType = expr.getExpression().getType();
+        // Expression memberType = Type.getMemberType(subjectType,
+        // expr.getMember().getValue());
+
+        if (!Type.isArray(expr.getExpression().getType())) {
+            throw new UnsupportedOperationException(
+                    "Only array.length is supported by MemberAccessExpressions: " + expr.getType());
+        }
+        if (!expr.getMember().getValue().equals("length")) {
+            throw new UnsupportedOperationException("Only array.length is supported by MemberAccessExpressions");
+        }
+
+        if (!(expr.getExpression() instanceof VariableExpression)) {
+            throw new UnsupportedOperationException(
+                    "Only variable expressions are supported for the subject of MemberAccessExpressions");
+        }
+        VariableExpression var = (VariableExpression) expr.getExpression();
+        asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
+                new UInt15MultipleOf8(var.getSymbolReference().getResolution().get().getLocalVariable().get()
+                        .getArrayLengthRegisterTracker().getStackPositionBytes())),
+                new Comment("array length")));
         asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
                 new UInt15MultipleOf8(expr.getRegisterTracker().getStackPositionBytes()))));
-
     }
 
     @Override
@@ -376,7 +390,8 @@ public class AArch64Visitor implements Visitor {
                 // Only implemented for arrays currently.
                 NewExpression newExpr = (NewExpression) stmt.getExpression();
                 asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
-                        new UInt15MultipleOf8(newExpr.getArrayItemWidthRegisterTracker().getStackPositionBytes()))));
+                        new UInt15MultipleOf8(newExpr.getArrayItemWidthRegisterTracker().getStackPositionBytes())),
+                        new Comment("Copying array item width")));
                 asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0,
                         new RegisterShift<>(Register.SP, new UInt15MultipleOf8(
                                 var.getArrayItemWidthRegisterTracker().getStackPositionBytes()))));
@@ -384,7 +399,8 @@ public class AArch64Visitor implements Visitor {
                         new UInt15MultipleOf8(newExpr.getArrayLengthRegisterTracker().getStackPositionBytes()))));
                 asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0,
                         new RegisterShift<>(Register.SP, new UInt15MultipleOf8(
-                                var.getArrayLengthRegisterTracker().getStackPositionBytes()))));
+                                var.getArrayLengthRegisterTracker().getStackPositionBytes())),
+                        new Comment("Copying array length")));
             }
         }
     }

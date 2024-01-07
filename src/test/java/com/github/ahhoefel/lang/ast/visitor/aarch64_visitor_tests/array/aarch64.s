@@ -8,7 +8,7 @@ STR w30, [sp, #0]
 MOV x0, #0x3
 STR x0, [sp, #32]
 LDR x0, [sp, #32]
-STR x1, [sp, #56]
+STR x0, [sp, #56]
 MOV x1, #0x8 // Array element width bytes
 STR x1, [sp, #64]
 MUL x0, x0, x1
@@ -21,10 +21,10 @@ LDR x1, =heap_bottom
 STR x0, [x1, #0]
 LDR x0, [sp, #40]
 STR x0, [sp, #72]
-LDR x0, [sp, #64]
+LDR x0, [sp, #64] // Copying array item width
 STR x0, [sp, #88]
 LDR x0, [sp, #56]
-STR x0, [sp, #80]
+STR x0, [sp, #80] // Copying array length
 // a[0] = 1
 MOV x0, #0x1
 STR x0, [sp, #96]
@@ -81,6 +81,7 @@ STR x0, [sp, #232]
 LDR x0, [sp, #232]
 STR x0, [sp, #240]
 before_for_0: // For loop
+LDR x0, [sp, #80] // array length
 STR x0, [sp, #248]
 LDR x0, [sp, #224]
 LDR x1, [sp, #248]

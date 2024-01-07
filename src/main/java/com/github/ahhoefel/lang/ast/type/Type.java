@@ -80,21 +80,29 @@ public abstract class Type extends Expression {
                 new UInt15MultipleOf8(expr.getWidthRegisterTracker().getStackPositionBytes()))));
     }
 
+    public static boolean isArray(Expression type) {
+        if (!(type instanceof IndexAccessExpression)) {
+            return false;
+        }
+        IndexAccessExpression arrayType = (IndexAccessExpression) type;
+        if (!(arrayType.getSubject() instanceof VariableExpression)) {
+            return false;
+        }
+        if (!((VariableExpression) arrayType.getSubject()).getIdentifier().equals("Array")) {
+            return false;
+        }
+        return true;
+    }
+
     public static void getWidthBitsNewExpression(NewExpression expr, AssemblyFile asm) {
-        if (!(expr.getType() instanceof IndexAccessExpression)) {
+        if (!Type.isArray(expr.getType())) {
             throw new RuntimeException("Expected new expressions for arrays only");
         }
         IndexAccessExpression arrayType = (IndexAccessExpression) expr.getType();
-        if (!(arrayType.getSubject() instanceof VariableExpression)) {
-            throw new RuntimeException("Expected new expressions for arrays only");
-        }
-        if (!((VariableExpression) arrayType.getSubject()).getIdentifier().equals("Array")) {
-            throw new RuntimeException("Expected new expressions for arrays only");
-        }
 
         asm.add(InstructionType.LDR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
                 new UInt15MultipleOf8(expr.getArgs().get(0).getRegisterTracker().getStackPositionBytes()))));
-        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X1, new RegisterShift<>(Register.SP,
+        asm.add(InstructionType.STR_REGISTER_OFFSET.of(Register.X0, new RegisterShift<>(Register.SP,
                 new UInt15MultipleOf8(expr.getArrayLengthRegisterTracker().getStackPositionBytes()))));
 
         int elementWidthBits = getWidthBits(arrayType.getIndex());

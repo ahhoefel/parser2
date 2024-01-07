@@ -147,3 +147,8 @@ fn postOrder(List roots, Node n) {
 - Comment idea:
   - Separate comment types for code and text to perserve formatting.
   - Comments should have a line separator so they can be autoformatted, word wrapped properly.
+
+- Union case statements done by overloading?
+  - Do we decorate the overloaded functions with the name of the union?
+
+-
