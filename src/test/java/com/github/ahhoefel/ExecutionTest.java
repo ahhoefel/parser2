@@ -9,13 +9,15 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.github.ahhoefel.lang.ast.File;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.visitor.LLVMVisitor;
 import com.github.ahhoefel.lang.ast.visitor.SymbolVisitor;
 import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 
 import org.bytedeco.javacpp.BytePointer;
 import org.bytedeco.javacpp.Pointer;
@@ -34,7 +36,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 
 public class ExecutionTest {
     private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/execution_tests";
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     private static class FileArgumentProvider implements ArgumentsProvider {
         @Override
@@ -50,8 +52,8 @@ public class ExecutionTest {
     @ParameterizedTest(name = "{0} {1}")
     @ArgumentsSource(FileArgumentProvider.class)
     public void testExecution(Path source, Path entry) throws Exception {
-        Target t = new Target(source, entry);
-        String s = Files.readString(t.getFilePath());
+        Target t = new RelativeTarget(source, entry);
+        String s = Files.readString(t.getPath());
         System.out.println(entry);
         System.out.println(s);
         File f = (File) fileParser.parse(s);

@@ -5,15 +5,16 @@ import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.type.Type;
 
 import com.github.ahhoefel.parser.Token;
+import com.github.ahhoefel.parser.io.CodeLocation;
 
 public class MemberAccessExpression extends Expression {
 
-    private final Token member;
+    private final Token<String> member;
     private final Expression expression;
     private SymbolReference symbol;
     private Type memberType;
 
-    public MemberAccessExpression(Expression expression, Token member, CodeLocation location) {
+    public MemberAccessExpression(Expression expression, Token<String> member, CodeLocation location) {
         this.member = member;
         this.expression = expression;
         this.setLocation(location);
@@ -23,7 +24,7 @@ public class MemberAccessExpression extends Expression {
         return expression;
     }
 
-    public Token getMember() {
+    public Token<String> getMember() {
         return member;
     }
 

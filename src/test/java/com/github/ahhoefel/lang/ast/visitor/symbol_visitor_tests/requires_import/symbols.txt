@@ -1,15 +1,15 @@
 Global Symbols:
 
-  File: requires_import:provides_import
+  File: //requires_import/provides_import.ro
     Imports:
     Functions:
       foo
         Local symbol table:
     Symbol References:
 
-  File: requires_import:requires_import
+  File: //requires_import/requires_import.ro
     Imports:
-      requires_import:provides_import
+      //requires_import:provides_import
     Functions:
       main
         Local symbol table:

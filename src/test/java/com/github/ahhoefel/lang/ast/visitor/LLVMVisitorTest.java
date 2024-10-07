@@ -10,11 +10,12 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import com.github.ahhoefel.lang.ast.File;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.rules.LanguageRules;
-import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
 import com.github.ahhoefel.parser.ParseException;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +30,7 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 public class LLVMVisitorTest {
     private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/test/java/com/github/ahhoefel/lang/ast/visitor/llvm_visitor_tests";
 
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     private static final boolean OVERWRITE_GOLDENS = false;
 
@@ -41,7 +42,7 @@ public class LLVMVisitorTest {
         System.out.println(s);
         try {
             File f = (File) fileParser.parse(s);
-            Target t = new Target(source, entry);
+            Target t = new RelativeTarget(source, entry);
             f.setTarget(t);
 
             SymbolVisitor symbolVistor = new SymbolVisitor(source);

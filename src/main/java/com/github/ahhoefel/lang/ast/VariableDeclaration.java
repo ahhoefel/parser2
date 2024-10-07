@@ -4,6 +4,7 @@ import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
 import com.github.ahhoefel.parser.ErrorLog;
 import com.github.ahhoefel.parser.Locateable;
+import com.github.ahhoefel.parser.io.CodeLocation;;
 
 public class VariableDeclaration implements Visitable, Locateable {
 

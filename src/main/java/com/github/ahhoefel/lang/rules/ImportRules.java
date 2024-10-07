@@ -1,49 +1,28 @@
 package com.github.ahhoefel.lang.rules;
 
-import java.util.List;
-import java.util.Map;
-
-import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.lang.RuleEmitter;
+import com.github.ahhoefel.parser.lang.SymbolProvider;
 import com.github.ahhoefel.parser.Symbol;
-import com.github.ahhoefel.parser.SymbolTable;
 import com.github.ahhoefel.lang.ast.Import;
-import com.github.ahhoefel.parser.ConcatAction;
-import com.github.ahhoefel.parser.LanguageBuilder;
-import com.github.ahhoefel.parser.LanguageComponent;
+import com.github.ahhoefel.parser.action.ConcatAction;
+import com.github.ahhoefel.parser.lang.LanguageComponent;
+import com.github.ahhoefel.parser.ShiftReduceResolver;
 import com.github.ahhoefel.parser.Token;
 
 public class ImportRules implements LanguageComponent {
-
-  // Provides
-  private Symbol imp0rt;
-
-  // Internal
-  private Symbol path;
-
+  @SuppressWarnings("unchecked")
   @Override
-  public void provideRules(LanguageBuilder lang) {
-    Lexicon lex = lang.getLexicon();
-    Rule.Builder rules = lang.getRules();
-    rules.add(imp0rt, lex.importKeyword, path).setAction(e -> new Import(((Token) e[1]).getValue()));
-    rules.add(imp0rt, lex.importKeyword, lex.identifier, path)
-        .setAction(e -> new Import(((Token) e[1]).getValue(), ((Token) e[2]).getValue()));
-    rules.add(path, lex.identifier).setAction(e -> e[0]);
-    rules.add(path, path, lex.forwardSlash, lex.identifier).setAction(ConcatAction.SINGLETON);
-  }
+  public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
+    Symbol imp0rt = provider.createAndExport("import");
+    Symbol path = provider.create("path");
 
-  @Override
-  public List<Symbol> provides(SymbolTable nonTerminals) {
-    imp0rt = nonTerminals.newSymbol("import");
-    path = nonTerminals.newSymbol("path");
-    return List.of(imp0rt);
-  }
+    Symbol importKeyword = provider.requireTerminal("import");
+    Symbol identifier = provider.requireTerminal("identifier");
 
-  @Override
-  public List<String> requires() {
-    return List.of();
-  }
-
-  @Override
-  public void acceptExternalSymbols(Map<String, Symbol> external) {
+    rules.emit(imp0rt, importKeyword, path).setAction(e -> new Import(((Token<String>) e[1]).getValue()));
+    rules.emit(imp0rt, importKeyword, identifier, path)
+        .setAction(e -> new Import(((Token<String>) e[1]).getValue(), ((Token<String>) e[2]).getValue()));
+    rules.emit(path, identifier).setAction(e -> e[0]);
+    rules.emit(path, path, provider.requireTerminal("forwardSlash"), identifier).setAction(ConcatAction.SINGLETON);
   }
 }

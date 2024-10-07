@@ -1,14 +1,15 @@
 package com.github.ahhoefel.io;
 
-import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.lang.ast.Target;
-import com.github.ahhoefel.parser.RangeTokenizer;
+import com.github.ahhoefel.parser.io.CodeLocation;
+import com.github.ahhoefel.parser.io.Target;
+import com.github.ahhoefel.parser.lang.RangeTokenizer;
 import com.github.ahhoefel.parser.Token;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.Optional;
 
-public class TokenIterator implements Iterator<Token> {
+public class TokenIterator implements Iterator<Token<String>> {
   private ReaderIterator iter;
   private RangeTokenizer tokenizer;
   private Target target;
@@ -48,13 +49,13 @@ public class TokenIterator implements Iterator<Token> {
   }
 
   @Override
-  public Token next() throws RuntimeException {
+  public Token<String> next() throws RuntimeException {
     if (!iter.hasNext()) {
       if (eofSent) {
         throw new RuntimeException("No next element.");
       }
       eofSent = true;
-      return new Token(tokenizer.getEof(), "eof", new CodeLocation(target, line, character, position));
+      return tokenizer.eof();
     }
     Integer next = iter.next();
     if (!iter.hasNext()) {
@@ -64,13 +65,13 @@ public class TokenIterator implements Iterator<Token> {
         throw new RuntimeException(e);
       }
     }
-    Token token = tokenizer.of(next, new CodeLocation(target, line, character, position));
+    Token<String> token = tokenizer.of(next, new CodeLocation(Optional.of(target), line, character, position));
     character++;
     position++;
-    if (token.getSymbol().equals(tokenizer.getNewLine())) {
-      character = 0;
-      line++;
-    }
+    // if (token.getSymbol().equals(tokenizer.getNewLine())) {
+    // character = 0;
+    // line++;
+    // }
     return token;
   }
 }

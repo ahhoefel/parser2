@@ -9,7 +9,6 @@ import com.github.ahhoefel.lang.ast.FunctionDeclaration;
 import com.github.ahhoefel.lang.ast.Import;
 import com.github.ahhoefel.lang.ast.ImportCatalog;
 import com.github.ahhoefel.lang.ast.LValue;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.TypeDeclaration;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitable;
@@ -51,6 +50,8 @@ import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
 import com.github.ahhoefel.lang.ast.type.Type.VoidType;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 import com.github.ahhoefel.lang.ast.type.Type.TypeType;
 
 // Visitors aren't type safe. Here's the list of expected arguments and return types
@@ -89,7 +90,7 @@ public class SymbolVisitor implements Visitor {
     public void visit(Import stmt, Object... objs) {
         // GlobalSymbols g = (GlobalSymbols) objs[0];
         FileSymbols symbols = (FileSymbols) objs[1];
-        Target target = new Target(source, stmt.getTargetString());
+        Target target = new RelativeTarget(source, source.resolve(stmt.getTargetString()));
         symbols.addImport(stmt.getShortName(), target);
     }
 

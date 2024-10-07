@@ -8,19 +8,21 @@ import java.util.Collections;
 import java.util.List;
 
 import com.github.ahhoefel.arm.AssemblyFile;
-import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.lang.ast.File;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.visitor.AArch64Visitor;
 import com.github.ahhoefel.lang.ast.visitor.RegisterVisitor;
 import com.github.ahhoefel.lang.ast.visitor.SymbolVisitor;
 import com.github.ahhoefel.lang.rules.LanguageRules;
-import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 import com.google.devtools.common.options.Option;
 import com.google.devtools.common.options.OptionsBase;
 import com.google.devtools.common.options.OptionsParser;
 
 public class LangToASM {
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     public static class Options extends OptionsBase {
 
@@ -59,13 +61,13 @@ public class LangToASM {
         for (String entry : entries) {
             System.out.println(source);
             System.out.println(entry);
-            Target t = new Target(source, entry);
-            System.out.println(t.getFilePath());
+            Target t = new RelativeTarget(source, entry);
+            System.out.println(t.getPath());
             globals.add(t);
         }
         if (!options.input.isEmpty()) {
-            Target t = new Target(source, Path.of(options.input));
-            System.out.println(t.getFilePath());
+            Target t = new RelativeTarget(source, Path.of(options.input));
+            System.out.println(t.getPath());
             globals.add(t);
         }
 

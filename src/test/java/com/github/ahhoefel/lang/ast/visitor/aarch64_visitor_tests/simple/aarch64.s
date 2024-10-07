@@ -20,7 +20,7 @@ ADD x0, x0, x1
 STR x0, [sp, #40]
 LDR x0, [sp, #40]
 STR x0, [sp, #48]
-fn_return_4:
+fn_return_10:
 LDR w30, [sp, #0]
 ADD sp, sp, #56
 RET 

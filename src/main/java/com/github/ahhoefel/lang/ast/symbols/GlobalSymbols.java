@@ -10,16 +10,16 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.github.ahhoefel.lang.ast.File;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.visitor.SymbolVisitor;
-import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
 import com.github.ahhoefel.parser.ParseException;
+import com.github.ahhoefel.parser.io.Target;
 import com.github.ahhoefel.util.IndentedString;
 
 public class GlobalSymbols {
 
     private SymbolVisitor symbolVisitor;
-    private LRParser fileParser;
+    private LayeredParser<File> fileParser;
 
     private Map<Target, FilePair> files;
     private TypeTable typeTable;
@@ -34,7 +34,7 @@ public class GlobalSymbols {
         }
     }
 
-    public GlobalSymbols(SymbolVisitor v, LRParser fileParser) {
+    public GlobalSymbols(SymbolVisitor v, LayeredParser<File> fileParser) {
         files = new HashMap<>();
         this.symbolVisitor = v;
         this.fileParser = fileParser;
@@ -51,7 +51,7 @@ public class GlobalSymbols {
 
     public Optional<FileSymbols> add(Target t) {
         try {
-            String s = Files.readString(t.getFilePath());
+            String s = Files.readString(t.getPath());
             File file = (File) fileParser.parse(s);
             file.setTarget(t);
             FileSymbols symbols = new FileSymbols(t);
@@ -59,7 +59,7 @@ public class GlobalSymbols {
             file.accept(symbolVisitor, this, symbols);
             return Optional.of(symbols);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to read file: " + t.getFilePath(), e);
+            throw new RuntimeException("Failed to read file: " + t.getPath(), e);
         } catch (ParseException e) {
             throw new RuntimeException("Parsing error on " + t, e);
         }
@@ -107,7 +107,7 @@ public class GlobalSymbols {
         targets.sort((o1, o2) -> {
             Target t1 = (Target) o1;
             Target t2 = (Target) o2;
-            return t1.getFilePath().compareTo(t2.getFilePath());
+            return t1.getPath().compareTo(t2.getPath());
         });
         for (Target t : targets) {
             FileSymbols symbols = files.get(t).symbols;

@@ -150,7 +150,7 @@ public class FormatVisitor implements Visitor {
     public void visit(MemberAccessExpression expr, Object... objs) {
         expr.getExpression().accept(this);
         out.add(".");
-        out.add(expr.getMember().getValue());
+        out.add(expr.getMember().getValue().toString());
     }
 
     @Override

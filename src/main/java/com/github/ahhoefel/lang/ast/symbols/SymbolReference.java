@@ -2,8 +2,8 @@ package com.github.ahhoefel.lang.ast.symbols;
 
 import java.util.Optional;
 
-import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.parser.io.CodeLocation;
+import com.github.ahhoefel.parser.io.Target;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;

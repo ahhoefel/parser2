@@ -4,6 +4,7 @@ import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.LocateableList;
 import com.github.ahhoefel.parser.Token;
+import com.github.ahhoefel.parser.io.CodeLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +29,8 @@ public class FunctionDeclaration implements Declaration {
     private Optional<Type> returnType;
     private CodeLocation location;
 
-    public FunctionDeclaration(Token name, LocateableList<VariableDeclaration> parameters, Optional<Type> returnType,
+    public FunctionDeclaration(Token<String> name, LocateableList<VariableDeclaration> parameters,
+            Optional<Type> returnType,
             Block statements) {
         this.name = name.getValue();
         this.parameters = parameters.getList();

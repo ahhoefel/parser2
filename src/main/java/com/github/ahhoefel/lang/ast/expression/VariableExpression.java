@@ -10,7 +10,7 @@ public class VariableExpression extends Expression {
     private final String identifier;
     private SymbolReference symbol;
 
-    public VariableExpression(Token t) {
+    public VariableExpression(Token<String> t) {
         this.identifier = t.getValue();
         this.setLocation(t.getLocation());
     }

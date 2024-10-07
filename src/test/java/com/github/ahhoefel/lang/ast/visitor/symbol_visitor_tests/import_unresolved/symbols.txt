@@ -1,8 +1,8 @@
 Global Symbols:
 
-  File: import_unresolved:import_unresolved
+  File: //import_unresolved/import_unresolved.ro
     Imports:
-      import_unresolved:missing_import
+      //import_unresolved:missing_import
     Functions:
       main
         Local symbol table:

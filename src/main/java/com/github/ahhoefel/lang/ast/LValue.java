@@ -2,6 +2,7 @@ package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.parser.Locateable;
+import com.github.ahhoefel.parser.io.CodeLocation;
 
 public class LValue implements Visitable, Locateable {
     private String identifier;

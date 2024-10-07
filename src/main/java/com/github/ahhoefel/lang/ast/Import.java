@@ -1,5 +1,7 @@
 package com.github.ahhoefel.lang.ast;
 
+import com.github.ahhoefel.parser.io.CodeLocation;
+
 public class Import implements Declaration {
 
     private boolean explicitShortName;

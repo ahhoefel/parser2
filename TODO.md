@@ -1,0 +1,3 @@
+2024-08-25
+- Lexer tests are passing.
+- Full grammar tests are failing. For example, the FormatVisitorTest is having class cast exceptions, receiving tokens where it expects expressions. It's not clear why this is happening. The expression grammar rules look to correctly return Expressions. It's hard to tell what parser layer the exception is happening on -- perhaps it's the lexer layer that's the issue. Additional debugging lines in the LRParser around the class cast exception shows that a plus(+) token is being cast in to the expression. But it's not clear why that's being returned from the expression rule. Perhaps additional testing in the parser respository is needed.

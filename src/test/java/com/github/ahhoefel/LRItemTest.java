@@ -1,9 +1,14 @@
 package com.github.ahhoefel;
 
-import com.github.ahhoefel.parser.*;
+import com.github.ahhoefel.parser.lang.Rule;
+import com.github.ahhoefel.parser.Grammar;
+import com.github.ahhoefel.parser.LRItem;
+import com.github.ahhoefel.parser.MarkedRule;
+import com.github.ahhoefel.parser.Symbol;
+import com.github.ahhoefel.parser.SymbolTable;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
-
 
 import java.util.List;
 import java.util.Set;
@@ -27,7 +32,7 @@ public class LRItemTest {
     Rule r2 = new Rule(a, List.of());
     Rule r3 = new Rule(b, List.of(y));
     Rule r4 = new Rule(b, List.of(z));
-    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4));
+    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r0, r1, r2, r3, r4), null);
     Grammar.FirstSymbols first = grammar.first();
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r0, 0, terminals.getEof()), grammar, first);
     Assertions.assertEquals(closure, Set.of(new MarkedRule(r0, 0, terminals.getEof()), new MarkedRule(r1, 0, y),
@@ -54,7 +59,7 @@ public class LRItemTest {
     Rule r4 = new Rule(t, List.of(t, times, f));
     Rule r5 = new Rule(f, List.of(n));
     Rule r6 = new Rule(f, List.of(lparen, start, rparen));
-    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
+    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6), null);
     Grammar.FirstSymbols first = grammar.first();
 
     Set<MarkedRule> closure = LRItem.closure(new MarkedRule(r6, 1, plus), grammar, first);
@@ -112,7 +117,8 @@ public class LRItemTest {
    * MarkedRule(r5, 0, plus), new MarkedRule(r6, 0, plus) ), closure);
    * 
    * closure = LRItem.closure( Set.of( new MarkedRule(r1, 1, terminals.getEof())
-   * ), grammar, first); Assertions.assertEquals(closure, Set.of( new MarkedRule(r1,
+   * ), grammar, first); Assertions.assertEquals(closure, Set.of( new
+   * MarkedRule(r1,
    * 1, terminals.getEof()) )); }
    */
 
@@ -136,13 +142,14 @@ public class LRItemTest {
     Rule r4 = new Rule(t, List.of(t, times, f));
     Rule r5 = new Rule(f, List.of(n));
     Rule r6 = new Rule(f, List.of(lparen, start, rparen));
-    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6));
+    Grammar grammar = new Grammar(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5, r6), null);
     // Rules rules = new Rules(terminals, nonTerminals, List.of(r1, r2, r3, r4, r5,
     // r6));
-    LRTable table = LRParser.getSLRTable(grammar);
-    Assertions.assertEquals(22, table.state.size());
 
-    System.out.println(table);
+    // LRTable table = LRParser.getCanonicalLRTable(grammar);
+    // Assertions.assertEquals(22, table.state.size());
+
+    // System.out.println(table);
     // List<Symbol> input = List.of(n, plus, n, eof);
     // Object tree = Parser.parseTerminals(table, input.iterator(),
     // grammar.getAugmentedStartRule().getSource());

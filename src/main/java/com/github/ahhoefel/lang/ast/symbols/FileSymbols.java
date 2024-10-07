@@ -10,9 +10,9 @@ import java.util.Optional;
 
 import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.lang.ast.FunctionDeclaration;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.expression.Expression;
 import com.github.ahhoefel.lang.ast.symbols.RegisterScope.RegisterTracker;
+import com.github.ahhoefel.parser.io.Target;
 import com.github.ahhoefel.util.IndentedString;
 
 public class FileSymbols {
@@ -97,7 +97,7 @@ public class FileSymbols {
         targets.sort((o1, o2) -> {
             Target t1 = (Target) o1;
             Target t2 = (Target) o2;
-            return t1.getFilePath().compareTo(t2.getFilePath());
+            return t1.getPath().compareTo(t2.getPath());
         });
         for (Target t : targets) {
             out.addLine(t.toString());

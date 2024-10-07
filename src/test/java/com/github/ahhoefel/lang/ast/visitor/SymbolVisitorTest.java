@@ -12,11 +12,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.lang.ast.File;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
 import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.rules.LanguageRules;
-import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -29,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 public class SymbolVisitorTest {
     private static final Logger logger = LoggerFactory.getLogger(SymbolVisitorTest.class);
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     @ParameterizedTest
     @ArgumentsSource(FileArgumentProvider.class)
@@ -40,7 +42,7 @@ public class SymbolVisitorTest {
         SymbolVisitor v = new SymbolVisitor(source);
         GlobalSymbols globals = new GlobalSymbols(v, fileParser);
         for (Path entry : entries) {
-            Target t = new Target(source, entry);
+            Target t = new RelativeTarget(source, entry);
             Optional<FileSymbols> fileSymbols = globals.add(t);
             assertTrue(fileSymbols.isPresent());
         }

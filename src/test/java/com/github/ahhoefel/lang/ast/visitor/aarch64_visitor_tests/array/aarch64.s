@@ -119,8 +119,8 @@ STR x0, [sp, #224] // Direct assign
 B before_for_0
 after_for_0:
 LDR x0, [sp, #240]
-B fn_return_3
-fn_return_3:
+B fn_return_9
+fn_return_9:
 LDR w30, [sp, #0]
 ADD sp, sp, #312
 RET 

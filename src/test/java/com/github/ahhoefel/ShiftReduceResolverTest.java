@@ -1,6 +1,6 @@
 package com.github.ahhoefel;
 
-import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.lang.Rule;
 import com.github.ahhoefel.parser.ShiftReduceResolver;
 import com.github.ahhoefel.parser.Symbol;
 import com.github.ahhoefel.parser.SymbolTable;
@@ -23,6 +23,5 @@ public class ShiftReduceResolverTest {
     Assertions.assertEquals(resolver.getPreference(r, t).get(), ShiftReduceResolver.Preference.SHIFT);
 
   }
-
 
 }

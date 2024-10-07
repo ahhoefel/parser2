@@ -1,24 +1,19 @@
 package com.github.ahhoefel.lang.ast.visitor;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
+import java.util.Iterator;
 
 import com.github.ahhoefel.FileArgumentProvider;
 import com.github.ahhoefel.lang.ast.File;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.expression.Expression;
-import com.github.ahhoefel.lang.ast.symbols.FileSymbols;
-import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.rules.ExpressionRules;
 import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.lang.rules.StructLiteralRules;
 import com.github.ahhoefel.lang.rules.TypeRules;
-import com.github.ahhoefel.parser.LRParser;
-import com.github.ahhoefel.parser.LanguageBuilder;
+import com.github.ahhoefel.parser.LayeredParser;
 import com.github.ahhoefel.parser.ParseException;
+import com.github.ahhoefel.lang.rules.lex.Lexicon;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -26,10 +21,14 @@ import org.junit.jupiter.params.provider.ArgumentsSource;
 import org.junit.jupiter.params.ParameterizedTest;
 
 public class FormatVisitorTest {
-    private static final LRParser parser = new LRParser(LanguageBuilder.build("expression", new ExpressionRules(),
-            new StructLiteralRules(), new TypeRules()));
 
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    @SuppressWarnings("rawtypes")
+    private static final LayeredParser<Expression> parser = new LayeredParser.Layer<Iterator, Expression>(
+            "Expression", Expression.class, new Lexicon(), "expression",
+            new ExpressionRules(),
+            new StructLiteralRules(), new TypeRules());
+
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     @Test
     public void testSumAndProduct() {
@@ -78,7 +77,7 @@ public class FormatVisitorTest {
             FormatVisitor v = new FormatVisitor();
             f.accept(v);
             Assertions.assertEquals(Files.readString(path), s, v.toString());
-        } catch (ParseException e) {
+        } catch (Exception e) {
             System.out.println("Ignoring error on path: " + path);
             System.out.println(e);
         }

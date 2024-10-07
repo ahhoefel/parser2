@@ -1,6 +1,6 @@
 package com.github.ahhoefel.lang.ast.expression;
 
-import com.github.ahhoefel.lang.ast.CodeLocation;
+import com.github.ahhoefel.parser.io.CodeLocation;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.type.Type;
 

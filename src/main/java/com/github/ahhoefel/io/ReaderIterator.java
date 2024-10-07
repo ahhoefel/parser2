@@ -6,7 +6,7 @@ import java.io.StringReader;
 import java.nio.file.Files;
 import java.util.Iterator;
 
-import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.parser.io.Target;
 
 public class ReaderIterator implements Iterator<Integer> {
   private Reader r;
@@ -15,7 +15,7 @@ public class ReaderIterator implements Iterator<Integer> {
   private boolean done;
 
   public ReaderIterator(Target target) throws IOException {
-    this(Files.newBufferedReader(target.getFilePath()));
+    this(Files.newBufferedReader(target.getPath()));
   }
 
   public ReaderIterator(String s) {

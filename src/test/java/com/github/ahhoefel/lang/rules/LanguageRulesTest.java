@@ -1,26 +1,31 @@
 package com.github.ahhoefel.lang.rules;
 
 import com.github.ahhoefel.lang.ast.File;
-import com.github.ahhoefel.lang.ast.Target;
 import com.github.ahhoefel.lang.ast.visitor.FormatVisitor;
+import com.github.ahhoefel.parser.LayeredParser;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.Collection;
-
+import java.util.Optional;
 import java.nio.file.Path;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import com.github.ahhoefel.parser.ErrorLog;
 
 // Tests that files parse correctly and produce the desired AST.
 
 public class LanguageRulesTest {
     private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/tests/";
-    private static final LanguageRules RULES = new LanguageRules();
+    private static final LayeredParser<File> PARSER = LanguageRules.getParser();
 
     public static Collection<Object[]> testTargets() throws IOException {
         return Files.walk(Paths.get(BASE_PATH))
@@ -37,56 +42,63 @@ public class LanguageRulesTest {
         int i = relativeFilename.lastIndexOf("/");
         String relativeBase = relativeFilename.substring(0, i);
         String name = relativeFilename.substring(i + 1);
-        return new Target(Path.of(BASE_PATH), relativeBase, name);
+        return new RelativeTarget(Path.of(BASE_PATH), relativeBase + "/" + name);
     }
 
     @ParameterizedTest
     @MethodSource("testTargets")
-    public void testTarget(Target target) {
-        ErrorLog log = new ErrorLog();
-        try {
-            File file = RULES.parse(target, log);
-            ErrorLog expectedError = ErrorLog.readErrors(target);
-            if (file == null) {
-                if (!expectedError.isEmpty()) {
-                    System.out.println("Skipping target with expected error: " + target);
-                    return;
-                } else {
-                    throw new RuntimeException("Error parsing file: " + log.toString());
-                }
-            }
-            FormatVisitor visitor = new FormatVisitor();
-            visitor.visit(file);
-            String result = visitor.toString();
-            String expected = Files.readString(target.getFilePath());
-            if (!expected.equals(result)) {
+    public void testTarget(Target target) throws Exception {
 
-                int diffIndex = 0;
-                boolean sizeDifference = expected.length() != result.length();
-                if (!sizeDifference) {
-                    for (int i = 0; i < expected.length(); i++) {
-                        if (expected.charAt(i) != result.charAt(i)) {
-                            diffIndex = i;
-                            break;
-                        }
+        Optional<String> expectedError = Optional.empty();
+        Path errorPath = target.getPath()
+                .resolveSibling(target.getPath().getFileName().toString().replace(".ro", ".err"));
+        if (Files.exists(errorPath)) {
+            expectedError = Optional.of(Files.readString(errorPath));
+        }
+
+        File file;
+        try {
+            file = PARSER.parse(target, Files.readString(target.getPath()));
+        } catch (Exception e) {
+            if (!expectedError.isPresent()) {
+                throw e;
+            }
+            assertEquals(expectedError.get(), e.toString());
+            return;
+        }
+
+        if (expectedError.isPresent()) {
+            Assertions.fail("An error was expected, but not produced: " + expectedError.get());
+        }
+
+        FormatVisitor visitor = new FormatVisitor();
+        visitor.visit(file);
+        String result = visitor.toString();
+        String expected = Files.readString(target.getPath());
+        if (!expected.equals(result)) {
+            int diffIndex = 0;
+            boolean sizeDifference = expected.length() != result.length();
+            if (!sizeDifference) {
+                for (int i = 0; i < expected.length(); i++) {
+                    if (expected.charAt(i) != result.charAt(i)) {
+                        diffIndex = i;
+                        break;
                     }
                 }
-
-                String reason;
-                if (sizeDifference) {
-                    reason = "different sizes";
-                } else {
-                    reason = "difference at character " + diffIndex;
-                }
-
-                throw new RuntimeException(
-                        "Parsed and formatted target does not match original (" + reason + "): " + target
-                                + ".\nExpected: " + expected.length() + " length\n"
-                                + expected + "\nResults: " + result.length() + " length\n" + result);
             }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            String reason;
+            if (sizeDifference) {
+                reason = "different sizes";
+            } else {
+                reason = "difference at character " + diffIndex;
+            }
+
+            throw new RuntimeException(
+                    "Parsed and formatted target does not match original (" + reason + "): " + target
+                            + ".\nExpected: " + expected.length() + " length\n"
+                            + expected + "\nResults: " + result.length() + " length\n" + result);
         }
+
     }
 
     // // @Test

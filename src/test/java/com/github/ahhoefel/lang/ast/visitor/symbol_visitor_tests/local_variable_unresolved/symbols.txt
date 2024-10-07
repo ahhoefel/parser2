@@ -1,6 +1,6 @@
 Global Symbols:
 
-  File: local_variable_unresolved:local_variable_unresolved
+  File: //local_variable_unresolved/local_variable_unresolved.ro
     Imports:
     Functions:
       main

@@ -1,6 +1,6 @@
 Global Symbols:
 
-  File: array:array
+  File: //array/array.ro
     Imports:
     Functions:
       main

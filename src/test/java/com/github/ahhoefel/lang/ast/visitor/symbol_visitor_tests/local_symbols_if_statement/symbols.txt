@@ -1,6 +1,6 @@
 Global Symbols:
 
-  File: local_symbols_if_statement:local_symbols_if_statement
+  File: //local_symbols_if_statement/local_symbols_if_statement.ro
     Imports:
     Functions:
       main

@@ -2,8 +2,13 @@ package com.github.ahhoefel.lang.ast;
 
 import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.parser.ErrorLog;
+import com.github.ahhoefel.parser.LayeredParser;
+import com.github.ahhoefel.parser.io.RelativeTarget;
+import com.github.ahhoefel.parser.io.Target;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,32 +17,30 @@ import java.util.Stack;
 
 public class FileTree {
 
-    public String base;
-    public Map<String, File> files;
+    public Map<Path, File> files;
 
-    public FileTree(String base) {
-        this.base = base;
+    public FileTree() {
         files = new HashMap<>();
     }
 
-    public static Result fromTarget(Target target) throws IOException {
+    public static Result fromTarget(RelativeTarget target) throws IOException {
         System.out.println("Reading tree from target: " + target);
         ErrorLog log = new ErrorLog();
-        String base = target.getBase();
-        FileTree tree = new FileTree(base);
-        LanguageRules lang = new LanguageRules();
-        Stack<String> paths = new Stack<>();
+        FileTree tree = new FileTree();
+        LayeredParser<File> parser = LanguageRules.getParser();
+        Path source = target.getSource();
+        Stack<Path> paths = new Stack<>();
         List<Target> targets = new ArrayList<>();
-        paths.push(target.getSuffix());
+        paths.push(target.getPath());
         while (!paths.isEmpty()) {
-            String p = paths.pop();
+            Path p = paths.pop();
             System.out.println("Reading path: " + p);
-            Target t = new Target(target.getSource(), base, p);
-            File file = lang.parse(t, log);
+            Target t = new RelativeTarget(source, p);
+            File file = parser.parse(t, Files.readString(t.getPath()));
             file.setTarget(t);
             tree.files.put(p, file);
             for (Import im : file.getImports().getImports()) {
-                String next = im.getPath();
+                Path next = source.resolve(im.getPath());
                 if (!tree.files.containsKey(next)) {
                     paths.add(next);
                     tree.files.put(next, null);
@@ -54,15 +57,14 @@ public class FileTree {
 
     public String toString() {
         String out = "FileTree:\n";
-        out += "\tBase: " + base + "\n";
-        for (Map.Entry<String, File> file : files.entrySet()) {
-            out += "\tFile: " + file.getKey() + "\n";
+        for (Map.Entry<Path, File> file : files.entrySet()) {
+            out += "\tPath: " + file.getKey() + "\n";
         }
         return out;
     }
 
     public class TargetMap {
-        public File get(String p) {
+        public File get(Path p) {
             return files.get(p);
         }
     }

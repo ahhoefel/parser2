@@ -1,6 +1,7 @@
 package com.github.ahhoefel.lang.ast.type;
 
 import java.math.BigInteger;
+import java.util.Optional;
 
 import com.github.ahhoefel.arm.AssemblyFile;
 import com.github.ahhoefel.arm.Comment;
@@ -8,11 +9,10 @@ import com.github.ahhoefel.arm.InstructionType;
 import com.github.ahhoefel.arm.Label;
 import com.github.ahhoefel.arm.Register;
 import com.github.ahhoefel.arm.RegisterShift;
-import com.github.ahhoefel.arm.UInt12;
 import com.github.ahhoefel.arm.UInt15MultipleOf8;
 import com.github.ahhoefel.arm.UInt64;
-import com.github.ahhoefel.lang.ast.CodeLocation;
-import com.github.ahhoefel.lang.ast.Target;
+import com.github.ahhoefel.parser.io.CodeLocation;
+import com.github.ahhoefel.parser.io.RelativeTarget;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitor;
 import com.github.ahhoefel.lang.ast.expression.Expression;
@@ -20,8 +20,6 @@ import com.github.ahhoefel.lang.ast.expression.IndexAccessExpression;
 import com.github.ahhoefel.lang.ast.expression.NewExpression;
 import com.github.ahhoefel.lang.ast.expression.VariableExpression;
 import com.github.ahhoefel.lang.ast.symbols.FileSymbols.FunctionDefinition;
-import com.github.ahhoefel.lang.ast.visitor.FormatVisitor;
-import com.github.ahhoefel.lang.ast.symbols.RegisterScope;
 
 public abstract class Type extends Expression {
 
@@ -37,7 +35,7 @@ public abstract class Type extends Expression {
     public static final Type TYPE = new TypeType(null);
 
     public static final VariableDeclaration LENGTH_MEMBER = new VariableDeclaration("length", Type.INT,
-            new CodeLocation(new Target(null, "//lang:Array"), 0, 0, 0));
+            new CodeLocation(Optional.empty(), 0, 0, 0));
 
     public abstract int getWidthBits();
 

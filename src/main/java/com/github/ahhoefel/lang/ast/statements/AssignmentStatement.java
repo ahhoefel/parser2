@@ -2,7 +2,7 @@ package com.github.ahhoefel.lang.ast.statements;
 
 import java.util.Optional;
 
-import com.github.ahhoefel.lang.ast.CodeLocation;
+import com.github.ahhoefel.parser.io.CodeLocation;
 import com.github.ahhoefel.lang.ast.LValue;
 import com.github.ahhoefel.lang.ast.VariableDeclaration;
 import com.github.ahhoefel.lang.ast.Visitable;

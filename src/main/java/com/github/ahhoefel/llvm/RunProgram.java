@@ -1,6 +1,5 @@
 package com.github.ahhoefel.llvm;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -9,7 +8,7 @@ import com.github.ahhoefel.lang.ast.symbols.GlobalSymbols;
 import com.github.ahhoefel.lang.ast.visitor.LLVMVisitor;
 import com.github.ahhoefel.lang.ast.visitor.SymbolVisitor;
 import com.github.ahhoefel.lang.rules.LanguageRules;
-import com.github.ahhoefel.parser.LRParser;
+import com.github.ahhoefel.parser.LayeredParser;
 import com.github.ahhoefel.parser.ParseException;
 
 import org.bytedeco.javacpp.BytePointer;
@@ -23,7 +22,7 @@ import org.bytedeco.llvm.LLVM.LLVMValueRef;
 import org.bytedeco.llvm.global.LLVM;
 
 public class RunProgram {
-    private static final LRParser fileParser = new LRParser(LanguageRules.getLanguage());
+    private static final LayeredParser<File> fileParser = LanguageRules.getParser();
 
     public static void main(String[] args) throws Exception {
         Path source = Path.of("/Users/hoefel/dev/parser2/src/tests/statements");

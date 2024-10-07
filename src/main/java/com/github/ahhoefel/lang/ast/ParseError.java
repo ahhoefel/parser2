@@ -4,6 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Objects;
 
+import com.github.ahhoefel.parser.io.CodeLocation;
+
 public class ParseError {
 
   private CodeLocation location;

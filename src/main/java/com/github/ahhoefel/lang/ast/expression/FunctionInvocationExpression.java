@@ -4,6 +4,7 @@ import com.github.ahhoefel.lang.ast.*;
 import com.github.ahhoefel.lang.ast.symbols.SymbolReference;
 import com.github.ahhoefel.lang.ast.type.Type;
 import com.github.ahhoefel.parser.Token;
+import com.github.ahhoefel.parser.io.CodeLocation;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ public class FunctionInvocationExpression extends Expression {
     private Type type;
     private SymbolReference symbol;
 
-    public FunctionInvocationExpression(Token identifier, List<Expression> args, CodeLocation location) {
+    public FunctionInvocationExpression(Token<String> identifier, List<Expression> args, CodeLocation location) {
         this.identifier = identifier.getValue();
         this.args = args;
         this.implicitArg = Optional.empty();

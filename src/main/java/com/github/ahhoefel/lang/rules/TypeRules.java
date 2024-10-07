@@ -1,34 +1,28 @@
 package com.github.ahhoefel.lang.rules;
 
-import com.github.ahhoefel.parser.Rule;
+import com.github.ahhoefel.parser.lang.RuleEmitter;
+import com.github.ahhoefel.parser.lang.SymbolProvider;
 import com.github.ahhoefel.parser.Symbol;
-import com.github.ahhoefel.parser.SymbolTable;
-import com.github.ahhoefel.lang.ast.*;
+import com.github.ahhoefel.parser.io.CodeLocation;
 import com.github.ahhoefel.lang.ast.type.Type.IntType;
 import com.github.ahhoefel.lang.ast.type.Type.BooleanType;
 import com.github.ahhoefel.lang.ast.type.Type.StringType;
-import com.github.ahhoefel.parser.LanguageBuilder;
-import com.github.ahhoefel.parser.LanguageComponent;
-
-import java.util.List;
-import java.util.Map;
+import com.github.ahhoefel.parser.lang.LanguageComponent;
+import com.github.ahhoefel.parser.ShiftReduceResolver;
 
 public class TypeRules implements LanguageComponent {
-
-    // Provides
-    private Symbol type;
 
     // Internal
     // private Symbol typeParams;
     // private Symbol members;
 
     @Override
-    public void provideRules(LanguageBuilder lang) {
-        Lexicon lex = lang.getLexicon();
-        Rule.Builder rules = lang.getRules();
-        rules.add(type, lex.intKeyword).setAction(e -> new IntType(new CodeLocation(e)));
-        rules.add(type, lex.boolKeyword).setAction(e -> new BooleanType(new CodeLocation(e)));
-        rules.add(type, lex.stringKeyword).setAction(e -> new StringType(new CodeLocation(e)));
+    public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
+        Symbol type = provider.createAndExport("type");
+
+        rules.emit(type, provider.requireTerminal("int")).setAction(e -> new IntType(new CodeLocation(e)));
+        rules.emit(type, provider.requireTerminal("bool")).setAction(e -> new BooleanType(new CodeLocation(e)));
+        rules.emit(type, provider.requireTerminal("string")).setAction(e -> new StringType(new CodeLocation(e)));
         // rules.add(type, lex.identifier).setAction(e -> new NamedType(((Token)
         // e[0]).getValue(), new CodeLocation(e)));
         // rules.add(type, lex.identifier, lex.period, lex.identifier).setAction(e -> {
@@ -68,20 +62,4 @@ public class TypeRules implements LanguageComponent {
         // rules.add(members).setAction(e -> new LocateableList<>());
     }
 
-    @Override
-    public List<Symbol> provides(SymbolTable nonTerminals) {
-        type = nonTerminals.newSymbol("type");
-        // typeParams = nonTerminals.newSymbol("typeParams");
-        // members = nonTerminals.newSymbol("members");
-        return List.of(type);
-    }
-
-    @Override
-    public List<String> requires() {
-        return List.of();
-    }
-
-    @Override
-    public void acceptExternalSymbols(Map<String, Symbol> external) {
-    }
 }

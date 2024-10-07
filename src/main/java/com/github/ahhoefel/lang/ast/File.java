@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 import com.github.ahhoefel.parser.Locateable;
+import com.github.ahhoefel.parser.io.CodeLocation;
+import com.github.ahhoefel.parser.io.Target;
 
 public class File implements Visitable, Locateable {
 

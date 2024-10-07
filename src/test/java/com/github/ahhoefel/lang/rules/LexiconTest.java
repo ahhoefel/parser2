@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
+import java.util.Iterator;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Named;
@@ -15,8 +15,8 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.ArgumentsProvider;
 import org.junit.jupiter.params.provider.ArgumentsSource;
 
+import com.github.ahhoefel.lang.rules.lex.Lexicon;
 import com.github.ahhoefel.parser.ErrorLog;
-import com.github.ahhoefel.parser.LocateableList;
 import com.github.ahhoefel.parser.Token;
 
 public class LexiconTest {
@@ -26,15 +26,16 @@ public class LexiconTest {
     public void testLexicon(Path input, Path expected) throws Exception {
         Lexicon lex = new Lexicon();
         ErrorLog log = new ErrorLog();
-        LocateableList<Token> tokens = lex.parse(Files.readString(input), log);
+        @SuppressWarnings("unchecked")
+        Iterator<Token<String>> tokens = lex.parse(Files.readString(input));
         if (!log.isEmpty()) {
             // System.out.print(log.toString());
             assertEquals("", log.toString());
         }
 
         StringBuilder out = new StringBuilder();
-        for (Token token : tokens.getList()) {
-            out.append(token.toString());
+        while (tokens.hasNext()) {
+            out.append(tokens.next().toString());
             out.append("\n");
         }
         String expectedString = Files.readString(expected);

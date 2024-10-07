@@ -8,7 +8,7 @@ public class IntegerLiteralExpression extends Expression {
 
     private long value;
 
-    public IntegerLiteralExpression(Token t) {
+    public IntegerLiteralExpression(Token<String> t) {
         String text = t.getValue();
         this.value = Long.parseLong(text);
         this.setLocation(t.getLocation());
