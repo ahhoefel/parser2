@@ -151,4 +151,137 @@ fn postOrder(List roots, Node n) {
 - Union case statements done by overloading?
   - Do we decorate the overloaded functions with the name of the union?
 
--
+- Ideas for type inference related to tagged unions:
+
+func foo(x A|B) {
+  if x is A  {
+    x.methodOnA()
+    return
+  }
+  // No type assertion needed here to know that x is B.
+  x.methodOnB()
+}
+
+type Opt<A> = A|Nil
+func (Opt<A>) isPresent() bool {
+  return this is not Nil
+}
+
+func foo() {
+  // Clean code, wrong semantics.
+  x Foo = new Foo()
+  if cond {
+    x = new OtherFoo()
+  }
+
+  x Foo = if cond (
+    new OtherFoo()
+  ) else (
+    new Foo()
+  )
+
+  x Opt<Foo>
+  if cond {
+    x = new OtherFoo()
+  } else {
+    x = new Foo()
+  }
+  // Implicit type assertion that x is not Optional here.
+
+  if cond {
+    x = new OtherFoo()
+  } else {
+    x = new Foo()
+  }
+  x Foo  // Declaration after the fact, needs no Optional.
+}
+
+Left-side labmbdas
+func foo() Error {
+   func mayError() A|Error {
+    ...
+   }
+
+  x | return = mayError()
+  x | e -> return e = mayError()
+  x | throw = mayError()
+
+  // Composition and returned unions
+  bar(mayError() | throw)
+  // This leads to the syntax
+  x = mayError() | throw  
+}
+
+
+If f : () -> A|B and G : B -> A then
+f() | g : () -> A. So, in essence, | is an optional compositional operator.
+Does the input of G need to match B on type or tag?
+e.g. 
+
+func f() (this A, that A) {
+  ...
+}
+func g(that A) A {
+  ...
+}
+a = f() | g  // Not ambiguous because of parameter name.
+
+Unions are implicitly tagged with type.
+A | B vs (a A | b B)
+
+If statements vs switches? How do we make type assertions?
+
+
+** Passed re
+
+
+// readFile reads a file and returns a string. Rather than returning (string | error), we pass a return channel
+// as an argument. Note, to use a return channel, you have to return it along with an argument of the right type.
+func readFile(in: stream; err Return<Error>) string {
+   out := ""
+   while !in.eof() {
+     more, streamErr += in.readSomeBytes()
+     if streamErr != nil {
+        return err(streamErr)
+     }
+     out += more
+   }
+   return out
+}
+
+// More idomatically, the readSomeBytes would require an error channel.
+// Note anywhere a return channel is passed, that function call may break out of the outer function.
+func readFile(in: stream; err Return<Error>) string {
+   out := ""
+   while !in.eof() {
+     out += in.readSomeBytes(err) // implicitly may return from readFile
+   }
+   return out
+}
+
+func foo(filename string) string | Error {
+   in := stream.Open(filename)
+   text := readFile(in; return) // May return.
+   return text
+}
+
+func bar(filename string) {
+   in := stream.Open(filename)
+   textOrErr := readFile(in; capture) // May return. Return type (string | Error)
+   if textOrError is string {
+      fmt.Println(textOrError)
+   } else {
+      fmt.Printf("Error: %w\n", textOrError)
+   }
+}
+
+// Rules for return channels:
+// 1. They cannot be assigned to variables. I.e., they cannot be stored.
+// 2. They may only be passed as arguments requiring them.
+// 3. They may not be returned themselves. 
+// 4. They may only be used within return statements to return values.
+// 5. They impact control flow by going back to the place where they were originally created.
+// 6. Return channels can be created with either "return" or "capture" expression keywords.
+// 7. Capture expressions convert return type f:(A;Return<B>) -> C to B | C. That is the return type is
+//    turned into a tagged union with the return channel type.
+// 8. When captured, the tag on the returned channel in the tagged union can be inferred from the name of the parameter.
