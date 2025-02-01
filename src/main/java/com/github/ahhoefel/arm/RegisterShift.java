@@ -5,7 +5,6 @@ public class RegisterShift<T extends Parameter> implements Parameter {
     private Register register;
     private T shift;
 
-
     public RegisterShift(Register register, T shift) {
         this.register = register;
         this.shift = shift;
@@ -20,6 +19,6 @@ public class RegisterShift<T extends Parameter> implements Parameter {
     }
 
     public String toString() {
-        return "[" + register +", " + shift +  "]";
+        return "[" + register + ", " + shift + "]";
     }
 }

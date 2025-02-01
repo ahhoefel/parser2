@@ -8,11 +8,11 @@ import com.github.ahhoefel.parser.lang.RuleEmitter;
 import com.github.ahhoefel.parser.lang.SymbolProvider;
 
 public class Number implements LanguageComponent {
-  @Override
-  public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
-    Symbol number = provider.createAndExport("number");
-    Symbol digit = provider.requireTerminal("number");
-    rules.emit(number, number, digit).setAction(ConcatAction.SINGLETON);
-    rules.emit(number, digit).setAction(ConcatAction.SINGLETON);
-  }
+    @Override
+    public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
+        Symbol number = provider.createAndExport("number");
+        Symbol digit = provider.requireTerminal("number");
+        rules.emit(number, number, digit).setAction(ConcatAction.SINGLETON);
+        rules.emit(number, digit).setAction(ConcatAction.SINGLETON);
+    }
 }

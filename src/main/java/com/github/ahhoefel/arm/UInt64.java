@@ -7,10 +7,11 @@ public class UInt64 implements Parameter {
     private static BigInteger MIN_UINT64 = new BigInteger("0");
 
     private BigInteger value;
+
     public UInt64(BigInteger value) {
         this.value = value;
-        if (value.compareTo(MAX_UINT64) > 0 || value.compareTo(MIN_UINT64) < 0 ) {
-              throw new RuntimeException("UInt64 value out of range [0,18446744073709551615]: " + value);
+        if (value.compareTo(MAX_UINT64) > 0 || value.compareTo(MIN_UINT64) < 0) {
+            throw new RuntimeException("UInt64 value out of range [0,18446744073709551615]: " + value);
         }
     }
 

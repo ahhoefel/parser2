@@ -10,19 +10,19 @@ import com.github.ahhoefel.parser.ShiftReduceResolver;
 import com.github.ahhoefel.parser.Token;
 
 public class ImportRules implements LanguageComponent {
-  @SuppressWarnings("unchecked")
-  @Override
-  public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
-    Symbol imp0rt = provider.createAndExport("import");
-    Symbol path = provider.create("path");
+    @SuppressWarnings("unchecked")
+    @Override
+    public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
+        Symbol imp0rt = provider.createAndExport("import");
+        Symbol path = provider.create("path");
 
-    Symbol importKeyword = provider.requireTerminal("import");
-    Symbol identifier = provider.requireTerminal("identifier");
+        Symbol importKeyword = provider.requireTerminal("import");
+        Symbol identifier = provider.requireTerminal("identifier");
 
-    rules.emit(imp0rt, importKeyword, path).setAction(e -> new Import(((Token<String>) e[1]).getValue()));
-    rules.emit(imp0rt, importKeyword, identifier, path)
-        .setAction(e -> new Import(((Token<String>) e[1]).getValue(), ((Token<String>) e[2]).getValue()));
-    rules.emit(path, identifier).setAction(e -> e[0]);
-    rules.emit(path, path, provider.requireTerminal("forwardSlash"), identifier).setAction(ConcatAction.SINGLETON);
-  }
+        rules.emit(imp0rt, importKeyword, path).setAction(e -> new Import(((Token<String>) e[1]).getValue()));
+        rules.emit(imp0rt, importKeyword, identifier, path)
+                .setAction(e -> new Import(((Token<String>) e[1]).getValue(), ((Token<String>) e[2]).getValue()));
+        rules.emit(path, identifier).setAction(e -> e[0]);
+        rules.emit(path, path, provider.requireTerminal("forwardSlash"), identifier).setAction(ConcatAction.SINGLETON);
+    }
 }

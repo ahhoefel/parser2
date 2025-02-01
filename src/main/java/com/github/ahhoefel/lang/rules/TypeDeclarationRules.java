@@ -10,13 +10,13 @@ import com.github.ahhoefel.parser.lang.LanguageComponent;
 import com.github.ahhoefel.parser.ShiftReduceResolver;
 
 public class TypeDeclarationRules implements LanguageComponent {
-  @SuppressWarnings("unchecked")
-  @Override
-  public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
-    Symbol typeDeclaration = provider.createAndExport("typeDeclaration");
-    rules
-        .emit(typeDeclaration, provider.requireTerminal("type"), provider.requireTerminal("identifier"),
-            provider.require("type"))
-        .setAction(e -> new TypeDeclaration(((Token<String>) e[1]).getValue(), (Type) e[2]));
-  }
+    @SuppressWarnings("unchecked")
+    @Override
+    public void provideRules(SymbolProvider provider, ShiftReduceResolver resolver, RuleEmitter rules) {
+        Symbol typeDeclaration = provider.createAndExport("typeDeclaration");
+        rules
+                .emit(typeDeclaration, provider.requireTerminal("type"), provider.requireTerminal("identifier"),
+                        provider.require("type"))
+                .setAction(e -> new TypeDeclaration(((Token<String>) e[1]).getValue(), (Type) e[2]));
+    }
 }

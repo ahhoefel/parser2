@@ -6,10 +6,8 @@ public class Condition implements Parameter {
         EQ, // Equal. Z==1
         NE, // Not equal. Z==0
         CS, // Unsigned higher or same (or carry set). C==1
-        HS,
-        CC, // Unsigned lower (or carry clear). C==0
-        LO,
-        MI, // Negative. The mnemonic stands for "minus". N==1
+        HS, CC, // Unsigned lower (or carry clear). C==0
+        LO, MI, // Negative. The mnemonic stands for "minus". N==1
         PL, // Positive or zero. The mnemonic stands for "plus". N==0
         VS, // Signed overflow. The mnemonic stands for "V set". V==1
         VC, // No signed overflow. The mnemonic stands for "V clear". V==0

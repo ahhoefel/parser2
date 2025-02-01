@@ -9,62 +9,62 @@ import java.util.Iterator;
 import com.github.ahhoefel.parser.io.Target;
 
 public class ReaderIterator implements Iterator<Integer> {
-  private Reader r;
-  private int pos;
-  private Integer next;
-  private boolean done;
+    private Reader r;
+    private int pos;
+    private Integer next;
+    private boolean done;
 
-  public ReaderIterator(Target target) throws IOException {
-    this(Files.newBufferedReader(target.getPath()));
-  }
-
-  public ReaderIterator(String s) {
-    this(new StringReader(s));
-  }
-
-  public ReaderIterator(Reader r) {
-    this.r = r;
-    this.done = false;
-  }
-
-  @Override
-  public boolean hasNext() {
-    if (done) {
-      return false;
+    public ReaderIterator(Target target) throws IOException {
+        this(Files.newBufferedReader(target.getPath()));
     }
-    populateNext();
-    return next != null;
-  }
 
-  @Override
-  public Integer next() {
-    populateNext();
-    Integer tmp = next;
-    next = null;
-    return tmp;
-  }
-
-  private void populateNext() {
-    if (next != null) {
-      return;
+    public ReaderIterator(String s) {
+        this(new StringReader(s));
     }
-    try {
-      next = r.read();
-      pos++;
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    if (next == -1) {
-      next = null;
-      done = true;
-    }
-  }
 
-  public void close() throws IOException {
-    r.close();
-  }
+    public ReaderIterator(Reader r) {
+        this.r = r;
+        this.done = false;
+    }
 
-  public int position() {
-    return pos;
-  }
+    @Override
+    public boolean hasNext() {
+        if (done) {
+            return false;
+        }
+        populateNext();
+        return next != null;
+    }
+
+    @Override
+    public Integer next() {
+        populateNext();
+        Integer tmp = next;
+        next = null;
+        return tmp;
+    }
+
+    private void populateNext() {
+        if (next != null) {
+            return;
+        }
+        try {
+            next = r.read();
+            pos++;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        if (next == -1) {
+            next = null;
+            done = true;
+        }
+    }
+
+    public void close() throws IOException {
+        r.close();
+    }
+
+    public int position() {
+        return pos;
+    }
 }

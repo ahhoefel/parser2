@@ -3,10 +3,8 @@ package com.github.ahhoefel.arm;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class AssemblyFile {
-   
-    
+
     private List<Instruction> instructions;
 
     public AssemblyFile() {
@@ -19,7 +17,7 @@ public class AssemblyFile {
 
     public boolean isValid() {
         for (Instruction i : instructions) {
-            if(!i.isValid()) {
+            if (!i.isValid()) {
                 return false;
             }
         }
