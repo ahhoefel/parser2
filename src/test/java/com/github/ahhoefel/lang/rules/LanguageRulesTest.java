@@ -7,9 +7,7 @@ import com.github.ahhoefel.parser.io.RelativeTarget;
 import com.github.ahhoefel.parser.io.Target;
 
 import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.Collectors;
-import java.util.Collection;
+import java.util.stream.Stream;
 import java.util.Optional;
 import java.nio.file.Path;
 
@@ -19,35 +17,38 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 // Tests that files parse correctly and produce the desired AST.
 
 public class LanguageRulesTest {
-    private static final String BASE_PATH = "/Users/hoefel/dev/parser2/src/tests/";
+    private static final String BASE_PATH = "src/test/java/com/github/ahhoefel/lang/rules";
+    private static final String TEST_PATH = "language_rules_tests";
     private static final LayeredParser<File> PARSER = LanguageRules.getParser();
 
-    public static Collection<Object[]> testTargets() throws IOException {
-        return Files.walk(Paths.get(BASE_PATH))
+    public static Stream<Arguments> testTargets() throws IOException {
+        Path root = Path.of(".").toAbsolutePath();
+        return Files.walk(root.resolve(BASE_PATH).resolve(TEST_PATH))
                 .filter(Files::isRegularFile)
                 .filter(f -> f.toString().endsWith(".ro"))
                 .map(LanguageRulesTest::filenameToTarget)
-                .map(t -> new Object[] { t })
-                .collect(Collectors.toList());
+                .map(t -> Arguments.of(t, t.getPath().getFileName().toString()));
     }
 
     public static Target filenameToTarget(Path path) {
+        Path rootPath = Path.of(".").resolve(BASE_PATH).resolve(TEST_PATH).toAbsolutePath();
         String filename = path.toString();
-        String relativeFilename = filename.substring(BASE_PATH.length());
+        String relativeFilename = filename.substring(rootPath.toString().length()).substring(1);
         int i = relativeFilename.lastIndexOf("/");
         String relativeBase = relativeFilename.substring(0, i);
         String name = relativeFilename.substring(i + 1);
-        return new RelativeTarget(Path.of(BASE_PATH), relativeBase + "/" + name);
+        return new RelativeTarget(rootPath, relativeBase + "/" + name);
     }
 
-    @ParameterizedTest
+    @ParameterizedTest(name = "{index} {1}")
     @MethodSource("testTargets")
-    public void testTarget(Target target) throws Exception {
+    public void testTarget(Target target, String name) throws Exception {
 
         Optional<String> expectedError = Optional.empty();
         Path errorPath = target.getPath()
@@ -98,7 +99,6 @@ public class LanguageRulesTest {
                             + ".\nExpected: " + expected.length() + " length\n"
                             + expected + "\nResults: " + result.length() + " length\n" + result);
         }
-
     }
 
     // // @Test

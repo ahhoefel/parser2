@@ -12,7 +12,6 @@ import com.github.ahhoefel.lang.rules.LanguageRules;
 import com.github.ahhoefel.lang.rules.StructLiteralRules;
 import com.github.ahhoefel.lang.rules.TypeRules;
 import com.github.ahhoefel.parser.LayeredParser;
-import com.github.ahhoefel.parser.ParseException;
 import com.github.ahhoefel.lang.rules.lex.Lexicon;
 
 import org.junit.jupiter.api.Assertions;
@@ -60,17 +59,9 @@ public class FormatVisitorTest {
         }
     }
 
-    @ParameterizedTest(name = "{0} {1}")
+    @ParameterizedTest(name = "{index} {0}")
     @ArgumentsSource(RoFiles.class)
     public void testCorrectlyFormatted(Path path) throws Exception {
-        // SymbolVisitor v = new SymbolVisitor(source);
-        // GlobalSymbols globals = new GlobalSymbols(v, fileParser);
-        // for (Path entry : entries) {
-        // Target t = new Target(source, entry);
-        // Optional<FileSymbols> fileSymbols = globals.add(t);
-        // assertTrue(fileSymbols.isPresent());
-        // }
-
         String s = Files.readString(path);
         try {
             File f = (File) fileParser.parse(s);

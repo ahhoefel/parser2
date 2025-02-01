@@ -1,0 +1,4 @@
+func main() int {
+  var a Array[int] = new Array[int](3)
+  return a.length
+}

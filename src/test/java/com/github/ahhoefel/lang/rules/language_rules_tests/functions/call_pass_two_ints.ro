@@ -1,0 +1,7 @@
+func main() int {
+  return foo(3, 4) + 1
+}
+
+func foo(x int, y int) int {
+  return x + y
+}

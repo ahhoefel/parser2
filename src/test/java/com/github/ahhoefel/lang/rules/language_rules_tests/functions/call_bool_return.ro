@@ -1,0 +1,10 @@
+func main() bool {
+  if boolReturn() != true {
+    return false
+  }
+  return true
+}
+
+func boolReturn() bool {
+  return true
+}

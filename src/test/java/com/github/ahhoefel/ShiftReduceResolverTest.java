@@ -21,7 +21,5 @@ public class ShiftReduceResolverTest {
     resolver.addShiftPreference(r, t);
 
     Assertions.assertEquals(resolver.getPreference(r, t).get(), ShiftReduceResolver.Preference.SHIFT);
-
   }
-
 }

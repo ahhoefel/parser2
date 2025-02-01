@@ -1,6 +1,7 @@
 .global other
 .global main
-other:
+// Function: other
+other: // Function definition
 SUB sp, sp, #64
 STR w30, [sp, #0]
 MOV x0, #0x1
@@ -18,7 +19,7 @@ LDR x1, [sp, #32]
 CMP x0, x1
 CSET x0, NE
 STR x0, [sp, #40]
-LDR x0, [sp, #40]
+LDR x0, [sp, #40] // If statement
 CMP x0, #0
 B.EQ after_if_0
 MOV x0, #0x0
@@ -34,7 +35,8 @@ fn_return_0:
 LDR w30, [sp, #0]
 ADD sp, sp, #64
 RET 
-main:
+// Function: main
+main: // Function definition
 SUB sp, sp, #256
 STR w30, [sp, #0]
 MOV x0, #0x1
@@ -52,7 +54,7 @@ LDR x1, [sp, #32]
 CMP x0, x1
 CSET x0, NE
 STR x0, [sp, #40]
-LDR x0, [sp, #40]
+LDR x0, [sp, #40] // If statement
 CMP x0, #0
 B.EQ after_if_1
 MOV x0, #0x0
@@ -75,7 +77,7 @@ LDR x1, [sp, #80]
 CMP x0, x1
 CSET x0, EQ
 STR x0, [sp, #88]
-LDR x0, [sp, #88]
+LDR x0, [sp, #88] // If statement
 CMP x0, #0
 B.EQ after_if_2
 MOV x0, #0x0
@@ -98,7 +100,7 @@ LDR x1, [sp, #128]
 CMP x0, x1
 CSET x0, NE
 STR x0, [sp, #136]
-LDR x0, [sp, #136]
+LDR x0, [sp, #136] // If statement
 CMP x0, #0
 B.EQ after_if_3
 MOV x0, #0x0
@@ -121,7 +123,7 @@ LDR x1, [sp, #176]
 CMP x0, x1
 CSET x0, NE
 STR x0, [sp, #184]
-LDR x0, [sp, #184]
+LDR x0, [sp, #184] // If statement
 CMP x0, #0
 B.EQ after_if_4
 MOV x0, #0x0
@@ -144,7 +146,7 @@ LDR x1, [sp, #224]
 CMP x0, x1
 CSET x0, NE
 STR x0, [sp, #232]
-LDR x0, [sp, #232]
+LDR x0, [sp, #232] // If statement
 CMP x0, #0
 B.EQ after_if_5
 MOV x0, #0x0
