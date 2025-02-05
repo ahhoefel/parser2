@@ -8,9 +8,7 @@ import com.github.ahhoefel.parser.LayeredParser.Layer;
 import java.util.Iterator;
 
 public class LanguageRules {
-
     public static LayeredParser<File> getParser() {
-        // TerminalLayeredParser lexer = new TerminalLayeredParser(new CharacterSet());
         Lexicon lexicon = new Lexicon();
         @SuppressWarnings("rawtypes")
         Layer<Iterator, File> layer = new Layer<>("LanguageLayer", File.class, lexicon, "declarationList",
